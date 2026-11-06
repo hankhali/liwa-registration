@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Liwa.Api/Liwa.Api.csproj" />
+    <Project Path="src/Liwa.Application/Liwa.Application.csproj" />
+    <Project Path="src/Liwa.Domain/Liwa.Domain.csproj" />
+    <Project Path="src/Liwa.Infrastructure/Liwa.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Liwa.IntegrationTests/Liwa.IntegrationTests.csproj" />
+    <Project Path="tests/Liwa.UnitTests/Liwa.UnitTests.csproj" />
+  </Folder>
+</Solution>
