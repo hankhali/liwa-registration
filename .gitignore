@@ -1,0 +1,54 @@
+# ---- Secrets / environment ----
+.env
+.env.*
+!.env.example
+*.pfx
+*.key
+appsettings.*.local.json
+secrets.json
+
+# ---- .NET ----
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+*.rsuser
+.vs/
+TestResults/
+*.trx
+coverage/
+coverage*.xml
+*.coverage
+artifacts/
+publish/
+
+# ---- Angular / Node ----
+node_modules/
+dist/
+out-tsc/
+.angular/
+.nx/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+playwright-report/
+test-results/
+
+# ---- Editors ----
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ---- OS ----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*.lnk
