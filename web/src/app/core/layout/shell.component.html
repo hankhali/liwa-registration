@@ -24,6 +24,7 @@
     </button>
 
     @if (user) {
+      <app-notification-bell />
       <button mat-button class="user-button" type="button" [matMenuTriggerFor]="userMenu" [title]="'shell.accountMenu' | transloco: { name: user.displayName }">
         <span class="avatar" aria-hidden="true">{{ initials(user.displayName) }}</span>
         <!-- Visually hidden on phones but still the button's accessible name. -->

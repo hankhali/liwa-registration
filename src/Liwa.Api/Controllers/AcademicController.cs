@@ -54,6 +54,15 @@ public sealed class StudentController(IAcademicQueries queries, IRecommendationS
         };
     }
 
+    /// <summary>Accepts the advisor's proposed changes; the plan becomes approved.</summary>
+    [HttpPost("plan/accept")]
+    public async Task<IActionResult> Accept(CancellationToken ct) => await plans.AcceptProposalAsync(user.UserId, ct) switch
+    {
+        SaveOutcome.Saved => NoContent(),
+        SaveOutcome.NotFound => NotLoaded(),
+        _ => Problem(statusCode: StatusCodes.Status409Conflict, title: "There are no proposed changes to accept."),
+    };
+
     private ObjectResult? Validate(RecommendationRequest? request)
     {
         if (request?.MaxCredits is < 0 or > 30)
@@ -108,10 +117,73 @@ public sealed class StudentController(IAcademicQueries queries, IRecommendationS
 [ApiController]
 [Route("api/advisor")]
 [Authorize(Policy = Policies.Advisor)]
-public sealed class AdvisorController(IAcademicQueries queries, ICurrentUser user) : ControllerBase
+public sealed class AdvisorController(IAcademicQueries queries, IAdvisorService advisor, ICurrentUser user) : ControllerBase
 {
+    public sealed record ProposalCheckRequest(IReadOnlyList<Guid> SectionIds);
+
     [HttpGet("students")]
     public Task<IReadOnlyList<AdviseeSummary>> Students(CancellationToken ct) => queries.GetAdviseesAsync(user.UserId, ct);
+
+    /// <summary>Read-only student record with transcript (own students only).</summary>
+    [HttpGet("students/{studentUserId:guid}")]
+    [ProducesResponseType<StudentRecordView>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Student(Guid studentUserId, CancellationToken ct) =>
+        await advisor.GetStudentRecordAsync(user.UserId, studentUserId, ct) is { } view ? Ok(view) : NotFound();
+
+    /// <summary>Plans sent by the advisor's students (oldest first). Filtering and sorting happen in the app.</summary>
+    [HttpGet("plans")]
+    public Task<IReadOnlyList<QueueItem>> Plans(CancellationToken ct) => advisor.GetQueueAsync(user.UserId, ct);
+
+    /// <summary>The one-page review. Opening a newly sent plan marks it "Advisor reviewing".</summary>
+    [HttpGet("plans/{planId:guid}")]
+    [ProducesResponseType<PlanReview>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Review(Guid planId, CancellationToken ct)
+    {
+        var (outcome, review) = await advisor.OpenReviewAsync(user.UserId, planId, ct);
+        return outcome switch
+        {
+            DecisionOutcome.Done => Ok(review),
+            DecisionOutcome.NotYourStudent => Forbid(),
+            _ => NotFound(),
+        };
+    }
+
+    /// <summary>Live check of the sections an advisor wants to propose.</summary>
+    [HttpPost("plans/{planId:guid}/check")]
+    public async Task<IActionResult> CheckProposal(Guid planId, ProposalCheckRequest request, CancellationToken ct) =>
+        await advisor.CheckProposalAsync(user.UserId, planId, request.SectionIds, ct) is { } check ? Ok(check) : NotFound();
+
+    /// <summary>Approve (optional note), reject (comment required) or propose changes (sections and note required).</summary>
+    [HttpPost("plans/{planId:guid}/decision")]
+    public async Task<IActionResult> Decide(Guid planId, DecisionRequest request, CancellationToken ct)
+    {
+        var result = await advisor.DecideAsync(user.UserId, planId, request, ct);
+        return result.Outcome switch
+        {
+            DecisionOutcome.Done => Ok(result),
+            DecisionOutcome.NotFound => NotFound(),
+            DecisionOutcome.NotYourStudent => Forbid(),
+            DecisionOutcome.NoteRequired => Problem(statusCode: StatusCodes.Status400BadRequest, title: "Please write a note for the student."),
+            DecisionOutcome.PlanHasErrors => BadRequest(result),
+            _ => Conflict(result),
+        };
+    }
+}
+
+/// <summary>The signed-in user's notifications (any role).</summary>
+[ApiController]
+[Route("api/notifications")]
+public sealed class NotificationsController(INotificationService notifications, ICurrentUser user) : ControllerBase
+{
+    [HttpGet]
+    public Task<NotificationList> Get(CancellationToken ct) => notifications.GetAsync(user.UserId, ct);
+
+    [HttpPost("read")]
+    public async Task<IActionResult> MarkAllRead(CancellationToken ct)
+    {
+        await notifications.MarkAllReadAsync(user.UserId, ct);
+        return NoContent();
+    }
 }
 
 /// <summary>Data loading for administrators. Contract: docs/import-contract.md.</summary>

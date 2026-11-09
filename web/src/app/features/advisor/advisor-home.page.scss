@@ -1,58 +1,114 @@
-.count {
-  margin-inline-start: auto;
-  color: var(--liwa-text-muted);
-  font-size: 0.875rem;
-  font-weight: 400;
+.block {
+  max-width: 960px;
+  margin-bottom: 2rem;
 }
 
-.students {
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--liwa-primary);
+
+  h2 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  a {
+    font-size: 0.9375rem;
+  }
+}
+
+.quiet {
+  padding: 1rem 0;
+  color: var(--liwa-text-muted);
+}
+
+.rows {
   margin: 0;
   padding: 0;
   list-style: none;
 
   li {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
     gap: 0.25rem 1rem;
-    padding: 0.75rem 0;
+    align-items: baseline;
+    padding: 0.75rem 0.5rem;
     border-bottom: 1px solid var(--liwa-border);
+  }
 
-    &:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
+  li.urgent {
+    box-shadow: inset 3px 0 0 var(--liwa-danger);
   }
 }
 
-.who,
-.numbers {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.who {
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-.who span {
+.what,
+.when,
+.sub {
+  color: var(--liwa-text-muted);
   font-size: 0.875rem;
 }
 
-.numbers {
-  align-items: flex-end;
-  font-size: 0.9375rem;
+.sub {
+  display: block;
 }
 
-.tag {
-  margin-top: 0.25rem;
-  padding: 0.0625rem 0.5rem;
-  border-radius: 999px;
-  background: #fdf1d8;
-  color: #6b4a00;
-  font-size: 0.8125rem;
-  font-weight: 600;
+.flag {
+  color: var(--liwa-danger);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-inline-end: 0.375rem;
 }
 
-@media (max-width: 600px) {
-  .numbers {
-    align-items: flex-start;
+.students {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--liwa-border);
+    vertical-align: top;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .rows li {
+    grid-template-columns: 1fr;
+  }
+
+  .students tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--liwa-border);
+    padding: 0.5rem 0;
+  }
+
+  .students td {
+    border: 0;
+    padding: 0.125rem 0.5rem;
+  }
+
+  .students td:first-child {
+    grid-column: 1 / -1;
   }
 }

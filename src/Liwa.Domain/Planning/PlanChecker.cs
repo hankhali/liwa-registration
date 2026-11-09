@@ -82,6 +82,37 @@ public static partial class Planner
         return new PlanCheckResult(total, limits, recommendation.MaxCredits, errors.Distinct().ToList(), warnings.Distinct().ToList());
     }
 
+    /// <summary>
+    /// Graduation projection for a specific set of sections (e.g. the plan a student sent), so an advisor can
+    /// compare "this plan" with the recommendation. Same assumptions as the recommendation's projection.
+    /// </summary>
+    public static GraduationProjection ProjectPlan(PlannerInput input, IReadOnlyCollection<Guid> sectionIds)
+    {
+        var catalog = input.Catalog.ToDictionary(c => c.Code, StringComparer.OrdinalIgnoreCase);
+        var (needs, chooseRemaining, _, free) = RemainingRequirements(input, catalog);
+        var needByCode = needs.ToDictionary(n => n.Code, StringComparer.Ordinal);
+        var (chain, unlocks, _) = CriticalPath(needs, needByCode);
+        var ordered = needs
+            .OrderByDescending(n => chain[n.Code]).ThenByDescending(n => unlocks[n.Code])
+            .ThenBy(n => n.Kind == RequirementKind.AllOf ? 0 : 1).ThenBy(n => SeasonCount(n.Offered))
+            .ThenBy(n => n.Suggested ?? int.MaxValue).ThenBy(n => n.Code, StringComparer.Ordinal).ToList();
+
+        var ids = sectionIds.ToHashSet();
+        var codes = input.Sections.Where(s => ids.Contains(s.Id)).Select(s => s.CourseCode)
+            .Where(catalog.ContainsKey).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        var credits = codes.Sum(c => catalog[c].Credits);
+        var quota = new Dictionary<string, int>(chooseRemaining, StringComparer.Ordinal);
+        foreach (var c in codes)
+        {
+            if (needByCode.TryGetValue(c, out var n)) { if (n.Kind == RequirementKind.ChooseCredits) quota[n.GroupKey] = quota.GetValueOrDefault(n.GroupKey) - n.Credits; }
+            else free = Math.Max(0, free - catalog[c].Credits); // outside the plan's groups: counts as a free elective
+        }
+
+        return new GraduationProjection(
+            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: true),
+            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: false));
+    }
+
     /// <summary>A stable key for a warning, so the student's "I understand" can be matched on the server.</summary>
     public static string WarningKey(PlannerReason r) => $"{r.Code}:{string.Join(',', r.Courses)}:{r.Value}";
 }

@@ -30,6 +30,7 @@ import {
   windowsFromGrid,
 } from '../../../core/planning/planning.models';
 import { PlanningService } from '../../../core/planning/planning.service';
+import { formatDateTime } from '../../../core/academic/academic.models';
 import { ReasonTextPipe } from '../../../core/planning/reason-text.pipe';
 
 interface PlannedRow {
@@ -91,7 +92,7 @@ export class StudentPlanComponent {
   protected readonly confirming = signal(false);
   protected readonly acknowledged = signal<Record<string, boolean>>({});
   protected readonly busy = signal(false);
-  protected readonly message = signal<'sent' | 'saved' | 'error' | null>(null);
+  protected readonly message = signal<'sent' | 'saved' | 'accepted' | 'error' | null>(null);
 
   protected readonly check = resource({
     params: () => (this.view.hasValue() ? { ids: Object.values(this.selection()), availability: this.availability() } : undefined),
@@ -102,6 +103,34 @@ export class StudentPlanComponent {
     const saved = this.view.hasValue() ? this.view.value().saved : null;
     return saved !== null && SENT_STATUSES.includes(saved.status);
   });
+
+  /** The advisor's reply, when the plan came back (sent back or changes proposed). */
+  protected readonly reply = computed(() => {
+    const v = this.view.value();
+    const status = v?.saved?.status;
+    if (!v || (status !== 'Rejected' && status !== 'ChangesProposed')) return null;
+    const last = [...v.history].reverse().find((e) => e.actorRole === 'Advisor' && (e.action === 'rejected' || e.action === 'proposed'));
+    return { status, note: last?.note ?? null, advisor: last?.actorName ?? v.advisorName };
+  });
+
+  protected readonly history = computed(() => [...(this.view.value()?.history ?? [])].reverse());
+
+  protected async accept(): Promise<void> {
+    this.busy.set(true);
+    try {
+      await this.planning.accept();
+      this.message.set('accepted');
+      this.view.reload();
+    } catch {
+      this.message.set('error');
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  protected when(iso: string): string {
+    return formatDateTime(iso, this.language.lang());
+  }
 
   private readonly sectionById = computed(() => new Map((this.view.hasValue() ? this.view.value().sections : []).map((s) => [s.id, s])));
   private readonly courseByCode = computed(() => new Map((this.view.hasValue() ? this.view.value().courses : []).map((c) => [c.code, c])));

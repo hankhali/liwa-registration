@@ -19,7 +19,8 @@ public sealed record PlanningView(
     PlannerResult Recommendation,
     IReadOnlyList<CourseInfo> Courses,
     IReadOnlyList<SectionInfo> Sections,
-    SavedPlan? Saved);
+    SavedPlan? Saved,
+    IReadOnlyList<PlanEvent> History);
 
 public sealed record SavePlanRequest(
     IReadOnlyList<Guid> SectionIds,
@@ -46,4 +47,7 @@ public interface IStudentPlanService
     Task<PlanCheckResult?> CheckAsync(Guid studentUserId, IReadOnlyCollection<Guid> sectionIds, Availability? availability, CancellationToken ct);
 
     Task<SavePlanResult> SaveAsync(Guid studentUserId, SavePlanRequest request, CancellationToken ct);
+
+    /// <summary>The student accepts the advisor's proposed changes: the plan becomes approved.</summary>
+    Task<SaveOutcome> AcceptProposalAsync(Guid studentUserId, CancellationToken ct);
 }

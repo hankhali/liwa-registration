@@ -114,7 +114,107 @@
         "probation": "On probation",
         "none": "No students are assigned to you yet.",
         "error": "We couldn't load your students right now. Please refresh the page."
-      }
+      },
+      "allPlans": "See all plans"
+    },
+    "queue": {
+      "title": "Plans to review",
+      "heading": "Plans to review",
+      "subtitle": "Plans your students have sent. The oldest and most urgent come first.",
+      "filterLabel": "Show plans",
+      "filters": {
+        "waiting": "Waiting for you",
+        "ChangesProposed": "Changes suggested",
+        "Rejected": "Sent back",
+        "Approved": "Approved",
+        "all": "All"
+      },
+      "program": "Program",
+      "allPrograms": "All programs",
+      "sort": "Sort by",
+      "sorts": {
+        "oldest": "Waiting longest",
+        "newest": "Most recent",
+        "name": "Student name"
+      },
+      "cols": {
+        "student": "Student",
+        "program": "Program",
+        "status": "Status",
+        "credits": "Credits",
+        "updated": "Last change"
+      },
+      "urgent": "Urgent",
+      "notes": "{{ n }} notes confirmed",
+      "empty": "No plans here.",
+      "error": "We couldn't load the plans. Please refresh the page."
+    },
+    "review": {
+      "title": "Review plan",
+      "back": "All plans",
+      "version": "version {{ n }}",
+      "courses": "Classes ({{ n }} credits)",
+      "section": "section {{ s }}",
+      "seats": "{{ n }} seats left",
+      "ranking": "Priority #{{ rank }}: unlocks {{ unlocks }} courses; a chain of {{ chain }} terms depends on it.",
+      "studentAdded": "The student added this course themselves.",
+      "studentChangedTime": "The student picked a different class time from the one recommended.",
+      "otherTimes": "Why other class times were not chosen:",
+      "recommendedNotChosen": "Recommended but not in this plan:",
+      "decision": "Your decision",
+      "notDecidable": "There is nothing to decide right now.",
+      "approveBlocked": "Approve is turned off until the problems listed under Checks are fixed.",
+      "noteOptional": "Note for the student (optional)",
+      "noteRequired": "Note for the student (required)",
+      "approve": "Approve",
+      "propose": "Suggest changes",
+      "reject": "Send back",
+      "rejectHint": "Tell the student what to change. They will see your comment.",
+      "sendBack": "Send back to student",
+      "failed": "That didn't work. Please check the plan and try again.",
+      "checks": "Checks",
+      "allChecksPass": "All checks pass.",
+      "confirmed": "The student confirmed they understand:",
+      "student": "Student",
+      "creditsDone": "Credits done",
+      "standing": "Standing",
+      "limit": "Credit limit",
+      "freeTime": "When they are free",
+      "anyTime": "Any time",
+      "fullRecord": "See full record and transcript",
+      "graduation": "Graduation",
+      "noSummer": "Without summer",
+      "withSummer": "With summer",
+      "thisPlan": "This plan",
+      "recommended": "Recommended plan",
+      "unknownTerm": "Not worked out",
+      "proposeHeading": "Suggest changes for {{ student }}",
+      "proposeHint": "Write a note explaining your changes. The student can accept them or change the plan and send it again.",
+      "sendProposal": "Send suggested changes",
+      "done": {
+        "Approve": "Approved. {{ student }} has been told.",
+        "Reject": "Sent back. {{ student }} has been told.",
+        "ProposeChanges": "Suggested changes sent. {{ student }} has been told."
+      },
+      "notFound": "This plan isn't available."
+    },
+    "record": {
+      "title": "Student record",
+      "back": "Advisor home",
+      "plan": "Plan this term",
+      "noPlan": "Not sent yet",
+      "probation": "On academic probation: a lower credit limit applies this term.",
+      "transcript": "Transcript",
+      "cols": {
+        "term": "Term",
+        "course": "Course",
+        "credits": "Credits",
+        "grade": "Grade"
+      },
+      "transfer": "Transfer",
+      "transferGrade": "Transfer credit",
+      "inProgress": "In progress",
+      "notFound": "This student isn't one of your advisees."
     }
   },
   "admin": {
@@ -273,7 +373,8 @@
     "messages": {
       "sent": "Your plan has been sent to {{ advisor }}.",
       "saved": "Saved. You can come back and send it later.",
-      "error": "Your plan couldn't be sent. Please check the notes above and try again."
+      "error": "Your plan couldn't be sent. Please check the notes above and try again.",
+      "accepted": "Done. Your plan is approved."
     },
     "editor": {
       "canTake": "Courses you can take this term",
@@ -289,7 +390,14 @@
       }
     },
     "credit1": "1 credit",
-    "dayJoin": " & "
+    "dayJoin": " & ",
+    "reply": {
+      "Rejected": "{{ advisor }} sent your plan back.",
+      "RejectedHint": "Make the changes below, then send it again.",
+      "ChangesProposed": "{{ advisor }} suggested some changes.",
+      "ChangesProposedHint": "The plan below shows the suggested changes. Accept them, or change the plan and send it again.",
+      "accept": "Accept the changes"
+    }
   },
   "planner": {
     "join": {
@@ -343,6 +451,36 @@
     }
   },
   "notifications": {
-    "planSubmitted": "{{ student }} sent a plan for {{ term }}."
+    "planSubmitted": "{{ student }} sent a plan for {{ term }}.",
+    "planReviewing": "{{ advisor }} is reviewing your plan.",
+    "planApproved": "{{ advisor }} approved your plan.",
+    "planRejected": "{{ advisor }} sent your plan back with a comment.",
+    "planChangesProposed": "{{ advisor }} suggested changes to your plan.",
+    "planAccepted": "{{ student }} accepted your suggested changes for {{ term }}."
+  },
+  "planStatus": {
+    "Draft": "Draft",
+    "Submitted": "Waiting for review",
+    "AdvisorReviewing": "Being reviewed",
+    "Approved": "Approved",
+    "Rejected": "Sent back",
+    "ChangesProposed": "Changes suggested",
+    "NeedsReview": "Needs another look"
+  },
+  "history": {
+    "heading": "Plan history",
+    "submitted": "{{ actor }} sent the plan (version {{ version }})",
+    "saved": "{{ actor }} saved a draft (version {{ version }})",
+    "reviewing": "{{ actor }} started reviewing",
+    "approved": "{{ actor }} approved the plan",
+    "rejected": "{{ actor }} sent the plan back",
+    "proposed": "{{ actor }} suggested changes (version {{ version }})",
+    "accepted": "{{ actor }} accepted the suggested changes",
+    "added": "Added:",
+    "removed": "Removed:"
+  },
+  "notificationsUi": {
+    "label": "Notifications, {{ count }} unread",
+    "empty": "No notifications yet."
   }
 }

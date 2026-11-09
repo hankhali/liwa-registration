@@ -25,7 +25,22 @@
         </span>
       </p>
     } @else {
-      <p class="intro">{{ 'plan.intro' | transloco }}</p>
+      @if (reply(); as rp) {
+        <div class="reply" [class.reply-back]="rp.status === 'Rejected'" role="status">
+          <strong>{{ 'plan.reply.' + rp.status | transloco: { advisor: rp.advisor ?? ('plan.yourAdvisor' | transloco) } }}</strong>
+          @if (rp.note) {
+            <q>{{ rp.note }}</q>
+          }
+          <span class="liwa-muted">{{ 'plan.reply.' + rp.status + 'Hint' | transloco }}</span>
+          @if (rp.status === 'ChangesProposed') {
+            <div class="actions">
+              <button mat-flat-button type="button" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="intro">{{ 'plan.intro' | transloco }}</p>
+      }
 
       <!-- When are you free? -->
       <fieldset class="free-time">
@@ -268,6 +283,29 @@
       <p class="message" [class.message-error]="m === 'error'" role="status">
         {{ 'plan.messages.' + m | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}
       </p>
+    }
+
+    @if (history().length > 0) {
+      <details class="history">
+        <summary>{{ 'history.heading' | transloco }}</summary>
+        <ol>
+          @for (e of history(); track $index) {
+            <li>
+              <span class="liwa-muted small">{{ when(e.at) }}</span>
+              <span>{{ 'history.' + e.action | transloco: { actor: e.actorName, version: e.version ?? '' } }}</span>
+              @if (e.note) {
+                <q>{{ e.note }}</q>
+              }
+              @if (e.added.length > 0) {
+                <span class="small">{{ 'history.added' | transloco }} <span dir="ltr">{{ e.added.join(', ') }}</span></span>
+              }
+              @if (e.removed.length > 0) {
+                <span class="small">{{ 'history.removed' | transloco }} <span dir="ltr">{{ e.removed.join(', ') }}</span></span>
+              }
+            </li>
+          }
+        </ol>
+      </details>
     }
 
     <!-- Change courses -->

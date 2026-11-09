@@ -1,0 +1,171 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--liwa-border);
+}
+
+.filter {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--liwa-text-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &.on {
+    color: var(--liwa-text);
+    border-bottom-color: var(--liwa-primary);
+  }
+
+  .count {
+    margin-inline-start: 0.25rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  mat-form-field {
+    width: min(100%, 260px);
+  }
+}
+
+.empty {
+  padding: 1.5rem 0;
+  color: var(--liwa-text-muted);
+}
+
+.queue {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--liwa-surface);
+  border: 1px solid var(--liwa-border);
+
+  th {
+    padding: 0.625rem 0.875rem;
+    text-align: start;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--liwa-text-muted);
+    border-bottom: 1px solid var(--liwa-border);
+    background: #fafaf8;
+  }
+
+  td {
+    padding: 0.75rem 0.875rem;
+    border-bottom: 1px solid var(--liwa-border);
+    vertical-align: top;
+  }
+
+  tr.urgent td:first-child {
+    box-shadow: inset 3px 0 0 #b3261e;
+  }
+
+  a {
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.sub {
+  display: block;
+  color: var(--liwa-text-muted);
+  font-size: 0.8125rem;
+}
+
+.flag {
+  display: inline-block;
+  margin-top: 0.25rem;
+  color: var(--liwa-danger);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-inline-end: 0.375rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.s-Submitted,
+.s-NeedsReview {
+  color: #8a5a00;
+}
+
+.s-AdvisorReviewing,
+.s-ChangesProposed {
+  color: #3d4f7a;
+}
+
+.s-Approved {
+  color: var(--liwa-success);
+}
+
+.s-Rejected {
+  color: var(--liwa-danger);
+}
+
+// Phones: each row becomes a compact card.
+@media (max-width: 700px) {
+  .queue {
+    border: 0;
+    background: none;
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.25rem 1rem;
+      margin-bottom: 0.75rem;
+      padding: 0.75rem 0.875rem;
+      background: var(--liwa-surface);
+      border: 1px solid var(--liwa-border);
+    }
+
+    td {
+      padding: 0;
+      border: 0;
+    }
+
+    tr.urgent {
+      border-inline-start: 3px solid #b3261e;
+    }
+
+    tr.urgent td:first-child {
+      box-shadow: none;
+    }
+  }
+}

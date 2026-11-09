@@ -13,7 +13,8 @@ namespace Liwa.Infrastructure.Academic;
 /// Student planning: builds the planner input from the database (all I/O and "today" live here; the
 /// planner stays pure), checks hand-picked plans, and saves versioned plans.
 /// </summary>
-internal sealed class StudentPlanService(LiwaDbContext db, TimeProvider clock) : IStudentPlanService, IRecommendationService
+internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider clock, Application.Academic.IAcademicQueries queries)
+    : IStudentPlanService, IRecommendationService, IAdvisorService
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
@@ -53,7 +54,8 @@ internal sealed class StudentPlanService(LiwaDbContext db, TimeProvider clock) :
             ctx.Sections.Where(s => relevant.Contains(codeById[s.CourseId]))
                 .OrderBy(s => codeById[s.CourseId], StringComparer.Ordinal).ThenBy(s => s.SectionCode, StringComparer.Ordinal)
                 .Select(s => new SectionInfo(s.Id, codeById[s.CourseId], s.SectionCode, s.Delivery, s.Instructor, s.Room, s.Meetings.ToList(), s.SeatsLeft)).ToList(),
-            saved);
+            saved,
+            saved is null ? [] : await HistoryAsync(saved.Id, ct));
     }
 
     public async Task<PlanCheckResult?> CheckAsync(Guid studentUserId, IReadOnlyCollection<Guid> sectionIds, Availability? availability, CancellationToken ct)
@@ -99,8 +101,7 @@ internal sealed class StudentPlanService(LiwaDbContext db, TimeProvider clock) :
 
         // Every status change is logged with the versions before and after (brief §10).
         db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), now, studentUserId, request.Submit ? "plan.submitted" : "plan.saved", "Plan", plan.Id.ToString(),
-            JsonSerializer.Serialize(new { status = beforeStatus.ToString(), version = before?.Number, sections = before?.Sections.Select(s => s.SectionId) }, Json),
-            JsonSerializer.Serialize(new { status = plan.Status.ToString(), version = version.Number, sections = request.SectionIds }, Json)));
+            Snapshot(beforeStatus, before), Snapshot(plan.Status, version, request.Note)));
 
         if (request.Submit && ctx.Record.AdvisorUserId is { } advisor)
         {

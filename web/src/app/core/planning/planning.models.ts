@@ -101,6 +101,17 @@ export interface PlanningView {
   courses: CourseInfo[];
   sections: SectionInfo[];
   saved: SavedPlan | null;
+  history: {
+    at: string;
+    actorName: string;
+    actorRole: string;
+    action: string;
+    status: PlanStatus;
+    version: number | null;
+    note: string | null;
+    added: string[];
+    removed: string[];
+  }[];
 }
 
 export interface PlanCheck {

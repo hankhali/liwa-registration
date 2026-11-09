@@ -414,3 +414,52 @@
     padding-inline-start: 0;
   }
 }
+
+.reply {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0 0 1.25rem;
+  padding: 0.875rem 1rem;
+  border-inline-start: 4px solid #3d4f7a;
+  background: #eef1f7;
+
+  q {
+    font-style: italic;
+  }
+
+  .actions {
+    margin-top: 0.5rem;
+  }
+}
+
+.reply-back {
+  border-inline-start-color: var(--liwa-danger);
+  background: #fbefee;
+}
+
+.history {
+  margin-top: 1.5rem;
+
+  summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.5rem 0 0.5rem 0.875rem;
+    border-inline-start: 2px solid var(--liwa-border);
+  }
+}

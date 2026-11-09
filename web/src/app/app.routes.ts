@@ -28,6 +28,24 @@ export const routes: Routes = [
         loadComponent: () => import('./features/advisor/advisor-home.page').then((m) => m.AdvisorHomePage),
       },
       {
+        path: 'advisor/plans',
+        canActivate: [roleGuard('Advisor')],
+        title: 'advisor.queue.title',
+        loadComponent: () => import('./features/advisor/advisor-queue.page').then((m) => m.AdvisorQueuePage),
+      },
+      {
+        path: 'advisor/plans/:planId',
+        canActivate: [roleGuard('Advisor')],
+        title: 'advisor.review.title',
+        loadComponent: () => import('./features/advisor/plan-review.page').then((m) => m.PlanReviewPage),
+      },
+      {
+        path: 'advisor/students/:studentUserId',
+        canActivate: [roleGuard('Advisor')],
+        title: 'advisor.record.title',
+        loadComponent: () => import('./features/advisor/student-record.page').then((m) => m.StudentRecordPage),
+      },
+      {
         path: 'admin',
         canActivate: [roleGuard('Admin')],
         title: 'admin.home.title',

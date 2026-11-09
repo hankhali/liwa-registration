@@ -8,10 +8,11 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
+import { NotificationBellComponent } from './notification-bell.component';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslocoPipe],
+  imports: [RouterOutlet, RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslocoPipe, NotificationBellComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })

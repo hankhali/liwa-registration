@@ -21,6 +21,10 @@ export class PlanningService {
     return firstValueFrom(this.http.post<PlanCheck>('/api/students/me/plan/check', { sectionIds, availability }));
   }
 
+  accept(): Promise<unknown> {
+    return firstValueFrom(this.http.post('/api/students/me/plan/accept', null));
+  }
+
   /** Errors come back as 400/409 with the same body shape; callers read `outcome`. */
   async save(sectionIds: string[], availability: TimeWindow[], submit: boolean, acknowledgedWarnings: string[]): Promise<SaveResponse> {
     try {
