@@ -2,6 +2,11 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased
+
+### Fixed
+- **Docker/production build showed an unstyled page** (icon names as text, see-through card). Angular's critical-CSS inlining loads the main stylesheet with an inline `onload` script, which the nginx Content-Security-Policy (`script-src 'self'`) correctly blocks. Turned off `inlineCritical` for production builds so the stylesheet loads normally and the strict policy stays. The M1 screenshots came from the dev server, which sends no CSP, so they didn't catch this.
+
 ## M1: scaffold, Docker, sign-in, role-based landing pages (2026-11-09)
 
 ### Added
