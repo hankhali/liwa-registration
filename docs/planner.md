@@ -67,7 +67,7 @@ Reasons are codes with course and value parameters (`ReasonCode`). The interface
    - Leftover room is filled with free-elective credits until they are used up.
    - Department permission is assumed obtainable in the future.
 
-   The term sequence follows the calendar (Spring → Summer → Fall). It is run twice: **with** summer terms, and **without** them. A course offered only in Fall therefore pushes graduation a year later when its Fall is missed. The projection gives up after 24 terms (`GraduationNotReachable`).
+   The term sequence follows the calendar (Spring → Summer → Fall). It is run twice: **with** summer terms, and **without** regular summer classes. "Without summer" still uses a summer term for courses that are offered *only* in summer (such as internships); otherwise a degree that requires one could never be finished. A course offered only in Fall therefore pushes graduation a year later when its Fall is missed. The projection gives up after 24 terms (`GraduationNotReachable`).
 
 ## Rejected alternatives (considered and not used)
 

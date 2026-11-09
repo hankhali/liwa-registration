@@ -2,7 +2,7 @@
 
 A web app that builds each student a valid, graduation-optimised semester plan, lets them adjust it, and sends it to their academic advisor for approval. The full specification is in [docs/BRIEF.md](docs/BRIEF.md). Every assumption that still needs the university's confirmation is listed in [docs/assumptions.md](docs/assumptions.md).
 
-**Status:** milestone **M2** (data model, database, demo data, CSV import). See [CHANGELOG.md](CHANGELOG.md).
+**Status:** milestone **M3** (the planner). See [docs/planner.md](docs/planner.md). See [CHANGELOG.md](CHANGELOG.md).
 
 | Part | Technology |
 |---|---|
@@ -137,7 +137,7 @@ tests/
   Liwa.IntegrationTests/  real API against a throwaway Postgres container
 web/                    Angular app, nginx image, Playwright screenshot script
 scripts/                PowerShell helpers
-docs/                   brief, assumptions, import contract, SSO guide, screenshots (later: planner, PeopleSoft notes)
+docs/                   brief, assumptions, planner design, import contract, SSO guide, screenshots (later: PeopleSoft notes)
 ```
 
 ## API surface
@@ -156,6 +156,7 @@ docs/                   brief, assumptions, import contract, SSO guide, screensh
 | `GET /api/admin/overview` | Admin only (how much data is loaded, last upload) |
 | `POST /api/admin/imports/{kind}?dryRun=true` | Admin only. Uploads one CSV file (`file` form field). Checks only, unless `dryRun=false`. Kinds: terms, courses, programs, degree-plans, sections, students, transcripts. Format: [docs/import-contract.md](docs/import-contract.md) |
 | `GET /api/students/me/summary` | Student only (own program, credits, GPA, advisor) |
+| `POST /api/students/me/recommendation` | Student only. The planner's recommendation for the current term. Optional body: `availability` (free-time windows per day, e.g. `{"day":"Monday","start":"17:00","end":"20:00"}`), `maxCredits`, `delivery` (`Any`, `OnCampusOnly`, `OnlineOnly`). See [docs/planner.md](docs/planner.md) |
 | `GET /api/advisor/students` | Advisor only (own students) |
 
 Every endpoint requires sign-in unless it is explicitly marked anonymous. Errors are returned as RFC 7807 problem details with a `traceId`.

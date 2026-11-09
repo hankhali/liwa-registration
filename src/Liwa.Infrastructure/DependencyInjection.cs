@@ -1,6 +1,7 @@
 using Liwa.Application.Abstractions;
 using Liwa.Application.Academic;
 using Liwa.Application.Imports;
+using Liwa.Application.Planning;
 using Liwa.Infrastructure.Academic;
 using Liwa.Infrastructure.Imports;
 using Liwa.Infrastructure.Persistence;
@@ -38,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<CreditPolicySeeder>();
         services.AddScoped<IImportService, ImportService>();
         services.AddScoped<IAcademicQueries, AcademicQueries>();
+        services.AddScoped<IRecommendationService, RecommendationService>();
 
         services.AddHealthChecks().AddDbContextCheck<LiwaDbContext>("database", tags: ["ready"]);
         return services;

@@ -2,6 +2,8 @@ using Liwa.Api.Infrastructure;
 using Liwa.Application.Abstractions;
 using Liwa.Application.Academic;
 using Liwa.Application.Imports;
+using Liwa.Application.Planning;
+using Liwa.Domain.Planning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,8 +13,32 @@ namespace Liwa.Api.Controllers;
 [ApiController]
 [Route("api/students/me")]
 [Authorize(Policy = Policies.Student)]
-public sealed class StudentController(IAcademicQueries queries, ICurrentUser user) : ControllerBase
+public sealed class StudentController(IAcademicQueries queries, IRecommendationService recommendations, ICurrentUser user) : ControllerBase
 {
+    /// <summary>Optional planning preferences. No availability means "show everything".</summary>
+    public sealed record RecommendationRequest(IReadOnlyList<TimeWindow>? Availability, int? MaxCredits, DeliveryPreference? Delivery);
+
+    /// <summary>
+    /// The planner's recommendation for the current term (plan, reasons, rejected alternatives, every remaining
+    /// course with its status, warnings, graduation projection with and without summer). See docs/planner.md.
+    /// </summary>
+    [HttpPost("recommendation")]
+    [ProducesResponseType<PlannerResult>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Recommendation([FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] RecommendationRequest? request, CancellationToken ct)
+    {
+        if (request?.MaxCredits is < 0 or > 30)
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Maximum credits must be between 0 and 30.");
+        if (request?.Availability?.Any(w => w.End <= w.Start) == true)
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Each free-time window must end after it starts.");
+
+        var availability = request?.Availability is { Count: > 0 } windows ? new Availability(windows) : null;
+        var preferences = new PlannerPreferences(request?.MaxCredits, request?.Delivery ?? DeliveryPreference.Any);
+        var result = await recommendations.RecommendAsync(user.UserId, availability, preferences, ct);
+        return result is null
+            ? Problem(statusCode: StatusCodes.Status404NotFound, title: "We can't build a plan yet: your study record or this term's timetable hasn't been loaded.")
+            : Ok(result);
+    }
+
     [HttpGet("summary")]
     [ProducesResponseType<StudentSummary>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

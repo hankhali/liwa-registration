@@ -2,6 +2,25 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## M3: the planner (2026-11-09)
+
+### Added
+- **Planner contract and design first** (`src/Liwa.Domain/Planning/PlannerContract.cs`, `docs/planner.md`), committed before the implementation, as the brief asks.
+- **Deterministic, pure planner** (`Planner.Plan`): no database, no clock; the same input always gives the same plan.
+  - Works out what's left: required groups, choose-N-credits groups and free electives.
+  - Ranks courses by **critical path**: longest chain, then how many courses each unlocks.
+  - Checks **eligibility**: AND/OR rules, minimum grades, corequisites, standing, credits earned, department permission, the course's usual seasons and this term's sections. A prerequisite in progress counts "with a condition" and is flagged; a failed prerequisite is named as failed.
+  - Applies the **credit policy**: 3.50 boundary, probation, summer, the student's own cap, and the graduating-student exemption from the minimum.
+  - **Packs sections greedily without clashes**, inside the student's free time and delivery preference, with seats left and one section per course. It records why every losing section lost (outside free time, clashes with a course, full, fewer seats). **Corequisite pairs are placed together or rejected together**, each naming the other.
+  - Projects **graduation with and without summer** terms.
+- Every decision carries a **reason code** with course and value parameters, ready to become plain sentences for students and detailed ones for advisors (M4/M5).
+- **API:** `POST /api/students/me/recommendation` runs the planner on the student's real data, with optional free-time windows, a credit cap and a delivery preference.
+- **Tests:**
+  - All five tests the brief requires: Fall-only course adds a year, probation cap, GPA 3.50 gets 21 credits, a corequisite pair rejected together, and the graduating senior not forced to 12 credits.
+  - 32 more planner unit tests.
+  - 10 integration tests that run the planner on the demo students through the API.
+  - Totals: 153 unit, 60 integration, 30 frontend.
+
 ## M2: data model, database, demo data, CSV import (2026-11-09)
 
 ### Added

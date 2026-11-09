@@ -63,3 +63,15 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | E10 | **Imports never delete.** Courses and sections missing from a later file stay. A transcript file replaces the full history of each student in it; a degree-plan file replaces the whole plan for each program + catalog year in it. | Deleting by omission is risky (a partial export would wipe data). Removal will be an explicit admin action. | Registrar / IT | Open |
 | E11 | Students see their own **GPA, year of study, progress and advisor** on their home page. Students on probation see a short, supportive note saying they can take fewer credits and their advisor can help. | Plain, useful context before planning. | Student Affairs (wording) | Open |
 | E12 | Courses in progress count toward prerequisites "with a condition" by default (`AllowInProgressPrerequisites`), as the brief says. The planner (M3) will carry this as a warning. | From the brief. | Registrar | Decided |
+
+## Planner (M3)
+
+| # | Assumption / decision | Why | Confirm with | Status |
+|---|---|---|---|---|
+| P1 | When several sections of a course fit, the planner picks the one with the **most seats left** (then the lowest section code). Advisors see why the others lost. | Spreads students across sections and is easy to explain. | Registrar | Open |
+| P2 | Priority: the **longest chain** of courses that depend on a course first, then how many courses it **unlocks**, then required before elective, then courses offered in **fewer seasons**, then the suggested semester. | Minimises semesters to graduation (brief §8). | Academic advisors | Open |
+| P3 | The planner recommends only **degree-plan courses**. Free electives aren't picked for the student (any course counts), but they are counted in the graduation projection. | The brief says plans contain only courses in the degree plan. | Academic advisors | Open |
+| P4 | Graduation projection assumptions: courses in progress are passed; the GPA and probation status stay as they are; department permission (for example for internships) is obtainable later; future terms follow each course's usual seasons (no future timetable exists yet). | A projection needs a stated baseline. | Registrar | Open |
+| P5 | **"Without summer"** means no regular summer classes. A summer term is still used for courses offered **only** in summer (such as internships); otherwise a degree that requires one could never be finished. | A strict "never summer" projection would be unreachable for every program with a summer-only internship. | Registrar | Open |
+| P6 | Department permission is **not** assumed for the term being planned: a course that needs it shows "needs permission" until it is recorded. | Avoids recommending a course the student can't register for. | Registrar | Open |
+| P7 | If no credit rule matches a student, the planner recommends nothing and says why, rather than guessing a limit. | Never invent policy numbers. | — | Decided |
