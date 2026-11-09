@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, var(--liwa-indigo) 0, var(--liwa-indigo) 220px, var(--liwa-page) 220px);
+}
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1rem 3rem;
+}
+
+.lang-row {
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto 1rem;
+
+  button {
+    --mat-button-text-label-text-color: #fff;
+    --mat-button-text-state-layer-color: #fff;
+    min-height: 44px;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2rem 1.75rem 1.5rem;
+  border-top: 4px solid var(--liwa-gold);
+  box-shadow: 0 8px 24px rgb(29 27 38 / 8%);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  img {
+    border-radius: 10px;
+  }
+}
+
+.login-university {
+  color: var(--liwa-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.login-product {
+  color: var(--liwa-indigo);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.intro {
+  margin: 0 0 1.25rem;
+}
+
+.field {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.notice {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: #eeedf7;
+  border-inline-start: 4px solid var(--liwa-indigo);
+  border-radius: 4px;
+}
+
+.error-slot {
+  min-height: 0.5rem;
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  color: var(--liwa-danger);
+  background: #fcebea;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.submit {
+  width: 100%;
+  min-height: 48px;
+  font-size: 1rem;
+
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+.help {
+  margin: 1.25rem 0 0;
+  font-size: 0.875rem;
+  text-align: center;
+}

@@ -1,0 +1,41 @@
+// Shared layout for role home pages. Imported by component styles.
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+
+  mat-icon {
+    color: var(--liwa-indigo);
+  }
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--liwa-page);
+  border-radius: var(--liwa-radius);
+  color: var(--liwa-text-muted);
+
+  mat-icon {
+    flex: none;
+    color: var(--liwa-success);
+  }
+}

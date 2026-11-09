@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Liwa University (placeholder logo)">
+  <!-- PLACEHOLDER: replace this file with the official Liwa University logo (same path, any aspect ratio). -->
+  <rect width="64" height="64" rx="12" fill="#2d2a6e"/>
+  <path d="M20 16v32h24v-6H27V16z" fill="#e2bd5c"/>
+  <circle cx="44" cy="20" r="4" fill="#e2bd5c"/>
+</svg>

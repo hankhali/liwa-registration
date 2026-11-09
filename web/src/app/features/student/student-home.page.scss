@@ -1,0 +1,35 @@
+.plan-card {
+  max-width: 760px;
+  border-top: 4px solid var(--liwa-gold);
+}
+
+.steps {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+}
+
+.step-number {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--liwa-indigo);
+  color: #fff;
+  font-weight: 700;
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+}

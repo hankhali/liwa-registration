@@ -1,0 +1,73 @@
+<div class="login-page">
+  <div class="lang-row">
+    <button mat-button type="button" (click)="language.toggle()" [attr.lang]="language.other()" [title]="'shell.switchLanguage' | transloco">
+      <mat-icon aria-hidden="true">translate</mat-icon>
+      {{ language.other() === 'ar' ? 'العربية' : 'English' }}
+    </button>
+  </div>
+
+  <main class="login-card liwa-card" aria-labelledby="login-heading">
+    <div class="login-brand">
+      <img src="assets/brand/logo.svg" alt="" width="56" height="56" />
+      <div>
+        <div class="login-university">{{ 'app.university' | transloco }}</div>
+        <div class="login-product">{{ 'app.product' | transloco }}</div>
+      </div>
+    </div>
+
+    <h1 id="login-heading">{{ 'login.heading' | transloco }}</h1>
+    <p class="liwa-muted intro">{{ 'login.intro' | transloco }}</p>
+
+    @if (reason() === 'expired' && !error()) {
+      <p class="notice" role="status">{{ 'login.expired' | transloco }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>{{ 'login.username' | transloco }}</mat-label>
+        <input #usernameInput matInput formControlName="username" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" required />
+        <mat-hint>{{ 'login.usernameHint' | transloco }}</mat-hint>
+        @if (form.controls.username.hasError('required')) {
+          <mat-error>{{ 'login.usernameRequired' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>{{ 'login.password' | transloco }}</mat-label>
+        <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" dir="ltr" required />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="(showPassword() ? 'login.hidePassword' : 'login.showPassword') | transloco"
+          [attr.aria-pressed]="showPassword()"
+        >
+          <mat-icon aria-hidden="true">{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>{{ 'login.passwordRequired' | transloco }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="error-slot" aria-live="assertive">
+        @if (error(); as e) {
+          <p class="error" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            {{ 'login.errors.' + e | transloco }}
+          </p>
+        }
+      </div>
+
+      <button mat-flat-button class="submit" type="submit" [disabled]="submitting()">
+        @if (submitting()) {
+          <mat-spinner diameter="20" [attr.aria-label]="'login.signingIn' | transloco" />
+        } @else {
+          {{ 'login.submit' | transloco }}
+        }
+      </button>
+    </form>
+
+    <p class="help liwa-muted">{{ 'login.help' | transloco }}</p>
+  </main>
+</div>

@@ -1,0 +1,144 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: -100px;
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  background: var(--liwa-surface);
+  color: var(--liwa-indigo);
+  border-radius: var(--liwa-radius);
+  font-weight: 600;
+
+  &:focus {
+    top: 0.5rem;
+  }
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 64px;
+  padding: 0 1rem;
+  background: var(--liwa-indigo);
+  color: #fff;
+  border-bottom: 3px solid var(--liwa-gold);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-logo {
+  flex: none;
+  border-radius: 8px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.brand-university {
+  font-size: 0.75rem;
+  color: var(--liwa-gold-light);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.brand-product {
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: none;
+}
+
+.lang-toggle,
+.user-button {
+  --mat-button-text-label-text-color: #fff;
+  --mat-button-text-state-layer-color: #fff;
+  min-height: 44px; // touch target
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-inline-end: 0.5rem;
+  border-radius: 50%;
+  background: var(--liwa-gold-light);
+  color: var(--liwa-indigo-dark);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.menu-identity {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--liwa-border);
+  font-size: 0.875rem;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand-university {
+    display: none;
+  }
+
+  // Keep the name for screen readers; only the avatar is shown.
+  .user-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .user-button mat-icon {
+    display: none;
+  }
+
+  .avatar {
+    margin: 0;
+  }
+
+  .lang-toggle mat-icon {
+    display: none;
+  }
+}

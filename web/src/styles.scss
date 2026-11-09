@@ -1,0 +1,122 @@
+@use '@angular/material' as mat;
+@use './styles/theme-colors' as liwa;
+
+// Fonts are self-hosted (no third-party font CDN). Open Sans has no Arabic glyphs,
+// so Noto Sans Arabic is the fallback that renders Arabic text.
+@import '@fontsource/open-sans/latin-400.css';
+@import '@fontsource/open-sans/latin-600.css';
+@import '@fontsource/open-sans/latin-700.css';
+@import '@fontsource/noto-sans-arabic/arabic-400.css';
+@import '@fontsource/noto-sans-arabic/arabic-600.css';
+@import '@fontsource/noto-sans-arabic/arabic-700.css';
+@import 'material-icons/iconfont/filled.css';
+
+:root {
+  // Brand tokens (placeholder values until the official brand guide is supplied).
+  --liwa-indigo: #2d2a6e;
+  --liwa-indigo-dark: #1f1d52;
+  --liwa-gold: #b8892b;
+  --liwa-gold-light: #e2bd5c; // only on indigo backgrounds (contrast 7:1)
+  --liwa-page: #f5f5f8;
+  --liwa-surface: #ffffff;
+  --liwa-border: #dcdbe4;
+  --liwa-text: #1d1b26;
+  --liwa-text-muted: #55536a; // 7.3:1 on white
+  --liwa-danger: #b3261e;
+  --liwa-success: #1e6b3a;
+  --liwa-radius: 8px;
+  --liwa-font: 'Open Sans', 'Noto Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  color-scheme: light;
+  @include mat.theme((
+    color: (
+      primary: liwa.$primary-palette,
+      tertiary: liwa.$tertiary-palette,
+      theme-type: light,
+    ),
+    typography: (
+      plain-family: var(--liwa-font),
+      brand-family: var(--liwa-font),
+    ),
+    density: 0,
+  ));
+
+  // Primary actions use the exact brand indigo rather than the generated tonal palette.
+  @include mat.button-overrides((
+    filled-container-color: var(--liwa-indigo),
+    filled-label-text-color: #fff,
+  ));
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--liwa-font);
+  background: var(--liwa-page);
+  color: var(--liwa-text);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+// Arabic reads better slightly larger with more line height.
+html[lang='ar'] body {
+  line-height: 1.7;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+h1 { font-size: 1.625rem; font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: 1.0625rem; font-weight: 600; }
+
+a {
+  color: var(--liwa-indigo);
+}
+
+// Visible keyboard focus everywhere (WCAG 2.4.7).
+:focus-visible {
+  outline: 3px solid var(--liwa-gold);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.liwa-card {
+  background: var(--liwa-surface);
+  border: 1px solid var(--liwa-border);
+  border-radius: var(--liwa-radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.liwa-muted {
+  color: var(--liwa-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

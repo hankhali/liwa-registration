@@ -1,0 +1,49 @@
+@let user = auth.user();
+<a class="skip-link" href="#main" (click)="$event.preventDefault(); main.focus()">{{ 'shell.skipToContent' | transloco }}</a>
+
+<header class="topbar">
+  <a class="brand" [routerLink]="auth.homeUrl()">
+    <img class="brand-logo" src="assets/brand/logo.svg" alt="" width="36" height="36" />
+    <span class="brand-text">
+      <span class="brand-university">{{ 'app.university' | transloco }}</span>
+      <span class="brand-product">{{ 'app.product' | transloco }}</span>
+    </span>
+  </a>
+
+  <div class="topbar-actions">
+    <button
+      mat-button
+      class="lang-toggle"
+      type="button"
+      (click)="language.toggle()"
+      [attr.lang]="language.other()"
+      [title]="'shell.switchLanguage' | transloco"
+    >
+      <mat-icon aria-hidden="true">translate</mat-icon>
+      {{ language.other() === 'ar' ? 'العربية' : 'English' }}
+    </button>
+
+    @if (user) {
+      <button mat-button class="user-button" type="button" [matMenuTriggerFor]="userMenu" [title]="'shell.accountMenu' | transloco: { name: user.displayName }">
+        <span class="avatar" aria-hidden="true">{{ initials(user.displayName) }}</span>
+        <!-- Visually hidden on phones but still the button's accessible name. -->
+        <span class="user-name">{{ user.displayName }}</span>
+        <mat-icon aria-hidden="true">expand_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <div class="menu-identity" role="presentation">
+          <strong>{{ user.displayName }}</strong>
+          <span class="liwa-muted">{{ 'roles.' + user.role | transloco }}</span>
+        </div>
+        <button mat-menu-item type="button" (click)="signOut()">
+          <mat-icon aria-hidden="true">logout</mat-icon>
+          <span>{{ 'shell.signOut' | transloco }}</span>
+        </button>
+      </mat-menu>
+    }
+  </div>
+</header>
+
+<main id="main" #main tabindex="-1" class="content">
+  <router-outlet />
+</main>

@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "Liwa Smart Registration",
+    "university": "Liwa University",
+    "product": "Smart Registration"
+  },
+  "common": {
+    "loading": "Loading…"
+  },
+  "roles": {
+    "Student": "Student",
+    "Advisor": "Academic advisor",
+    "Admin": "Administrator"
+  },
+  "shell": {
+    "skipToContent": "Skip to main content",
+    "homeLink": "Smart Registration home",
+    "switchLanguage": "Switch language to Arabic",
+    "accountMenu": "Account menu for {{ name }}",
+    "signOut": "Sign out"
+  },
+  "login": {
+    "title": "Sign in",
+    "heading": "Sign in",
+    "intro": "Plan your semester and send it to your advisor in a few minutes.",
+    "username": "Username",
+    "usernameHint": "For example: student.new",
+    "usernameRequired": "Enter your username.",
+    "password": "Password",
+    "passwordRequired": "Enter your password.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Sign in",
+    "signingIn": "Signing in",
+    "expired": "You were signed out to keep your account safe. Please sign in again.",
+    "help": "Trouble signing in? Contact the IT Service Desk.",
+    "errors": {
+      "invalid": "That username and password don't match. Check them and try again.",
+      "throttled": "Too many attempts. Wait a minute, then try again.",
+      "unavailable": "We can't reach the service right now. Please try again in a moment."
+    }
+  },
+  "student": {
+    "home": {
+      "title": "My plan",
+      "welcome": "Welcome, {{ name }}",
+      "subtitle": "Let's get your next semester sorted.",
+      "planHeading": "Your plan for next semester",
+      "planComingSoon": "Soon you'll find the plan we recommend for you right here. You'll be able to change it and send it to your advisor.",
+      "steps": {
+        "availability": {
+          "title": "Tell us when you're free",
+          "body": "Pick the days and times that suit you, like evenings only."
+        },
+        "review": {
+          "title": "Check the plan we build for you",
+          "body": "We only choose classes you can take, with no time clashes."
+        },
+        "send": {
+          "title": "Send it to your advisor",
+          "body": "Your advisor approves it or suggests changes."
+        }
+      }
+    }
+  },
+  "advisor": {
+    "home": {
+      "title": "Advisor home",
+      "welcome": "Welcome, {{ name }}",
+      "subtitle": "Review your students' plans and help them stay on track.",
+      "needsAttention": "Needs attention",
+      "nothingWaiting": "No plans are waiting for you right now.",
+      "advisees": "My students",
+      "adviseesComingSoon": "Your list of students will appear here."
+    }
+  },
+  "admin": {
+    "home": {
+      "title": "Administration",
+      "heading": "Administration",
+      "subtitle": "Manage terms, courses, degree plans and data.",
+      "systemStatus": "System status",
+      "database": "Database",
+      "healthy": "Working",
+      "unhealthy": "Not reachable",
+      "environment": "Environment",
+      "version": "Version",
+      "demoAccounts": "Demo accounts",
+      "demoOn": "On (turn off for real use)",
+      "demoOff": "Off",
+      "statusError": "Couldn't load the system status.",
+      "manage": "What you'll manage here",
+      "manageComingSoon": "These tools arrive in a later release.",
+      "areas": {
+        "terms": "Terms and teaching days",
+        "catalog": "Course catalog and sections",
+        "degreePlans": "Degree plans",
+        "creditPolicy": "Credit limits",
+        "imports": "Data import and export"
+      }
+    }
+  },
+  "errors": {
+    "backHome": "Go to my home page",
+    "forbidden": {
+      "title": "Not available",
+      "heading": "This page isn't available to you",
+      "body": "Your account doesn't have access to this page."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "heading": "We couldn't find that page",
+      "body": "The link may be old or mistyped."
+    }
+  }
+}
