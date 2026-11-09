@@ -33,6 +33,7 @@ public static class DatabaseInitializer
             }
         }
 
+        await sp.GetRequiredService<CreditPolicySeeder>().SeedAsync(ct);
         await sp.GetRequiredService<DemoSeeder>().SeedAsync(ct);
     }
 }

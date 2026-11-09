@@ -1,4 +1,5 @@
 using Liwa.Application.Abstractions;
+using Liwa.Application.Imports;
 using Liwa.Domain.Users;
 using Liwa.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,18 @@ public sealed class DemoSeedOptions
 }
 
 /// <summary>
-/// Creates demo accounts. Idempotent: existing usernames are left alone. Student academic records
-/// (transcripts, standing) are seeded with the domain model in M2.
+/// Creates demo accounts, then loads the illustrative academic data (terms, catalog, three programs,
+/// Spring 2027 timetable, student records) from the CSV files in Seeding/Demo through the real import
+/// pipeline, so the demo also proves the import contract. Idempotent: existing usernames are left alone
+/// and academic data is only loaded into an empty database (never over real or edited data).
 /// </summary>
-public sealed class DemoSeeder(LiwaDbContext db, IPasswordHasher hasher, TimeProvider clock, IOptions<DemoSeedOptions> options, ILogger<DemoSeeder> logger)
+public sealed class DemoSeeder(
+    LiwaDbContext db,
+    IPasswordHasher hasher,
+    TimeProvider clock,
+    IImportService imports,
+    IOptions<DemoSeedOptions> options,
+    ILogger<DemoSeeder> logger)
 {
     /// <summary>Stable IDs so later seed data (M2) can reference these accounts.</summary>
     public static IReadOnlyList<DemoAccount> Accounts { get; } =
@@ -55,7 +64,31 @@ public sealed class DemoSeeder(LiwaDbContext db, IPasswordHasher hasher, TimePro
 
         if (created > 0) await db.SaveChangesAsync(ct);
         logger.LogWarning("Demo seed is ENABLED: {Created} demo account(s) created. Disable DemoSeed:Enabled for real deployments.", created);
+
+        if (await db.Terms.AnyAsync(ct)) return;
+        foreach (var (kind, file) in DemoFiles)
+        {
+            await using var stream = typeof(DemoSeeder).Assembly.GetManifestResourceStream($"Liwa.Infrastructure.Seeding.Demo.{file}")
+                ?? throw new InvalidOperationException($"Demo data file {file} is missing from the build.");
+            var report = await imports.ImportAsync(kind, stream, dryRun: false, actorUserId: null, ct);
+            if (report.HasErrors)
+                throw new InvalidOperationException($"Demo data {file} failed to import: " +
+                    string.Join(" | ", report.Issues.Where(i => i.Severity == IssueSeverity.Error).Take(5).Select(i => $"line {i.Line}: {i.Message}")));
+            logger.LogInformation("Demo data {File}: {Created} created, {Warnings} warning(s).", file, report.Created, report.WarningCount);
+        }
     }
+
+    /// <summary>Import order matters: later files refer to earlier ones.</summary>
+    public static IReadOnlyList<(ImportKind Kind, string File)> DemoFiles { get; } =
+    [
+        (ImportKind.Terms, "terms.csv"),
+        (ImportKind.Courses, "courses.csv"),
+        (ImportKind.Programs, "programs.csv"),
+        (ImportKind.DegreePlans, "degree-plans.csv"),
+        (ImportKind.Sections, "sections.csv"),
+        (ImportKind.Students, "students.csv"),
+        (ImportKind.Transcripts, "transcripts.csv"),
+    ];
 }
 
 public sealed record DemoAccount(Guid Id, string Username, string DisplayName, UserRole Role, string? UniversityId, string Description);

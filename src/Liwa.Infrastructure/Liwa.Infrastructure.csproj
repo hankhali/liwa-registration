@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\Liwa.Application\Liwa.Application.csproj" />
@@ -16,6 +16,11 @@
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.14" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Illustrative demo data in the import-contract format (regenerate with scripts/generate-demo-data.py). -->
+    <EmbeddedResource Include="Seeding\Demo\*.csv" />
   </ItemGroup>
 
   <PropertyGroup>

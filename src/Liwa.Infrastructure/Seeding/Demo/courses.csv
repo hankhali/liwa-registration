@@ -1,0 +1,98 @@
+course_code,title,title_ar,credits,department,prerequisites,offered
+ENG101,English Composition I,الكتابة الإنجليزية 1,3,General Education,,Fall;Spring;Summer
+ENG102,English Composition II,الكتابة الإنجليزية 2,3,General Education,ENG101,Fall;Spring;Summer
+ENG201,Technical and Professional Writing,الكتابة التقنية والمهنية,3,General Education,ENG102,Fall;Spring
+ARB101,Arabic Language Skills,مهارات اللغة العربية,3,General Education,,Fall;Spring;Summer
+ISL101,Islamic Culture,الثقافة الإسلامية,3,General Education,,Fall;Spring;Summer
+GEN100,Student Success Seminar,ندوة النجاح الجامعي,1,General Education,,Fall;Spring
+GEN101,UAE Society,المجتمع الإماراتي,3,General Education,,Fall;Spring;Summer
+GEN110,Innovation and Entrepreneurship,الابتكار وريادة الأعمال,3,General Education,,Fall;Spring
+GEN120,Critical Thinking,التفكير الناقد,3,General Education,ENG101,Fall;Spring
+PED101,Health and Wellness,الصحة واللياقة,2,General Education,,Fall;Spring;Summer
+MTH101,College Mathematics,الرياضيات الجامعية,3,General Education,,Fall;Spring;Summer
+MTH110,Calculus I,التفاضل والتكامل 1,4,General Education,MTH101:C,Fall;Spring
+STA201,Introduction to Statistics,مقدمة في الإحصاء,3,General Education,MTH101,Fall;Spring;Summer
+CSC101,Introduction to Programming,مقدمة في البرمجة,3,Information Technology,COREQ(CSC101L),Fall;Spring
+CSC101L,Programming Lab,مختبر البرمجة,1,Information Technology,COREQ(CSC101),Fall;Spring
+CSC102,Object-Oriented Programming,البرمجة كائنية التوجه,3,Information Technology,CSC101,Fall;Spring
+CSC201,Data Structures,هياكل البيانات,3,Information Technology,CSC102,Fall;Spring
+CSC210,Discrete Mathematics,الرياضيات المتقطعة,3,Information Technology,MTH101,Fall;Spring
+ITC101,Introduction to Information Technology,مقدمة في تقنية المعلومات,3,Information Technology,,Fall;Spring;Summer
+ITC110,Computer Hardware Fundamentals,أساسيات عتاد الحاسوب,3,Information Technology,COREQ(ITC110L),Fall;Spring
+ITC110L,Computer Hardware Lab,مختبر عتاد الحاسوب,1,Information Technology,COREQ(ITC110),Fall;Spring
+ITC201,Database Systems,نظم قواعد البيانات,3,Information Technology,CSC102,Fall;Spring
+ITC202,Computer Networks,شبكات الحاسوب,3,Information Technology,ITC110 AND COREQ(ITC202L),Fall;Spring
+ITC202L,Computer Networks Lab,مختبر شبكات الحاسوب,1,Information Technology,COREQ(ITC202),Fall;Spring
+ITC210,Web Development,تطوير الويب,3,Information Technology,CSC101,Fall;Spring
+ITC220,Operating Systems,نظم التشغيل,3,Information Technology,CSC201,Fall
+ITC250,Software Engineering,هندسة البرمجيات,3,Information Technology,CSC201,Fall;Spring
+ITC301,Systems Analysis and Design,تحليل النظم وتصميمها,3,Information Technology,ITC201,Fall;Spring
+ITC304,Information Security,أمن المعلومات,3,Information Technology,ITC202,Spring
+ITC310,Cloud Computing,الحوسبة السحابية,3,Information Technology,ITC202 AND ITC220,Fall;Spring
+ITC320,Mobile App Development,تطوير تطبيقات الهاتف,3,Information Technology,ITC210 AND CSC102,Fall;Spring
+ITC330,Human-Computer Interaction,التفاعل بين الإنسان والحاسوب,3,Information Technology,ITC210,Fall;Spring
+ITC340,IT Project Management,إدارة مشاريع تقنية المعلومات,3,Information Technology,ITC301 AND STANDING(Junior),Fall;Spring
+ITC350,Data Analytics,تحليل البيانات,3,Information Technology,ITC201 AND STA201,Fall;Spring
+ITC360,Artificial Intelligence Fundamentals,أساسيات الذكاء الاصطناعي,3,Information Technology,CSC201 AND STA201,Fall;Spring
+ITC370,Network Administration,إدارة الشبكات,3,Information Technology,ITC202,Fall;Spring
+ITC380,Digital Forensics,التحقيق الجنائي الرقمي,3,Information Technology,ITC304,Fall;Spring
+ITC390,Special Topics in IT,موضوعات خاصة في تقنية المعلومات,3,Information Technology,STANDING(Junior),Fall;Spring
+ITC401,Capstone Project I,مشروع التخرج 1,3,Information Technology,ITC301 AND STANDING(Senior),Fall
+ITC402,Capstone Project II,مشروع التخرج 2,4,Information Technology,ITC401,Spring
+ITC410,IT Internship,التدريب العملي في تقنية المعلومات,4,Information Technology,CREDITS(90) AND PERMISSION,Summer
+BUS101,Introduction to Business,مقدمة في إدارة الأعمال,3,Business,,Fall;Spring;Summer
+BUS110,Business Communication,الاتصال في الأعمال,3,Business,ENG101,Fall;Spring
+BUS120,Microeconomics,الاقتصاد الجزئي,3,Business,MTH101,Fall;Spring
+BUS121,Macroeconomics,الاقتصاد الكلي,3,Business,BUS120,Fall;Spring
+BUS205,Spreadsheet Modelling Lab,مختبر نمذجة الجداول الإلكترونية,2,Business,BUS101,Fall;Spring
+BUS210,Business Law,قانون الأعمال,3,Business,BUS101,Fall;Spring
+BUS220,Business Statistics,إحصاء الأعمال,3,Business,STA201,Fall;Spring
+BUS230,Management Information Systems,نظم المعلومات الإدارية,3,Business,BUS101,Fall;Spring
+BUS301,Business Ethics,أخلاقيات الأعمال,3,Business,STANDING(Junior),Fall;Spring
+BUS310,Business Research Methods,مناهج البحث في الأعمال,3,Business,BUS220,Fall;Spring
+BUS401,Strategic Management,الإدارة الاستراتيجية,4,Business,MGT201 AND FIN201 AND STANDING(Senior),Spring
+BUS410,Business Internship,التدريب العملي في الأعمال,4,Business,CREDITS(90) AND PERMISSION,Summer
+ACC101,Financial Accounting,المحاسبة المالية,3,Business,MTH101,Fall;Spring
+ACC102,Managerial Accounting,المحاسبة الإدارية,3,Business,ACC101,Fall;Spring
+FIN201,Principles of Finance,مبادئ التمويل,3,Business,ACC101 AND BUS120,Fall;Spring
+FIN301,Corporate Finance,تمويل الشركات,3,Business,FIN201,Fall
+MGT201,Principles of Management,مبادئ الإدارة,3,Business,BUS101,Fall;Spring
+MGT210,Organizational Behavior,السلوك التنظيمي,3,Business,MGT201,Fall;Spring
+MGT220,Human Resource Management,إدارة الموارد البشرية,3,Business,MGT201,Fall;Spring
+MGT230,Operations Management,إدارة العمليات,3,Business,MGT201 AND BUS220,Fall;Spring
+MGT290,Professional Skills Workshop,ورشة المهارات المهنية,2,Business,MGT201,Fall;Spring
+MGT301,Leadership,القيادة,3,Business,MGT210,Fall;Spring
+MGT310,Project Management,إدارة المشاريع,3,Business,MGT201,Fall;Spring
+MGT320,Entrepreneurship and Small Business,ريادة الأعمال والمشروعات الصغيرة,3,Business,MGT201,Fall;Spring
+MGT330,International Business,الأعمال الدولية,3,Business,BUS121,Fall;Spring
+MGT340,Change Management,إدارة التغيير,3,Business,MGT210,Fall;Spring
+MGT350,Quality Management,إدارة الجودة,3,Business,MGT230,Fall;Spring
+MGT360,Negotiation,التفاوض,3,Business,MGT201,Fall;Spring
+MGT370,Strategic Human Resource Management,الإدارة الاستراتيجية للموارد البشرية,3,Business,MGT220,Fall;Spring
+MGT380,Business Analytics,تحليلات الأعمال,3,Business,BUS220 AND BUS230,Fall;Spring
+MCM101,Introduction to Mass Communication,مقدمة في الاتصال الجماهيري,3,Mass Communication,,Fall;Spring;Summer
+MCM110,Media Writing,الكتابة الإعلامية,3,Mass Communication,ENG101,Fall;Spring
+MCM120,Visual Communication,الاتصال البصري,3,Mass Communication,,Fall;Spring
+MCM130,Photography,التصوير الفوتوغرافي,3,Mass Communication,COREQ(MCM130L),Fall;Spring
+MCM130L,Photography Lab,مختبر التصوير,1,Mass Communication,COREQ(MCM130),Fall;Spring
+MCM201,Principles of Journalism,مبادئ الصحافة,3,Mass Communication,MCM110,Fall
+MCM210,Principles of Public Relations,مبادئ العلاقات العامة,3,Mass Communication,MCM101,Fall;Spring
+MCM220,Media Law and Ethics,قوانين الإعلام وأخلاقياته,3,Mass Communication,MCM101,Fall;Spring
+MCM230,Broadcast Production,الإنتاج الإذاعي والتلفزيوني,3,Mass Communication,MCM120,Fall;Spring
+MCM240,Digital Media,الإعلام الرقمي,3,Mass Communication,MCM120,Fall;Spring
+MCM250,Arabic Media Writing,الكتابة الإعلامية باللغة العربية,3,Mass Communication,ARB101 AND MCM110,Fall;Spring
+MCM290,Portfolio Workshop,ورشة الملف المهني,3,Mass Communication,MCM110,Fall;Spring
+MCM301,News Reporting and Editing,كتابة الأخبار وتحريرها,3,Mass Communication,MCM201:C,Fall;Spring
+MCM310,Advertising,الإعلان,3,Mass Communication,MCM210,Fall;Spring
+MCM320,Media Research Methods,مناهج البحث الإعلامي,3,Mass Communication,STA201 AND MCM101,Fall;Spring
+MCM330,Social Media Strategy,استراتيجية وسائل التواصل الاجتماعي,3,Mass Communication,MCM240,Fall;Spring
+MCM340,Crisis Communication,اتصال الأزمات,3,Mass Communication,MCM210,Fall;Spring
+MCM350,Documentary Production,إنتاج الأفلام الوثائقية,3,Mass Communication,MCM230,Fall;Spring
+MCM360,Media and Society in the UAE,الإعلام والمجتمع في الإمارات,3,Mass Communication,MCM101 AND GEN101,Fall;Spring
+MCM370,Corporate Communication,الاتصال المؤسسي,3,Mass Communication,MCM210,Fall;Spring
+MCM380,Data Journalism,صحافة البيانات,3,Mass Communication,MCM301 OR MCM320,Fall;Spring
+MCM390,Investigative Journalism,الصحافة الاستقصائية,3,Mass Communication,MCM301,Fall;Spring
+MCM395,Event Management,إدارة الفعاليات,3,Mass Communication,MCM210,Fall;Spring
+MCM401,Graduation Project I,مشروع التخرج 1,3,Mass Communication,MCM320 AND STANDING(Senior),Fall
+MCM402,Graduation Project II,مشروع التخرج 2,4,Mass Communication,MCM401,Spring
+MCM410,Media Internship,التدريب العملي في الإعلام,4,Mass Communication,CREDITS(90) AND PERMISSION,Summer

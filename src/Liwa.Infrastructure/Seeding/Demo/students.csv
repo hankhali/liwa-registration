@@ -1,0 +1,11 @@
+student_id,display_name,email,username,program_code,catalog_year,admit_term,status,advisor_username
+202700101,Mariam Al Mansoori,202700101@lu.ac.ae,student.new,BIT,2024,2027SP,Good,advisor.it
+202500102,Khalid Al Hammadi,202500102@lu.ac.ae,student.probation,BBA-MGT,2024,2025FA,Probation,advisor.business
+202500103,Aisha Al Nuaimi,202500103@lu.ac.ae,student.honors,BIT,2024,2025FA,Good,advisor.it
+202300104,Omar Al Shamsi,202300104@lu.ac.ae,student.senior,BIT,2024,2023FA,Good,advisor.it
+202500105,Noura Al Ketbi,202500105@lu.ac.ae,student.repeat,BMC,2024,2025FA,Good,advisor.media
+202600106,Saeed Al Dhaheri,202600106@lu.ac.ae,,BIT,2024,2026FA,Good,advisor.it
+202600107,Fatima Al Kaabi,202600107@lu.ac.ae,,BBA-MGT,2024,2026FA,Good,advisor.business
+202500108,Hamad Al Marri,202500108@lu.ac.ae,,BBA-MGT,2024,2025FA,Good,advisor.business
+202400109,Latifa Al Suwaidi,202400109@lu.ac.ae,,BMC,2024,2024FA,Good,advisor.media
+202400110,Rashid Al Falasi,202400110@lu.ac.ae,,BIT,2024,2024FA,Good,advisor.it

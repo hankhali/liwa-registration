@@ -1,0 +1,126 @@
+program_code,catalog_year,group_key,group_name,group_type,group_credits,course_code,suggested_semester
+BIT,2024,UNIV,University requirements,AllOf,,ENG101,1
+BIT,2024,UNIV,University requirements,AllOf,,ENG102,2
+BIT,2024,UNIV,University requirements,AllOf,,ARB101,1
+BIT,2024,UNIV,University requirements,AllOf,,ISL101,1
+BIT,2024,UNIV,University requirements,AllOf,,GEN100,1
+BIT,2024,UNIV,University requirements,AllOf,,GEN101,1
+BIT,2024,UNIV,University requirements,AllOf,,GEN110,1
+BIT,2024,UNIV,University requirements,AllOf,,PED101,1
+BIT,2024,UNIV,University requirements,AllOf,,MTH101,1
+BIT,2024,UNIV,University requirements,AllOf,,STA201,3
+BIT,2024,CORE,Major requirements,AllOf,,MTH110,2
+BIT,2024,CORE,Major requirements,AllOf,,CSC101,1
+BIT,2024,CORE,Major requirements,AllOf,,CSC101L,1
+BIT,2024,CORE,Major requirements,AllOf,,CSC102,2
+BIT,2024,CORE,Major requirements,AllOf,,CSC201,3
+BIT,2024,CORE,Major requirements,AllOf,,CSC210,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC101,1
+BIT,2024,CORE,Major requirements,AllOf,,ITC110,1
+BIT,2024,CORE,Major requirements,AllOf,,ITC110L,1
+BIT,2024,CORE,Major requirements,AllOf,,ITC201,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC202,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC202L,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC210,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC220,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC250,3
+BIT,2024,CORE,Major requirements,AllOf,,ITC301,5
+BIT,2024,CORE,Major requirements,AllOf,,ITC304,5
+BIT,2024,CORE,Major requirements,AllOf,,ITC340,5
+BIT,2024,CORE,Major requirements,AllOf,,ITC401,7
+BIT,2024,CORE,Major requirements,AllOf,,ITC402,8
+BIT,2024,CORE,Major requirements,AllOf,,ITC410,7
+BIT,2024,CORE,Major requirements,AllOf,,GEN120,1
+BIT,2024,CORE,Major requirements,AllOf,,ENG201,3
+BIT,2024,CORE,Major requirements,AllOf,,BUS101,1
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC310,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC320,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC330,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC350,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC360,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC370,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC380,
+BIT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,ITC390,
+BIT,2024,FREE,Free electives (9 credits),AnyCourse,9,,
+BBA-MGT,2024,UNIV,University requirements,AllOf,,ENG101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,ENG102,2
+BBA-MGT,2024,UNIV,University requirements,AllOf,,ARB101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,ISL101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,GEN100,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,GEN101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,GEN110,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,PED101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,MTH101,1
+BBA-MGT,2024,UNIV,University requirements,AllOf,,STA201,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS101,1
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS110,1
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS120,1
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS121,2
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS205,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS210,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS220,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS230,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS301,5
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS310,5
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS401,8
+BBA-MGT,2024,CORE,Major requirements,AllOf,,BUS410,7
+BBA-MGT,2024,CORE,Major requirements,AllOf,,ACC101,1
+BBA-MGT,2024,CORE,Major requirements,AllOf,,ACC102,2
+BBA-MGT,2024,CORE,Major requirements,AllOf,,FIN201,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,FIN301,5
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT201,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT210,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT220,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT230,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT290,3
+BBA-MGT,2024,CORE,Major requirements,AllOf,,MGT301,5
+BBA-MGT,2024,CORE,Major requirements,AllOf,,GEN120,1
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT310,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT320,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT330,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT340,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT350,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT360,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT370,
+BBA-MGT,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MGT380,
+BBA-MGT,2024,FREE,Free electives (9 credits),AnyCourse,9,,
+BMC,2024,UNIV,University requirements,AllOf,,ENG101,1
+BMC,2024,UNIV,University requirements,AllOf,,ENG102,2
+BMC,2024,UNIV,University requirements,AllOf,,ARB101,1
+BMC,2024,UNIV,University requirements,AllOf,,ISL101,1
+BMC,2024,UNIV,University requirements,AllOf,,GEN100,1
+BMC,2024,UNIV,University requirements,AllOf,,GEN101,1
+BMC,2024,UNIV,University requirements,AllOf,,GEN110,1
+BMC,2024,UNIV,University requirements,AllOf,,PED101,1
+BMC,2024,UNIV,University requirements,AllOf,,MTH101,1
+BMC,2024,UNIV,University requirements,AllOf,,STA201,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM101,1
+BMC,2024,CORE,Major requirements,AllOf,,MCM110,1
+BMC,2024,CORE,Major requirements,AllOf,,MCM120,1
+BMC,2024,CORE,Major requirements,AllOf,,MCM130,1
+BMC,2024,CORE,Major requirements,AllOf,,MCM130L,1
+BMC,2024,CORE,Major requirements,AllOf,,MCM201,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM210,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM220,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM230,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM240,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM250,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM290,3
+BMC,2024,CORE,Major requirements,AllOf,,MCM301,5
+BMC,2024,CORE,Major requirements,AllOf,,MCM310,5
+BMC,2024,CORE,Major requirements,AllOf,,MCM320,5
+BMC,2024,CORE,Major requirements,AllOf,,MCM360,5
+BMC,2024,CORE,Major requirements,AllOf,,MCM401,7
+BMC,2024,CORE,Major requirements,AllOf,,MCM402,8
+BMC,2024,CORE,Major requirements,AllOf,,MCM410,7
+BMC,2024,CORE,Major requirements,AllOf,,GEN120,1
+BMC,2024,CORE,Major requirements,AllOf,,ENG201,3
+BMC,2024,CORE,Major requirements,AllOf,,BUS101,1
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM330,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM340,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM350,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM370,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM380,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM390,
+BMC,2024,MAJ-ELEC,Major electives (choose 15 credits),ChooseCredits,15,MCM395,
+BMC,2024,FREE,Free electives (12 credits),AnyCourse,12,,

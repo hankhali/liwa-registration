@@ -51,6 +51,15 @@ public sealed class User
 
     public static string NormalizeUsername(string username) => username.Trim().ToLowerInvariant();
 
+    /// <summary>Profile fields that come from registrar data (imports).</summary>
+    public void UpdateProfile(string displayName, string? email, string? universityId)
+    {
+        if (string.IsNullOrWhiteSpace(displayName)) throw new ArgumentException("Display name is required.", nameof(displayName));
+        DisplayName = displayName.Trim();
+        Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim().ToLowerInvariant();
+        UniversityId = string.IsNullOrWhiteSpace(universityId) ? null : universityId.Trim();
+    }
+
     public void SetPasswordHash(string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(passwordHash)) throw new ArgumentException("Hash is required.", nameof(passwordHash));

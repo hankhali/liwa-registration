@@ -97,10 +97,16 @@ public sealed class AuthTests(LiwaApiFactory factory)
     public async Task Demo_seed_is_idempotent()
     {
         using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<LiwaDbContext>();
+        var usersBefore = await db.Users.CountAsync();
+        var coursesBefore = await db.Courses.CountAsync();
+
         await scope.ServiceProvider.GetRequiredService<DemoSeeder>().SeedAsync(default);
 
-        var db = scope.ServiceProvider.GetRequiredService<LiwaDbContext>();
-        Assert.Equal(DemoSeeder.Accounts.Count, await db.Users.CountAsync());
+        Assert.Equal(usersBefore, await db.Users.CountAsync());
+        Assert.Equal(coursesBefore, await db.Courses.CountAsync());
+        var usernames = await db.Users.Select(u => u.Username).ToListAsync();
+        Assert.All(DemoSeeder.Accounts, a => Assert.Contains(a.Username, usernames));
     }
 
     [Fact]
@@ -108,11 +114,17 @@ public sealed class AuthTests(LiwaApiFactory factory)
     {
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<LiwaDbContext>();
-        var hashes = await db.Users.Select(u => u.PasswordHash).ToListAsync();
+        var demoNames = DemoSeeder.Accounts.Select(a => a.Username).ToList();
+        var hashes = await db.Users.Where(u => demoNames.Contains(u.Username)).Select(u => u.PasswordHash).ToListAsync();
+        Assert.Equal(demoNames.Count, hashes.Count);
         Assert.All(hashes, h =>
         {
             Assert.StartsWith("PBKDF2-SHA256$", h, StringComparison.Ordinal);
             Assert.DoesNotContain(LiwaApiFactory.DemoPassword, h!, StringComparison.Ordinal);
         });
+
+        // Students created by an import sign in with their university account: they never get a password.
+        Assert.True(await db.Users.AnyAsync(u => !demoNames.Contains(u.Username)));
+        Assert.All(await db.Users.Where(u => !demoNames.Contains(u.Username)).ToListAsync(), u => Assert.Null(u.PasswordHash));
     }
 }
