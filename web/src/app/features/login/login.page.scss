@@ -2,7 +2,26 @@
   display: block;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, var(--liwa-indigo) 0, var(--liwa-indigo) 220px, var(--liwa-page) 220px);
+    linear-gradient(180deg, var(--liwa-primary) 0, var(--liwa-primary) 300px, var(--liwa-page) 300px);
+}
+
+.login-logo {
+  display: block;
+  height: 150px;
+  width: auto;
+  margin: 0 0 1.5rem;
+}
+
+@media (max-width: 600px) {
+  :host {
+    background:
+      linear-gradient(180deg, var(--liwa-primary) 0, var(--liwa-primary) 250px, var(--liwa-page) 250px);
+  }
+
+  .login-logo {
+    height: 120px;
+    margin-bottom: 1.25rem;
+  }
 }
 
 .login-page {
@@ -31,31 +50,17 @@
   width: 100%;
   max-width: 440px;
   padding: 2rem 1.75rem 1.5rem;
-  border-top: 4px solid var(--liwa-gold);
-  box-shadow: 0 8px 24px rgb(29 27 38 / 8%);
-}
-
-.login-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-
-  img {
-    border-radius: 10px;
-  }
-}
-
-.login-university {
-  color: var(--liwa-text-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  border-top: 4px solid var(--liwa-sage);
+  box-shadow: 0 8px 24px rgb(29 29 27 / 10%);
 }
 
 .login-product {
-  color: var(--liwa-indigo);
-  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+  color: var(--liwa-accent);
+  font-size: 0.875rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .intro {
@@ -70,8 +75,8 @@
 .notice {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
-  background: #eeedf7;
-  border-inline-start: 4px solid var(--liwa-indigo);
+  background: #f0f0ea;
+  border-inline-start: 4px solid var(--liwa-primary);
   border-radius: 4px;
 }
 

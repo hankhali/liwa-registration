@@ -35,6 +35,7 @@ services:
       Jwt__LifetimeMinutes: ${JWT_LIFETIME_MINUTES:-480}
       DemoSeed__Enabled: ${DEMO_SEED_ENABLED:-false}
       Swagger__Enabled: ${SWAGGER_ENABLED:-false}
+      RateLimiting__SignInPermitsPerMinute: ${SIGNIN_PERMITS_PER_MINUTE:-10}
     # Not published to the host: reachable only through the web container's /api proxy.
     expose:
       - "8080"

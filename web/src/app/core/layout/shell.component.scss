@@ -11,7 +11,7 @@
   z-index: 1000;
   padding: 0.5rem 1rem;
   background: var(--liwa-surface);
-  color: var(--liwa-indigo);
+  color: var(--liwa-primary);
   border-radius: var(--liwa-radius);
   font-weight: 600;
 
@@ -27,9 +27,9 @@
   gap: 0.5rem;
   min-height: 64px;
   padding: 0 1rem;
-  background: var(--liwa-indigo);
+  background: var(--liwa-primary);
   color: #fff;
-  border-bottom: 3px solid var(--liwa-gold);
+  border-bottom: 3px solid var(--liwa-sage);
 }
 
 .brand {
@@ -43,7 +43,9 @@
 
 .brand-logo {
   flex: none;
-  border-radius: 8px;
+  // Shield mark is 194x238; keep its aspect ratio.
+  height: 42px;
+  width: auto;
 }
 
 .brand-text {
@@ -55,7 +57,7 @@
 
 .brand-university {
   font-size: 0.75rem;
-  color: var(--liwa-gold-light);
+  color: var(--liwa-sage);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -89,8 +91,8 @@
   height: 32px;
   margin-inline-end: 0.5rem;
   border-radius: 50%;
-  background: var(--liwa-gold-light);
-  color: var(--liwa-indigo-dark);
+  background: var(--liwa-sage);
+  color: var(--liwa-primary-dark);
   font-size: 0.8125rem;
   font-weight: 700;
 }

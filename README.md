@@ -65,7 +65,7 @@ Open http://localhost:8088. Before any real deployment, set a real `JWT_SIGNING_
 |---|---|
 | `.\scripts\test.ps1` | Runs every test: .NET unit tests, .NET integration tests (throwaway Postgres containers) and Angular unit tests |
 | `.\scripts\reset-db.ps1` | Deletes the local database volume and starts an empty database. Asks you to type `reset` first; `-Force` skips the prompt |
-| `cd web; npm run screenshots -- --base http://localhost:4200 --milestone M1` | Captures English/Arabic screenshots at desktop and phone widths, runs the axe accessibility check, and writes `docs/screenshots/<milestone>/index.html` |
+| `cd web; npm run screenshots -- --base http://127.0.0.1:8088 --milestone M1` | Captures English/Arabic screenshots at desktop and phone widths, runs the axe accessibility check, and writes `docs/screenshots/<milestone>/index.html`. Point it at the Docker stack (8088), not the dev server: only the production build runs under the real Content-Security-Policy. The script signs in about 24 times, so start the stack with `$env:SIGNIN_PERMITS_PER_MINUTE=200; docker compose up -d api` first, then run plain `docker compose up -d api` afterwards to restore the limit of 10 |
 
 ## Demo accounts
 

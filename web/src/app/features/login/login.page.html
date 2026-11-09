@@ -1,19 +1,16 @@
 <div class="login-page">
-  <div class="lang-row">
+  <div class="lang-row liwa-on-dark">
     <button mat-button type="button" (click)="language.toggle()" [attr.lang]="language.other()" [title]="'shell.switchLanguage' | transloco">
       <mat-icon aria-hidden="true">translate</mat-icon>
       {{ language.other() === 'ar' ? 'العربية' : 'English' }}
     </button>
   </div>
 
+  <!-- Official bilingual lockup on charcoal, as on Liwa's own sign-in pages. -->
+  <img class="login-logo" src="assets/brand/logo.png" [alt]="'app.university' | transloco" width="408" height="405" />
+
   <main class="login-card liwa-card" aria-labelledby="login-heading">
-    <div class="login-brand">
-      <img src="assets/brand/logo.svg" alt="" width="56" height="56" />
-      <div>
-        <div class="login-university">{{ 'app.university' | transloco }}</div>
-        <div class="login-product">{{ 'app.product' | transloco }}</div>
-      </div>
-    </div>
+    <div class="login-product">{{ 'app.product' | transloco }}</div>
 
     <h1 id="login-heading">{{ 'login.heading' | transloco }}</h1>
     <p class="liwa-muted intro">{{ 'login.intro' | transloco }}</p>

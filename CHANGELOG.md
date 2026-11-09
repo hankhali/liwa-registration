@@ -4,6 +4,11 @@ All notable changes are listed here, newest first, grouped by milestone.
 
 ## Unreleased
 
+### Changed
+- **Re-branded to match Liwa University's real identity:** charcoal `#272727` and sage `#b5b59e` (from the official logo) replace indigo and gold. A deep olive `#6b6a52` is the accent and focus colour on light backgrounds. Material palettes were regenerated from the new colours.
+- **Official logo:** the sign-in page shows the full bilingual lockup on a charcoal band (as on Liwa's Blackboard sign-in), and the top bar shows the shield mark. The favicon and touch icon are now the shield on charcoal. The placeholder `logo.svg` was removed.
+- The Docker sign-in rate limit can now be set with `SIGNIN_PERMITS_PER_MINUTE` (default 10), so screenshots can be taken against the real production build.
+
 ### Fixed
 - **Docker/production build showed an unstyled page** (icon names as text, see-through card). Angular's critical-CSS inlining loads the main stylesheet with an inline `onload` script, which the nginx Content-Security-Policy (`script-src 'self'`) correctly blocks. Turned off `inlineCritical` for production builds so the stylesheet loads normally and the strict policy stays. The M1 screenshots came from the dev server, which sends no CSP, so they didn't catch this.
 
