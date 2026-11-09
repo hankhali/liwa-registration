@@ -74,6 +74,26 @@
           "title": "Send it to your advisor",
           "body": "Your advisor approves it or suggests changes."
         }
+      },
+      "studies": {
+        "heading": "Your studies",
+        "progress": "{{ earned }} of {{ required }} credits done",
+        "progressLabel": "Progress toward graduation",
+        "percent": "You're {{ percent }}% of the way to graduating.",
+        "inProgress": "Plus {{ credits }} credits in progress, waiting for final grades.",
+        "advisor": "Your advisor",
+        "year": "Year of study",
+        "gpa": "GPA",
+        "noGpa": "No grades yet",
+        "standing": {
+          "Freshman": "First year",
+          "Sophomore": "Second year",
+          "Junior": "Third year",
+          "Senior": "Final year"
+        },
+        "probation": "You're on academic probation, so you can take fewer credits this term. Your advisor is there to help you get back on track.",
+        "noRecord": "We haven't received your study record from the Registrar yet. Please check again later.",
+        "error": "We couldn't load your study details right now. Please refresh the page."
       }
     }
   },
@@ -85,7 +105,16 @@
       "needsAttention": "Needs attention",
       "nothingWaiting": "No plans are waiting for you right now.",
       "advisees": "My students",
-      "adviseesComingSoon": "Your list of students will appear here."
+      "adviseesComingSoon": "Your list of students will appear here.",
+      "students": {
+        "count": "{{ count }} students",
+        "credits": "{{ earned }} of {{ required }} credits",
+        "gpa": "GPA {{ gpa }}",
+        "noGpa": "No grades yet",
+        "probation": "On probation",
+        "none": "No students are assigned to you yet.",
+        "error": "We couldn't load your students right now. Please refresh the page."
+      }
     }
   },
   "admin": {
@@ -115,7 +144,20 @@
       "allGood": "Everything is working normally.",
       "dbDown": "The system can't load or save information right now. Please contact the IT Service Desk.",
       "demoWarning": "Practice accounts are switched on. Ask IT to switch them off before students start using the system.",
-      "details": "Details for IT"
+      "details": "Details for IT",
+      "data": {
+        "heading": "Data in the system",
+        "currentTerm": "Current term",
+        "courses": "Courses",
+        "programs": "Study programs",
+        "sections": "Classes this term",
+        "students": "Students",
+        "advisors": "Advisors",
+        "lastUpload": "Last data upload",
+        "never": "No uploads yet",
+        "noTerm": "Not set",
+        "error": "We couldn't load the data summary right now. Please refresh the page."
+      }
     }
   },
   "errors": {

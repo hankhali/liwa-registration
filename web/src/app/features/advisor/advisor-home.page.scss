@@ -1,0 +1,58 @@
+.count {
+  margin-inline-start: auto;
+  color: var(--liwa-text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.students {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--liwa-border);
+
+    &:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.who,
+.numbers {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.who span {
+  font-size: 0.875rem;
+}
+
+.numbers {
+  align-items: flex-end;
+  font-size: 0.9375rem;
+}
+
+.tag {
+  margin-top: 0.25rem;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 999px;
+  background: #fdf1d8;
+  color: #6b4a00;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .numbers {
+    align-items: flex-start;
+  }
+}

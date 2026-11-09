@@ -60,6 +60,7 @@ const screens = [
     waitFor: '[role="alert"]',
   },
   { id: 'student-home', title: 'Student home', user: 'student.new', path: '/student' },
+  { id: 'student-home-probation', title: 'Student home — on academic probation', user: 'student.probation', path: '/student' },
   { id: 'advisor-home', title: 'Advisor home', user: 'advisor.it', path: '/advisor' },
   { id: 'admin-home', title: 'Admin home', user: 'admin', path: '/admin', waitFor: 'p.summary' },
   {

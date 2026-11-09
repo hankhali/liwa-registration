@@ -3,6 +3,8 @@ import { Component, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
+import { DataOverview, formatDateTime } from '../../core/academic/academic.models';
+import { LanguageService } from '../../core/i18n/language.service';
 
 interface SystemStatus {
   version: string;
@@ -84,6 +86,35 @@ interface SystemStatus {
         }
       </section>
 
+      <section class="liwa-card" aria-labelledby="data-heading" [attr.aria-busy]="overview.isLoading()">
+        <h2 id="data-heading" class="card-title">
+          <mat-icon aria-hidden="true">inventory_2</mat-icon>
+          {{ 'admin.home.data.heading' | transloco }}
+        </h2>
+        @if (overview.hasValue()) {
+          @let o = overview.value();
+          <dl class="status-list">
+            <div>
+              <dt>{{ 'admin.home.data.currentTerm' | transloco }}</dt>
+              <dd>{{ o.currentTerm?.name ?? ('admin.home.data.noTerm' | transloco) }}</dd>
+            </div>
+            <div><dt>{{ 'admin.home.data.programs' | transloco }}</dt><dd>{{ o.programs }}</dd></div>
+            <div><dt>{{ 'admin.home.data.courses' | transloco }}</dt><dd>{{ o.courses }}</dd></div>
+            <div><dt>{{ 'admin.home.data.sections' | transloco }}</dt><dd>{{ o.sectionsThisTerm }}</dd></div>
+            <div><dt>{{ 'admin.home.data.students' | transloco }}</dt><dd>{{ o.students }}</dd></div>
+            <div><dt>{{ 'admin.home.data.advisors' | transloco }}</dt><dd>{{ o.advisors }}</dd></div>
+            <div>
+              <dt>{{ 'admin.home.data.lastUpload' | transloco }}</dt>
+              <dd>{{ o.lastImportAt ? when(o.lastImportAt) : ('admin.home.data.never' | transloco) }}</dd>
+            </div>
+          </dl>
+        } @else if (overview.error()) {
+          <p class="error" role="alert">{{ 'admin.home.data.error' | transloco }}</p>
+        } @else {
+          <p class="liwa-muted">{{ 'common.loading' | transloco }}</p>
+        }
+      </section>
+
       <section class="liwa-card" aria-labelledby="manage-heading">
         <h2 id="manage-heading" class="card-title">
           <mat-icon aria-hidden="true">tune</mat-icon>
@@ -103,5 +134,11 @@ interface SystemStatus {
 export class AdminHomePage {
   private readonly http = inject(HttpClient);
   protected readonly status = resource({ loader: () => firstValueFrom(this.http.get<SystemStatus>('/api/admin/system')) });
+  protected readonly overview = resource({ loader: () => firstValueFrom(this.http.get<DataOverview>('/api/admin/overview')) });
   protected readonly areas = ['terms', 'catalog', 'degreePlans', 'creditPolicy', 'imports'];
+  private readonly language = inject(LanguageService);
+
+  protected when(iso: string): string {
+    return formatDateTime(iso, this.language.lang());
+  }
 }

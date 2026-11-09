@@ -33,3 +33,62 @@
   display: flex;
   flex-direction: column;
 }
+
+.studies-card {
+  max-width: 760px;
+  margin-bottom: 1rem;
+}
+
+.program {
+  margin: 0 0 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.progress-text {
+  margin: 0 0 0.5rem;
+}
+
+mat-progress-bar {
+  --mat-progress-bar-active-indicator-color: var(--liwa-primary);
+  --mat-progress-bar-track-color: #e4e3dc;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.small {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.75rem 1.5rem;
+  margin: 1.25rem 0 0;
+
+  dt {
+    color: var(--liwa-text-muted);
+    font-size: 0.875rem;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.probation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  background: #fdf1d8;
+  color: #6b4a00;
+  border-radius: 6px;
+
+  mat-icon {
+    flex: none;
+  }
+}

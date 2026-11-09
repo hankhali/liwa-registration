@@ -32,7 +32,8 @@ public static class ApiSetup
 {
     public static IServiceCollection AddLiwaApi(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
     {
-        services.AddControllers();
+        // Enums travel as names ("Probation", "OnCampus"), which is easier to read for people and tools.
+        services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
         services.AddProblemDetails(o => o.CustomizeProblemDetails = ctx =>
             ctx.ProblemDetails.Extensions["traceId"] = ctx.HttpContext.TraceIdentifier);
         services.AddExceptionHandler<UnhandledExceptionHandler>();

@@ -1,4 +1,8 @@
 using Liwa.Application.Abstractions;
+using Liwa.Application.Academic;
+using Liwa.Application.Imports;
+using Liwa.Infrastructure.Academic;
+using Liwa.Infrastructure.Imports;
 using Liwa.Infrastructure.Persistence;
 using Liwa.Infrastructure.Security;
 using Liwa.Infrastructure.Seeding;
@@ -23,6 +27,7 @@ public static class DependencyInjection
         services.AddOptions<PasswordHashingOptions>().Bind(config.GetSection(PasswordHashingOptions.Section));
         services.AddOptions<DemoSeedOptions>().Bind(config.GetSection(DemoSeedOptions.Section));
         services.AddOptions<DatabaseOptions>().Bind(config.GetSection(DatabaseOptions.Section));
+        services.AddOptions<CreditPolicyDefaults>().Bind(config.GetSection(CreditPolicyDefaults.Section));
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
@@ -30,6 +35,9 @@ public static class DependencyInjection
         services.AddSingleton<ISignInHandoff, InMemorySignInHandoff>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<DemoSeeder>();
+        services.AddScoped<CreditPolicySeeder>();
+        services.AddScoped<IImportService, ImportService>();
+        services.AddScoped<IAcademicQueries, AcademicQueries>();
 
         services.AddHealthChecks().AddDbContextCheck<LiwaDbContext>("database", tags: ["ready"]);
         return services;
