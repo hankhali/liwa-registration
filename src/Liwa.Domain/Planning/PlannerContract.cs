@@ -184,6 +184,21 @@ public enum ReasonCode
     OfferedButNoSections = 102,   // Courses = courses offered this season with no sections
     InProgressPrerequisite = 103, // Courses = planned courses that depend on a grade in progress
     GraduationNotReachable = 104,
+
+    // Checking a plan the student changed by hand (Planner.Check)
+    NotInDegreePlan = 120,        // Courses = course
+    AlreadyTaken = 121,           // Courses = course (passed or in progress)
+    DuplicateCourse = 122,        // Courses = course chosen twice
+    CorequisiteMissing = 123,     // Courses = [course, missing corequisite]
+    UnknownSection = 124,
+    OverCreditLimit = 125,        // Value = maximum credits
+    NotEligibleNow = 126,         // Courses = course; see the course's own reasons
+}
+
+/// <summary>Result of checking a hand-picked plan: errors block saving; warnings need an "I understand" at submit.</summary>
+public sealed record PlanCheckResult(int TotalCredits, CreditLimits? Limits, int MaxCredits, IReadOnlyList<PlannerReason> Errors, IReadOnlyList<PlannerReason> Warnings)
+{
+    public bool IsValid => Errors.Count == 0;
 }
 
 /// <summary>When the student would graduate if they follow the recommendation, with and without summer terms.</summary>

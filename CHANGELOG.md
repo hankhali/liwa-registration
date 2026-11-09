@@ -2,6 +2,23 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## M4: student planning screens (2026-11-09)
+
+### Added
+- **The recommended plan shows straight away** on the student's home page: "Here's the plan we recommend. Happy with it? Send it to your advisor."
+- **"When are you free?"** uses big preset cards (Any time, Evenings only, Mornings only, Daytime, Let me choose). The day-and-time grid appears only for "Let me choose". "How do you want to study?" (on campus / online) and "How many credits?" are optional.
+- **Every course says why it's there, in plain words:** "Needed for your degree", "Take this soon: 5 other courses depend on it", "Only offered in Fall, so take it now", "Waiting for a grade: you can take ITC301 if you pass ITC201", "Taken together with CSC101L". Ranking details stay for advisors.
+- **"Change courses"** lists the courses the student can take, each with a choice of class time. Courses they can't take sit in a folded "Not available this term" panel, grouped by reason with counts (for example "Need to pass another course first (14)", "Not offered this term (5)").
+- **Live checks while building the plan:** problems to fix (clashes, missing lab, over the limit, full class, not eligible yet) and things good to know (below the minimum, waiting for a grade, outside your free time).
+- **"Your week":** a Monday–Friday view on computers that becomes a simple day-by-day list on phones ("Tue — ITC201, 5:00–6:15 pm"), plus the graduation estimate with and without summer classes.
+- **Sending to the advisor:** each remaining warning needs its own "I understand" tick. The plan is saved as a new version, with the confirmed warnings and the student's free time stored for the advisor; the change goes to the audit log, and the advisor gets a notification. "Save for later" keeps a draft. After sending, the screen shows the plan as with the advisor.
+- **API:** `POST /api/students/me/planning`, `POST /api/students/me/plan/check`, `POST /api/students/me/plan`. Planner check (`Planner.Check`) uses the same rules as the recommendation. Migration `PlanDetails` (confirmed warnings and free time on each plan version).
+- All text in English and Arabic, 12-hour times (Arabic ص/م), right-to-left layout.
+- Tests: 5 more integration tests for the plan flow and 8 more frontend tests (totals: 153 unit, 65 integration, 38 frontend).
+
+### Changed
+- Milestone screenshots are no longer captured, at the project owner's request.
+
 ## M3: the planner (2026-11-09)
 
 ### Added

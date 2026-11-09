@@ -47,9 +47,10 @@ public sealed class Plan
 
     public PlanVersion? Current => _versions.MaxBy(v => v.Number);
 
-    public PlanVersion AddVersion(IEnumerable<Guid> sectionIds, Guid authorUserId, string? note, DateTimeOffset at)
+    public PlanVersion AddVersion(IEnumerable<Guid> sectionIds, Guid authorUserId, string? note, DateTimeOffset at,
+        string? acknowledgedWarnings = null, string? availability = null)
     {
-        var version = new PlanVersion(Guid.NewGuid(), Id, (Current?.Number ?? 0) + 1, authorUserId, note, at, sectionIds);
+        var version = new PlanVersion(Guid.NewGuid(), Id, (Current?.Number ?? 0) + 1, authorUserId, note, at, sectionIds, acknowledgedWarnings, availability);
         _versions.Add(version);
         UpdatedAt = at;
         return version;
@@ -69,8 +70,11 @@ public sealed class PlanVersion
 
     private PlanVersion() { } // EF Core
 
-    internal PlanVersion(Guid id, Guid planId, int number, Guid authorUserId, string? note, DateTimeOffset createdAt, IEnumerable<Guid> sectionIds)
+    internal PlanVersion(Guid id, Guid planId, int number, Guid authorUserId, string? note, DateTimeOffset createdAt, IEnumerable<Guid> sectionIds,
+        string? acknowledgedWarnings, string? availability)
     {
+        AcknowledgedWarnings = acknowledgedWarnings;
+        Availability = availability;
         Id = id;
         PlanId = planId;
         Number = number;
@@ -91,6 +95,12 @@ public sealed class PlanVersion
     public string? Note { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
+
+    /// <summary>JSON list of warnings the student confirmed with "I understand" when sending the plan.</summary>
+    public string? AcknowledgedWarnings { get; private set; }
+
+    /// <summary>JSON of the free-time windows the student chose (shown to the advisor).</summary>
+    public string? Availability { get; private set; }
 
     public IReadOnlyList<PlanVersionSection> Sections => _sections;
 }

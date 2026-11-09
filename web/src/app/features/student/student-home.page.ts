@@ -8,11 +8,12 @@ import { StudentSummary, formatGpa, percentOf, programName } from '../../core/ac
 import { AuthService } from '../../core/auth/auth.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { greetingName } from '../../shared/first-name';
+import { StudentPlanComponent } from './plan/student-plan.component';
 
 /** Student landing page. Plain language only: no system or technical information for students. */
 @Component({
   selector: 'app-student-home',
-  imports: [MatIconModule, MatProgressBarModule, TranslocoPipe],
+  imports: [MatIconModule, MatProgressBarModule, TranslocoPipe, StudentPlanComponent],
   template: `
     <header class="page-header">
       <h1>{{ 'student.home.welcome' | transloco: { name: name() } }}</h1>
@@ -74,25 +75,7 @@ import { greetingName } from '../../shared/first-name';
       }
     </section>
 
-    <section class="liwa-card plan-card" aria-labelledby="plan-heading">
-      <h2 id="plan-heading" class="card-title">
-        <mat-icon aria-hidden="true">event_note</mat-icon>
-        {{ 'student.home.planHeading' | transloco }}
-      </h2>
-      <p>{{ 'student.home.planComingSoon' | transloco }}</p>
-
-      <ol class="steps">
-        @for (step of steps; track step.key; let i = $index) {
-          <li>
-            <span class="step-number" aria-hidden="true">{{ i + 1 }}</span>
-            <span class="step-text">
-              <strong>{{ 'student.home.steps.' + step.key + '.title' | transloco }}</strong>
-              <span class="liwa-muted">{{ 'student.home.steps.' + step.key + '.body' | transloco }}</span>
-            </span>
-          </li>
-        }
-      </ol>
-    </section>
+    <app-student-plan />
   `,
   styleUrls: ['../../shared/page.scss', './student-home.page.scss'],
 })
@@ -102,7 +85,6 @@ export class StudentHomePage {
   private readonly language = inject(LanguageService);
 
   protected readonly name = computed(() => greetingName(this.auth.user()?.displayName ?? ''));
-  protected readonly steps = [{ key: 'availability' }, { key: 'review' }, { key: 'send' }];
   protected readonly summary = resource({ loader: () => firstValueFrom(this.http.get<StudentSummary>('/api/students/me/summary')) });
 
   protected readonly program = computed(() => (this.summary.hasValue() ? programName(this.summary.value(), this.language.lang()) : ''));

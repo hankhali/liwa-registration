@@ -39,7 +39,9 @@ public static class DependencyInjection
         services.AddScoped<CreditPolicySeeder>();
         services.AddScoped<IImportService, ImportService>();
         services.AddScoped<IAcademicQueries, AcademicQueries>();
-        services.AddScoped<IRecommendationService, RecommendationService>();
+        services.AddScoped<StudentPlanService>();
+        services.AddScoped<IStudentPlanService>(sp => sp.GetRequiredService<StudentPlanService>());
+        services.AddScoped<IRecommendationService>(sp => sp.GetRequiredService<StudentPlanService>());
 
         services.AddHealthChecks().AddDbContextCheck<LiwaDbContext>("database", tags: ["ready"]);
         return services;

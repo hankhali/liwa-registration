@@ -59,7 +59,44 @@ const screens = [
     path: '/login?sso=not_registered',
     waitFor: '[role="alert"]',
   },
-  { id: 'student-home', title: 'Student home', user: 'student.new', path: '/student' },
+  { id: 'student-home', title: 'Student home — recommended plan shown straight away', user: 'student.new', path: '/student', waitFor: '.course' },
+  {
+    id: 'plan-evenings',
+    title: 'Plan — "Evenings only" chosen (high-GPA student)',
+    user: 'student.honors',
+    path: '/student',
+    waitFor: '.preset',
+    act: async (page) => {
+      await page.click('.preset >> nth=1');
+      await page.waitForLoadState('networkidle');
+      await page.waitForSelector('.course, .empty-plan');
+    },
+  },
+  {
+    id: 'plan-change',
+    title: 'Plan — "Change courses" open with the not-available panel',
+    user: 'student.new',
+    path: '/student',
+    waitFor: '.course',
+    act: async (page) => {
+      await page.click('button.change');
+      await page.waitForSelector('.editor');
+      await page.click('details.blocked > summary');
+      await page.click('details.blocked-group >> nth=0 >> summary');
+    },
+  },
+  {
+    id: 'plan-confirm',
+    title: 'Plan — sending, each warning needs "I understand"',
+    user: 'student.honors',
+    path: '/student',
+    waitFor: '.course',
+    act: async (page) => {
+      await page.waitForSelector('button.send:not([disabled])');
+      await page.click('button.send');
+      await page.waitForSelector('.confirm');
+    },
+  },
   { id: 'student-home-probation', title: 'Student home — on academic probation', user: 'student.probation', path: '/student' },
   { id: 'advisor-home', title: 'Advisor home', user: 'advisor.it', path: '/advisor' },
   { id: 'admin-home', title: 'Admin home', user: 'admin', path: '/admin', waitFor: 'p.summary' },

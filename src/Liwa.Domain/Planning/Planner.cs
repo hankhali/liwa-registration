@@ -6,7 +6,7 @@ namespace Liwa.Domain.Planning;
 /// <summary>
 /// The deterministic planner described in docs/planner.md. Pure: no database, no clock, no randomness.
 /// </summary>
-public static class Planner
+public static partial class Planner
 {
     /// <summary>The projection gives up after this many terms.</summary>
     public const int ProjectionHorizon = 24;

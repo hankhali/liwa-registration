@@ -172,5 +172,177 @@
       "heading": "We couldn't find that page",
       "body": "The link may be old or mistyped."
     }
+  },
+  "days": {
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday",
+    "Sunday": "Sunday"
+  },
+  "daysShort": {
+    "Monday": "Mon",
+    "Tuesday": "Tue",
+    "Wednesday": "Wed",
+    "Thursday": "Thu",
+    "Friday": "Fri",
+    "Saturday": "Sat",
+    "Sunday": "Sun"
+  },
+  "plan": {
+    "heading": "Your plan for {{ term }}",
+    "building": "Building your plan…",
+    "notReady": "We can't build your plan yet because your study record or this term's timetable hasn't arrived. Please check again later.",
+    "intro": "Here's the plan we recommend. Happy with it? Send it to your advisor.",
+    "yourAdvisor": "your advisor",
+    "freeTime": {
+      "heading": "When are you free?",
+      "hint": "Pick when you're free, or skip this and we'll show everything.",
+      "gridCaption": "Times you are free each week",
+      "day": "Day",
+      "periods": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening"
+      },
+      "presets": {
+        "any": {
+          "title": "Any time",
+          "body": "Show me everything"
+        },
+        "evenings": {
+          "title": "Evenings only",
+          "body": "I work during the day. Mon–Thu, 5–8 pm"
+        },
+        "mornings": {
+          "title": "Mornings only",
+          "body": "Mon–Fri, before 12 noon"
+        },
+        "daytime": {
+          "title": "Daytime",
+          "body": "Mon–Fri, before 5 pm"
+        },
+        "custom": {
+          "title": "Let me choose",
+          "body": "Pick days and times myself"
+        }
+      }
+    },
+    "prefs": {
+      "delivery": "How do you want to study?",
+      "deliveryAny": "On campus or online",
+      "deliveryCampus": "On campus only",
+      "deliveryOnline": "Online only",
+      "maxCredits": "How many credits?",
+      "noLimit": "As many as I can",
+      "upTo": "Up to {{ n }} credits"
+    },
+    "listLabel": "Courses in your plan",
+    "credits": "{{ n }} credits",
+    "onlineAnyTime": "Online, study any time",
+    "total": "Total: {{ n }} credits",
+    "limits": "You can take {{ min }}–{{ max }} credits this term.",
+    "empty": "No classes fit your choices right now. Try different times, or tap \"Change courses\".",
+    "fixFirst": "Please fix these before sending:",
+    "goodToKnow": "Good to know:",
+    "graduate": "If you follow this plan, you could graduate in {{ term }}.",
+    "graduateSummer": "With summer classes: {{ term }}.",
+    "week": "Your week",
+    "noClasses": "No classes",
+    "onlineList": "Online (no fixed time):",
+    "send": "Send to my advisor",
+    "change": "Change courses",
+    "doneChanging": "Done changing",
+    "saveLater": "Save for later",
+    "useRecommendation": "Go back to the recommended plan",
+    "sentHint": "You'll get a notification when they reply.",
+    "status": {
+      "Submitted": "Sent to {{ advisor }}. Waiting for their review.",
+      "AdvisorReviewing": "{{ advisor }} is reviewing your plan.",
+      "Approved": "Approved by {{ advisor }}."
+    },
+    "confirm": {
+      "heading": "Send your plan to {{ advisor }}?",
+      "intro": "Before you send it, please read each note and tick \"I understand\".",
+      "understand": "I understand",
+      "send": "Send now",
+      "cancel": "Not yet"
+    },
+    "messages": {
+      "sent": "Your plan has been sent to {{ advisor }}.",
+      "saved": "Saved. You can come back and send it later.",
+      "error": "Your plan couldn't be sent. Please check the notes above and try again."
+    },
+    "editor": {
+      "canTake": "Courses you can take this term",
+      "classTime": "Class time",
+      "full": "Full",
+      "notAvailable": "Not available this term",
+      "groups": {
+        "prerequisite": "Need to pass another course first ({{ n }})",
+        "notOffered": "Not offered this term ({{ n }})",
+        "moreCredits": "Need more credits first ({{ n }})",
+        "permission": "Need permission from the department ({{ n }})",
+        "other": "Other reasons ({{ n }})"
+      }
+    },
+    "credit1": "1 credit",
+    "dayJoin": " & "
+  },
+  "planner": {
+    "join": {
+      "or": "or",
+      "and": "and"
+    },
+    "season": {
+      "Fall": "Fall",
+      "Spring": "Spring",
+      "Summer": "Summer"
+    },
+    "reasons": {
+      "RequiredForDegree": "Needed for your degree",
+      "CountsTowardElectives": "Counts toward your electives",
+      "UnlocksOtherCourses": "Take this soon: {{ value }} other courses depend on it",
+      "SuggestedForThisSemester": "Planned for this point in your degree",
+      "OnlyOfferedIn": "Only offered in {{ value }}, so take it now",
+      "TakeWithCorequisite": "Taken together with {{ courses }}",
+      "WaitingForGrade": "Waiting for a grade: you can take {{ first }} if you pass {{ second }}",
+      "PrerequisiteNotMet": "You need to pass {{ courses }} first",
+      "PrerequisiteFailed": "You need to pass {{ courses }} first, with at least a {{ value }}",
+      "PrerequisiteFailedAny": "You need to pass {{ courses }} first",
+      "MinimumGradeNotMet": "You need at least a {{ value }} in {{ courses }}",
+      "StandingRequired": "Open from your {{ value }} onward",
+      "CreditsRequired": "You need {{ value }} credits first",
+      "PermissionRequired": "Needs permission from the department",
+      "NotOfferedThisTerm": "Not offered this term (usually in {{ value }})",
+      "NoSectionsThisTerm": "No classes scheduled this term",
+      "CorequisiteDoesNotFit": "Must be taken with {{ courses }}, but they don't fit together in your free time",
+      "CreditLimitReached": "Would go over your credit limit ({{ value }})",
+      "ElectiveQuotaMet": "You already have enough electives planned",
+      "NoSectionFits": "No class time fits your schedule",
+      "OutsideAvailability": "{{ courses }} is outside the times you said you're free",
+      "ClashesWith": "{{ courses }} are at the same time",
+      "SectionFull": "{{ courses }} is full",
+      "DeliveryNotPreferred": "Not the way you prefer to study",
+      "FewerSeatsLeft": "Another class time had more seats",
+      "BelowMinimumCredits": "This is below the usual minimum of {{ value }} credits",
+      "NoCreditRule": "We couldn't find your credit limit. Please contact the Registrar.",
+      "OfferedButNoSections": "Some courses have no classes scheduled this term: {{ courses }}",
+      "InProgressPrerequisite": "Some courses depend on grades you haven't received yet: {{ courses }}",
+      "GraduationNotReachable": "We couldn't work out your graduation date. Your advisor will help.",
+      "NotInDegreePlan": "{{ courses }} isn't part of your degree plan",
+      "AlreadyTaken": "You've already taken {{ courses }}",
+      "DuplicateCourse": "You picked {{ courses }} twice",
+      "CorequisiteMissing": "Add {{ second }} too: it must be taken with {{ first }}",
+      "UnknownSection": "One of these classes is no longer available. Please refresh the page.",
+      "OverCreditLimit": "That's more than your limit of {{ value }} credits",
+      "NotEligibleNow": "You can't take {{ courses }} yet",
+      "UnlocksOtherCoursesOne": "Take this soon: 1 other course depends on it"
+    }
+  },
+  "notifications": {
+    "planSubmitted": "{{ student }} sent a plan for {{ term }}."
   }
 }

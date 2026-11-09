@@ -715,9 +715,17 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("AcknowledgedWarnings")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("acknowledged_warnings");
+
                     b.Property<Guid>("AuthorUserId")
                         .HasColumnType("uuid")
                         .HasColumnName("author_user_id");
+
+                    b.Property<string>("Availability")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("availability");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")

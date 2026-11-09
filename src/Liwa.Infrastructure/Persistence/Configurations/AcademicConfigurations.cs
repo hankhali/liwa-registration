@@ -226,6 +226,8 @@ internal sealed class PlanVersionConfiguration : IEntityTypeConfiguration<PlanVe
         b.Property(v => v.Id).ValueGeneratedNever();
         b.HasIndex(v => new { v.PlanId, v.Number }).IsUnique();
         b.Property(v => v.Note).HasMaxLength(2000);
+        b.Property(v => v.AcknowledgedWarnings).HasColumnType("jsonb");
+        b.Property(v => v.Availability).HasColumnType("jsonb");
         b.HasOne<User>().WithMany().HasForeignKey(v => v.AuthorUserId).OnDelete(DeleteBehavior.Restrict);
         b.HasMany(v => v.Sections).WithOne().HasForeignKey(s => s.PlanVersionId).OnDelete(DeleteBehavior.Cascade);
         b.Navigation(v => v.Sections).UsePropertyAccessMode(PropertyAccessMode.Field);

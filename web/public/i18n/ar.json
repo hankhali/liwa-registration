@@ -172,5 +172,177 @@
       "heading": "لم نعثر على هذه الصفحة",
       "body": "ربما يكون الرابط قديماً أو مكتوباً بشكل خاطئ."
     }
+  },
+  "days": {
+    "Monday": "الاثنين",
+    "Tuesday": "الثلاثاء",
+    "Wednesday": "الأربعاء",
+    "Thursday": "الخميس",
+    "Friday": "الجمعة",
+    "Saturday": "السبت",
+    "Sunday": "الأحد"
+  },
+  "daysShort": {
+    "Monday": "الاثنين",
+    "Tuesday": "الثلاثاء",
+    "Wednesday": "الأربعاء",
+    "Thursday": "الخميس",
+    "Friday": "الجمعة",
+    "Saturday": "السبت",
+    "Sunday": "الأحد"
+  },
+  "plan": {
+    "heading": "خطتك لفصل {{ term }}",
+    "building": "جارٍ إعداد خطتك…",
+    "notReady": "لا يمكننا إعداد خطتك بعد لأن سجلك الدراسي أو جدول هذا الفصل لم يصل. يرجى المحاولة لاحقاً.",
+    "intro": "هذه هي الخطة التي نقترحها لك. هل أنت راضٍ عنها؟ أرسلها إلى مرشدك.",
+    "yourAdvisor": "مرشدك",
+    "freeTime": {
+      "heading": "متى تكون متفرغاً؟",
+      "hint": "اختر أوقات فراغك، أو تجاوز هذه الخطوة وسنعرض لك كل الخيارات.",
+      "gridCaption": "أوقات فراغك كل أسبوع",
+      "day": "اليوم",
+      "periods": {
+        "morning": "صباحاً",
+        "afternoon": "بعد الظهر",
+        "evening": "مساءً"
+      },
+      "presets": {
+        "any": {
+          "title": "أي وقت",
+          "body": "اعرض لي كل الخيارات"
+        },
+        "evenings": {
+          "title": "مساءً فقط",
+          "body": "أعمل خلال النهار. من الاثنين إلى الخميس، 5–8 مساءً"
+        },
+        "mornings": {
+          "title": "صباحاً فقط",
+          "body": "من الاثنين إلى الجمعة، قبل 12 ظهراً"
+        },
+        "daytime": {
+          "title": "خلال النهار",
+          "body": "من الاثنين إلى الجمعة، قبل 5 مساءً"
+        },
+        "custom": {
+          "title": "دعني أختار",
+          "body": "أختار الأيام والأوقات بنفسي"
+        }
+      }
+    },
+    "prefs": {
+      "delivery": "كيف تفضّل أن تدرس؟",
+      "deliveryAny": "في الحرم الجامعي أو عن بُعد",
+      "deliveryCampus": "في الحرم الجامعي فقط",
+      "deliveryOnline": "عن بُعد فقط",
+      "maxCredits": "كم عدد الساعات؟",
+      "noLimit": "أكبر عدد ممكن",
+      "upTo": "حتى {{ n }} ساعة"
+    },
+    "listLabel": "المواد في خطتك",
+    "credits": "{{ n }} ساعات",
+    "onlineAnyTime": "عن بُعد، ادرس في أي وقت",
+    "total": "المجموع: {{ n }} ساعة",
+    "limits": "يمكنك تسجيل من {{ min }} إلى {{ max }} ساعة هذا الفصل.",
+    "empty": "لا توجد شُعب تناسب اختياراتك الآن. جرّب أوقاتاً مختلفة، أو اضغط \"تغيير المواد\".",
+    "fixFirst": "يرجى إصلاح ما يلي قبل الإرسال:",
+    "goodToKnow": "معلومات مهمة:",
+    "graduate": "إذا اتبعت هذه الخطة، يمكنك التخرج في {{ term }}.",
+    "graduateSummer": "مع الدراسة الصيفية: {{ term }}.",
+    "week": "أسبوعك",
+    "noClasses": "لا توجد محاضرات",
+    "onlineList": "عن بُعد (دون وقت محدد):",
+    "send": "أرسلها إلى مرشدي",
+    "change": "تغيير المواد",
+    "doneChanging": "انتهيت من التغيير",
+    "saveLater": "احفظها لوقت لاحق",
+    "useRecommendation": "العودة إلى الخطة المقترحة",
+    "sentHint": "سيصلك إشعار عندما يرد المرشد.",
+    "status": {
+      "Submitted": "أُرسلت إلى {{ advisor }} بانتظار المراجعة.",
+      "AdvisorReviewing": "{{ advisor }} يراجع خطتك الآن.",
+      "Approved": "وافق عليها {{ advisor }}."
+    },
+    "confirm": {
+      "heading": "هل تريد إرسال خطتك إلى {{ advisor }}؟",
+      "intro": "قبل الإرسال، يرجى قراءة كل ملاحظة ووضع علامة على \"فهمت\".",
+      "understand": "فهمت",
+      "send": "أرسل الآن",
+      "cancel": "ليس الآن"
+    },
+    "messages": {
+      "sent": "تم إرسال خطتك إلى {{ advisor }}.",
+      "saved": "تم الحفظ. يمكنك العودة وإرسالها لاحقاً.",
+      "error": "تعذّر إرسال خطتك. يرجى مراجعة الملاحظات أعلاه والمحاولة مرة أخرى."
+    },
+    "editor": {
+      "canTake": "المواد التي يمكنك تسجيلها هذا الفصل",
+      "classTime": "موعد المحاضرة",
+      "full": "مكتملة",
+      "notAvailable": "غير متاحة هذا الفصل",
+      "groups": {
+        "prerequisite": "يجب اجتياز مادة أخرى أولاً ({{ n }})",
+        "notOffered": "غير مطروحة هذا الفصل ({{ n }})",
+        "moreCredits": "تحتاج إلى ساعات أكثر أولاً ({{ n }})",
+        "permission": "تحتاج إلى موافقة القسم ({{ n }})",
+        "other": "أسباب أخرى ({{ n }})"
+      }
+    },
+    "credit1": "ساعة واحدة",
+    "dayJoin": " و"
+  },
+  "planner": {
+    "join": {
+      "or": "أو",
+      "and": "و"
+    },
+    "season": {
+      "Fall": "الخريف",
+      "Spring": "الربيع",
+      "Summer": "الصيف"
+    },
+    "reasons": {
+      "RequiredForDegree": "مطلوبة لشهادتك",
+      "CountsTowardElectives": "تُحتسب ضمن موادك الاختيارية",
+      "UnlocksOtherCourses": "سجّلها قريباً: {{ value }} مواد أخرى تعتمد عليها",
+      "SuggestedForThisSemester": "مقررة لهذه المرحلة من دراستك",
+      "OnlyOfferedIn": "تُطرح في {{ value }} فقط، لذا سجّلها الآن",
+      "TakeWithCorequisite": "تُسجَّل مع {{ courses }}",
+      "WaitingForGrade": "بانتظار درجة: يمكنك تسجيل {{ first }} إذا نجحت في {{ second }}",
+      "PrerequisiteNotMet": "يجب أن تنجح في {{ courses }} أولاً",
+      "PrerequisiteFailed": "يجب أن تنجح في {{ courses }} أولاً بتقدير {{ value }} على الأقل",
+      "PrerequisiteFailedAny": "يجب أن تنجح في {{ courses }} أولاً",
+      "MinimumGradeNotMet": "تحتاج إلى تقدير {{ value }} على الأقل في {{ courses }}",
+      "StandingRequired": "متاحة ابتداءً من {{ value }}",
+      "CreditsRequired": "تحتاج إلى {{ value }} ساعة معتمدة أولاً",
+      "PermissionRequired": "تحتاج إلى موافقة القسم",
+      "NotOfferedThisTerm": "غير مطروحة هذا الفصل (عادةً في {{ value }})",
+      "NoSectionsThisTerm": "لا توجد شُعب مجدولة هذا الفصل",
+      "CorequisiteDoesNotFit": "يجب تسجيلها مع {{ courses }}، لكن لا يمكن جمعهما في أوقات فراغك",
+      "CreditLimitReached": "ستتجاوز الحد المسموح من الساعات ({{ value }})",
+      "ElectiveQuotaMet": "لديك ما يكفي من المواد الاختيارية في خطتك",
+      "NoSectionFits": "لا يوجد موعد يناسب جدولك",
+      "OutsideAvailability": "{{ courses }} خارج الأوقات التي اخترت أنك متفرغ فيها",
+      "ClashesWith": "{{ courses }} في الوقت نفسه",
+      "SectionFull": "{{ courses }} مكتملة",
+      "DeliveryNotPreferred": "ليست بطريقة الدراسة التي تفضّلها",
+      "FewerSeatsLeft": "كان لموعد آخر مقاعد أكثر",
+      "BelowMinimumCredits": "هذا أقل من الحد الأدنى المعتاد وهو {{ value }} ساعة",
+      "NoCreditRule": "لم نتمكن من معرفة الحد المسموح لك من الساعات. يرجى التواصل مع مكتب التسجيل.",
+      "OfferedButNoSections": "بعض المواد ليس لها شُعب هذا الفصل: {{ courses }}",
+      "InProgressPrerequisite": "بعض المواد تعتمد على درجات لم تصلك بعد: {{ courses }}",
+      "GraduationNotReachable": "لم نتمكن من تحديد موعد تخرجك. سيساعدك مرشدك.",
+      "NotInDegreePlan": "{{ courses }} ليست ضمن خطتك الدراسية",
+      "AlreadyTaken": "لقد درست {{ courses }} من قبل",
+      "DuplicateCourse": "اخترت {{ courses }} مرتين",
+      "CorequisiteMissing": "أضف {{ second }} أيضاً: يجب تسجيلها مع {{ first }}",
+      "UnknownSection": "إحدى هذه الشُّعب لم تعد متاحة. يرجى تحديث الصفحة.",
+      "OverCreditLimit": "هذا أكثر من الحد المسموح لك وهو {{ value }} ساعة",
+      "NotEligibleNow": "لا يمكنك تسجيل {{ courses }} بعد",
+      "UnlocksOtherCoursesOne": "سجّلها قريباً: مادة أخرى تعتمد عليها"
+    }
+  },
+  "notifications": {
+    "planSubmitted": "أرسل {{ student }} خطة لفصل {{ term }}."
   }
 }

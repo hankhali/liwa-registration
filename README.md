@@ -2,7 +2,7 @@
 
 A web app that builds each student a valid, graduation-optimised semester plan, lets them adjust it, and sends it to their academic advisor for approval. The full specification is in [docs/BRIEF.md](docs/BRIEF.md). Every assumption that still needs the university's confirmation is listed in [docs/assumptions.md](docs/assumptions.md).
 
-**Status:** milestone **M3** (the planner). See [docs/planner.md](docs/planner.md). See [CHANGELOG.md](CHANGELOG.md).
+**Status:** milestone **M4** (student planning screens). Sign in as a student to see the recommended plan. How plans are built: [docs/planner.md](docs/planner.md). See [CHANGELOG.md](CHANGELOG.md).
 
 | Part | Technology |
 |---|---|
@@ -156,6 +156,9 @@ docs/                   brief, assumptions, planner design, import contract, SSO
 | `GET /api/admin/overview` | Admin only (how much data is loaded, last upload) |
 | `POST /api/admin/imports/{kind}?dryRun=true` | Admin only. Uploads one CSV file (`file` form field). Checks only, unless `dryRun=false`. Kinds: terms, courses, programs, degree-plans, sections, students, transcripts. Format: [docs/import-contract.md](docs/import-contract.md) |
 | `GET /api/students/me/summary` | Student only (own program, credits, GPA, advisor) |
+| `POST /api/students/me/planning` | Student only. Everything the plan screen needs: the recommendation, course titles (English and Arabic), class times and the saved plan. Same optional body as `recommendation` |
+| `POST /api/students/me/plan/check` | Student only. Live check of hand-picked sections (`sectionIds`, optional `availability`): errors that block saving and warnings to confirm |
+| `POST /api/students/me/plan` | Student only. Saves a draft (`submit: false`) or sends to the advisor (`submit: true`, with every warning's key in `acknowledgedWarnings`). Every save is a new version, audited; sending notifies the advisor |
 | `POST /api/students/me/recommendation` | Student only. The planner's recommendation for the current term. Optional body: `availability` (free-time windows per day, e.g. `{"day":"Monday","start":"17:00","end":"20:00"}`), `maxCredits`, `delivery` (`Any`, `OnCampusOnly`, `OnlineOnly`). See [docs/planner.md](docs/planner.md) |
 | `GET /api/advisor/students` | Advisor only (own students) |
 

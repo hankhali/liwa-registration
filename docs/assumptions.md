@@ -75,3 +75,13 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | P5 | **"Without summer"** means no regular summer classes. A summer term is still used for courses offered **only** in summer (such as internships); otherwise a degree that requires one could never be finished. | A strict "never summer" projection would be unreachable for every program with a summer-only internship. | Registrar | Open |
 | P6 | Department permission is **not** assumed for the term being planned: a course that needs it shows "needs permission" until it is recorded. | Avoids recommending a course the student can't register for. | Registrar | Open |
 | P7 | If no credit rule matches a student, the planner recommends nothing and says why, rather than guessing a limit. | Never invent policy numbers. | — | Decided |
+
+## Student planning screens (M4)
+
+| # | Assumption / decision | Why | Confirm with | Status |
+|---|---|---|---|---|
+| S1 | Free-time presets: **Any time**; **Evenings only** (Mon–Thu 5–8 pm, the brief's example); **Mornings only** (Mon–Fri before 12 noon); **Daytime** (Mon–Fri before 5 pm, Friday until 12 noon); **Let me choose** (a grid of morning / afternoon / evening per day; Friday afternoon and evening are never offered). | Big, simple choices for a first-year (brief §9). | Student Affairs | Open |
+| S2 | When checking a hand-picked plan, these **block saving**: classes at the same time, the same course twice, a course the student can't take yet, a missing lab or corequisite, a full class, going over the credit limit. These are **allowed, but need "I understand" when sending**: below the minimum, waiting for a grade, a class outside the times the student said they're free. | Errors would make registration fail; warnings are informed choices. | Registrar | Open |
+| S3 | Once a plan is sent, the student can't change it until the advisor responds (M5 adds approve / reject / propose changes, after which the student can edit and resend). | Avoids the advisor reviewing a moving target. | Academic advisors | Open |
+| S4 | Changing courses shows only courses from the degree plan. Free electives outside the plan aren't offered on this screen yet. | The brief says plans contain only degree-plan courses. | Academic advisors | Open |
+| S5 | **Milestone screenshots are no longer captured** (from M4 onward), at the project owner's request on 2026-11-09. Automated tests and the production-build check still run. | Faster milestones. | — | Decided |

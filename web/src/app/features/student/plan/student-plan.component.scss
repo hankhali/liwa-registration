@@ -1,0 +1,416 @@
+:host {
+  display: block;
+}
+
+.plan {
+  max-width: 960px;
+  border-top: 4px solid var(--liwa-accent);
+}
+
+.loading,
+.status,
+.graduation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.intro {
+  margin: 0 0 1rem;
+  font-size: 1.0625rem;
+}
+
+.free-time {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+
+  legend {
+    font-weight: 600;
+    font-size: 1.0625rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.hint {
+  margin: 0 0 0.75rem;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 0.75rem;
+}
+
+.preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-height: 112px;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--liwa-border);
+  border-radius: var(--liwa-radius);
+  background: var(--liwa-surface);
+  color: var(--liwa-text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  mat-icon {
+    color: var(--liwa-accent);
+  }
+
+  &:hover {
+    border-color: var(--liwa-accent);
+  }
+
+  &.selected {
+    border-color: var(--liwa-primary);
+    background: #f0f0ea;
+    box-shadow: inset 0 0 0 1px var(--liwa-primary);
+  }
+}
+
+.preset-title {
+  font-weight: 700;
+}
+
+.preset-body {
+  color: var(--liwa-text-muted);
+  font-size: 0.875rem;
+}
+
+.grid-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.free-grid {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 560px;
+
+  th,
+  td {
+    padding: 0.375rem 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--liwa-border);
+  }
+
+  th[scope='row'] {
+    text-align: start;
+    font-weight: 600;
+  }
+}
+
+.prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  mat-form-field {
+    width: min(100%, 240px);
+  }
+}
+
+.small {
+  font-size: 0.8125rem;
+}
+
+.empty-plan {
+  padding: 1rem;
+  background: var(--liwa-page);
+  border-radius: var(--liwa-radius);
+}
+
+.courses {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.course {
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--liwa-border);
+  border-radius: var(--liwa-radius);
+}
+
+.course-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.code {
+  font-weight: 700;
+  color: var(--liwa-accent);
+}
+
+.title {
+  flex: 1 1 200px;
+}
+
+.credits {
+  color: var(--liwa-text-muted);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.375rem;
+  font-size: 0.9375rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--liwa-text-muted);
+  }
+}
+
+.why {
+  margin: 0.5rem 0 0;
+  padding-inline-start: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--liwa-text-muted);
+}
+
+.total {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: 1rem 0;
+}
+
+.notice {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+
+  ul {
+    margin: 0.375rem 0 0;
+    padding-inline-start: 1.25rem;
+  }
+}
+
+.notice-error {
+  background: #fcebea;
+  color: var(--liwa-danger);
+}
+
+.notice-warn {
+  background: #fdf1d8;
+  color: #6b4a00;
+}
+
+.graduation {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: #e3f1e7;
+  color: var(--liwa-success);
+  border-radius: 6px;
+  font-weight: 600;
+
+  span span {
+    display: block;
+    font-weight: 400;
+  }
+}
+
+.week-title {
+  margin-top: 1.5rem;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.day {
+  padding: 0.5rem 0.625rem;
+  background: var(--liwa-page);
+  border-radius: 6px;
+
+  h4 {
+    margin: 0 0 0.375rem;
+    font-size: 0.9375rem;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .time {
+    display: block;
+    color: var(--liwa-text-muted);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+
+  button {
+    min-height: 44px;
+  }
+}
+
+.send {
+  min-width: 220px;
+}
+
+.confirm {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--liwa-primary);
+  border-radius: var(--liwa-radius);
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.ack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+
+  li {
+    padding: 0.625rem 0.75rem;
+    background: #fdf1d8;
+    border-radius: 6px;
+  }
+
+  p {
+    margin: 0 0 0.25rem;
+  }
+}
+
+.message {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  background: #e3f1e7;
+  color: var(--liwa-success);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.message-error {
+  background: #fcebea;
+  color: var(--liwa-danger);
+}
+
+.status-sent {
+  padding: 0.875rem 1rem;
+  background: #e3f1e7;
+  color: var(--liwa-success);
+  border-radius: 6px;
+
+  span {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.editor {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--liwa-border);
+}
+
+.candidates {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+
+  li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--liwa-border);
+  }
+}
+
+.cond {
+  margin: 0 0 0.25rem;
+  padding-inline-start: 2.5rem;
+}
+
+.section-pick {
+  width: min(100%, 360px);
+  margin-inline-start: 2.5rem;
+}
+
+.blocked {
+  margin-top: 1rem;
+
+  > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 44px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.blocked-group {
+  margin: 0.25rem 0 0.25rem 1rem;
+
+  summary {
+    min-height: 40px;
+    cursor: pointer;
+  }
+
+  ul {
+    margin: 0.25rem 0 0.5rem;
+    padding-inline-start: 1.25rem;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 700px) {
+  // Phones: the week becomes a simple list ("Tue — ITC201, 5:00–6:15 pm"), not a grid.
+  .week {
+    grid-template-columns: 1fr;
+  }
+
+  .day.empty {
+    display: none;
+  }
+
+  .day ul li {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .day .time {
+    display: inline;
+  }
+
+  .section-pick,
+  .cond {
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+  }
+}

@@ -13,8 +13,61 @@ namespace Liwa.Api.Controllers;
 [ApiController]
 [Route("api/students/me")]
 [Authorize(Policy = Policies.Student)]
-public sealed class StudentController(IAcademicQueries queries, IRecommendationService recommendations, ICurrentUser user) : ControllerBase
+public sealed class StudentController(IAcademicQueries queries, IRecommendationService recommendations, IStudentPlanService plans, ICurrentUser user) : ControllerBase
 {
+    public sealed record CheckRequest(IReadOnlyList<Guid> SectionIds, IReadOnlyList<TimeWindow>? Availability);
+
+    /// <summary>The planning screen: recommendation plus course titles, class times and the saved plan.</summary>
+    [HttpPost("planning")]
+    [ProducesResponseType<PlanningView>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Planning([FromBody(EmptyBodyBehavior = Microsoft.AspNetCore.Mvc.ModelBinding.EmptyBodyBehavior.Allow)] RecommendationRequest? request, CancellationToken ct)
+    {
+        if (Validate(request) is { } problem) return problem;
+        var view = await plans.GetViewAsync(user.UserId, ToAvailability(request?.Availability),
+            new PlannerPreferences(request?.MaxCredits, request?.Delivery ?? DeliveryPreference.Any), ct);
+        return view is null ? NotLoaded() : Ok(view);
+    }
+
+    /// <summary>Live check of a hand-picked plan (clashes, credit limits, prerequisites, corequisites).</summary>
+    [HttpPost("plan/check")]
+    [ProducesResponseType<PlanCheckResult>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Check(CheckRequest request, CancellationToken ct)
+    {
+        if (request.SectionIds.Count > 15) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "That's too many classes for one term.");
+        var check = await plans.CheckAsync(user.UserId, request.SectionIds, ToAvailability(request.Availability), ct);
+        return check is null ? NotLoaded() : Ok(check);
+    }
+
+    /// <summary>Saves the plan as a draft, or sends it to the advisor (Submit = true; warnings must be confirmed).</summary>
+    [HttpPost("plan")]
+    [ProducesResponseType<SavePlanResult>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Save(SavePlanRequest request, CancellationToken ct)
+    {
+        if (request.SectionIds.Count > 15) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "That's too many classes for one term.");
+        var result = await plans.SaveAsync(user.UserId, request, ct);
+        return result.Outcome switch
+        {
+            SaveOutcome.Saved => Ok(result),
+            SaveOutcome.Invalid => BadRequest(result),
+            SaveOutcome.NotFound => NotLoaded(),
+            _ => Conflict(result),
+        };
+    }
+
+    private ObjectResult? Validate(RecommendationRequest? request)
+    {
+        if (request?.MaxCredits is < 0 or > 30)
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Maximum credits must be between 0 and 30.");
+        if (request?.Availability?.Any(w => w.End <= w.Start) == true)
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Each free-time window must end after it starts.");
+        return null;
+    }
+
+    private static Availability? ToAvailability(IReadOnlyList<TimeWindow>? windows) => windows is { Count: > 0 } ? new Availability(windows) : null;
+
+    private ObjectResult NotLoaded() =>
+        Problem(statusCode: StatusCodes.Status404NotFound, title: "We can't build a plan yet: your study record or this term's timetable hasn't been loaded.");
+
     /// <summary>Optional planning preferences. No availability means "show everything".</summary>
     public sealed record RecommendationRequest(IReadOnlyList<TimeWindow>? Availability, int? MaxCredits, DeliveryPreference? Delivery);
 
