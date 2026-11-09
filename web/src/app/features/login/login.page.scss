@@ -94,6 +94,11 @@
   background: #fcebea;
   border-radius: 4px;
   font-weight: 600;
+
+  // Long messages must not squeeze the icon.
+  mat-icon {
+    flex: none;
+  }
 }
 
 .submit {
@@ -104,6 +109,33 @@
   mat-spinner {
     margin: 0 auto;
   }
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  margin: 0;
+}
+
+.sso-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.local-toggle {
+  display: block;
+  min-height: 44px;
+  margin: 1rem auto 0;
+  text-decoration: underline;
+}
+
+form.secondary {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--liwa-border);
 }
 
 .help {

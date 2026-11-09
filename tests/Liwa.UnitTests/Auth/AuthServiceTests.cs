@@ -103,6 +103,12 @@ public sealed class AuthServiceTests
         public Task<User?> FindByIdAsync(Guid id, CancellationToken ct) =>
             Task.FromResult(Items.SingleOrDefault(u => u.Id == id));
 
+        public Task<User?> FindByExternalSubjectAsync(string subject, CancellationToken ct) =>
+            Task.FromResult(Items.SingleOrDefault(u => u.ExternalSubject == subject));
+
+        public Task<User?> FindByEmailAsync(string email, CancellationToken ct) =>
+            Task.FromResult(Items.SingleOrDefault(u => u.Email == email));
+
         public Task SaveChangesAsync(CancellationToken ct) => Task.CompletedTask;
     }
 

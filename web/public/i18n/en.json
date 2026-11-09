@@ -38,6 +38,20 @@
       "invalid": "That username and password don't match. Check them and try again.",
       "throttled": "Too many tries. Please wait one minute, then try again.",
       "unavailable": "We can't reach the service right now. Please try again in a moment."
+    },
+    "sso": {
+      "button": "Sign in with your Liwa account",
+      "hint": "Use the same account you use for Blackboard and your university email.",
+      "useUsername": "Sign in with a username instead",
+      "redirecting": "Taking you to the Liwa sign-in page",
+      "completing": "Signing you in…",
+      "errors": {
+        "failed": "Signing in with your Liwa account didn't work. Please try again.",
+        "not_registered": "We couldn't find your Liwa account in Smart Registration. Please contact the Registrar's Office.",
+        "inactive": "Your Smart Registration account is switched off. Please contact the Registrar's Office.",
+        "expired": "That sign-in took too long. Please try again.",
+        "unavailable": "Liwa sign-in isn't available right now. Please try again later."
+      }
     }
   },
   "student": {

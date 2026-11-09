@@ -98,6 +98,20 @@ Docker settings come from `.env`, which is git-ignored. [.env.example](.env.exam
 | `DemoSeed:Enabled` | false (true in Development) | Creates the demo accounts |
 | `Swagger:Enabled` | false (true in Development) | Swagger UI at `/api/swagger` |
 | `Database:MigrateOnStartup` | false (true in Development and in compose) | Applies EF Core migrations on start |
+| `Sso:Enabled` (`SSO_ENABLED`) | false | Shows "Sign in with your Liwa account" (Microsoft Entra ID, the same account as Blackboard). See [docs/sso.md](docs/sso.md) |
+| `Sso:TenantId`, `Sso:ClientId`, `Sso:ClientSecret` | empty | From the university's Entra app registration. Required when SSO is on; the API refuses to start without them |
+| `Sso:LocalSignInEnabled` (`SSO_LOCAL_SIGNIN_ENABLED`) | true | Keep username/password sign-in next to SSO (demo accounts, emergency admin access) |
+
+### Sign in with your Liwa account
+
+This is ready to use, but stays off until university IT registers the app. [docs/sso.md](docs/sso.md) is the step-by-step guide to hand to IT. To try it locally once you have the values:
+
+```powershell
+$env:SSO_ENABLED='true'; $env:SSO_TENANT_ID='<tenant id>'; $env:SSO_CLIENT_ID='<client id>'; $env:SSO_CLIENT_SECRET='<secret>'
+docker compose up -d api
+```
+
+The redirect URI to register for the local Docker stack is `http://localhost:8088/api/auth/sso/callback`.
 
 ## Project layout
 
@@ -121,6 +135,10 @@ docs/                   brief, assumptions, screenshots (later: planner, SSO, Pe
 |---|---|
 | `POST /api/auth/login` | Anyone (rate-limited) |
 | `GET /api/auth/me` | Signed in |
+| `GET /api/auth/sso/config` | Anyone (which sign-in options to show) |
+| `GET /api/auth/sso/start` | Anyone (sends the browser to Microsoft sign-in; 404 while SSO is off) |
+| `GET /api/auth/sso/callback`, `GET /api/auth/sso/complete` | Microsoft's redirect back; ends with a single-use code |
+| `POST /api/auth/sso/exchange` | Anyone (rate-limited; trades the single-use code for a session) |
 | `GET /api/health` | Anyone (liveness) |
 | `GET /api/health/ready` | Anyone (readiness: database reachable) |
 | `GET /api/admin/system` | Admin only (version, environment, database status) |

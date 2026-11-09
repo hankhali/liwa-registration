@@ -15,11 +15,43 @@
     <h1 id="login-heading">{{ 'login.heading' | transloco }}</h1>
     <p class="liwa-muted intro">{{ 'login.intro' | transloco }}</p>
 
-    @if (reason() === 'expired' && !error()) {
+    @if (reason() === 'expired' && !error() && !ssoError()) {
       <p class="notice" role="status">{{ 'login.expired' | transloco }}</p>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (ssoError(); as e) {
+      <p class="error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        {{ 'login.sso.errors.' + e | transloco }}
+      </p>
+    }
+
+    @if (completing() || !ssoConfig()) {
+      <!-- Finishing a Microsoft sign-in, or checking which sign-in options exist. -->
+      <p class="waiting" role="status">
+        <mat-spinner diameter="24" aria-hidden="true" />
+        {{ (completing() ? 'login.sso.completing' : 'common.loading') | transloco }}
+      </p>
+    } @else {
+      @if (ssoConfig()!.enabled) {
+        <button mat-flat-button class="submit" type="button" (click)="startSso()" [disabled]="redirecting()">
+          @if (redirecting()) {
+            <mat-spinner diameter="20" [attr.aria-label]="'login.sso.redirecting' | transloco" />
+          } @else {
+            {{ 'login.sso.button' | transloco }}
+          }
+        </button>
+        <p class="liwa-muted sso-hint">{{ 'login.sso.hint' | transloco }}</p>
+
+        @if (ssoConfig()!.localSignInEnabled && !showLocal()) {
+          <button mat-button type="button" class="local-toggle" (click)="showLocal.set(true)">
+            {{ 'login.sso.useUsername' | transloco }}
+          </button>
+        }
+      }
+
+      @if (localVisible()) {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate [class.secondary]="ssoConfig()!.enabled">
       <mat-form-field appearance="outline" class="field" hideRequiredMarker subscriptSizing="dynamic">
         <mat-label>{{ 'login.username' | transloco }}</mat-label>
         <input #usernameInput matInput formControlName="username" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" required />
@@ -64,6 +96,8 @@
         }
       </button>
     </form>
+      }
+    }
 
     <p class="help liwa-muted">{{ 'login.help' | transloco }}</p>
   </main>

@@ -57,6 +57,18 @@ public sealed class User
         PasswordHash = passwordHash;
     }
 
+    /// <summary>
+    /// Ties this account to an identity-provider subject on first SSO sign-in. Once linked, it is never
+    /// silently re-pointed to another subject (an email address can be reassigned to a different person).
+    /// </summary>
+    public void LinkExternalSubject(string subject)
+    {
+        if (string.IsNullOrWhiteSpace(subject)) throw new ArgumentException("Subject is required.", nameof(subject));
+        if (ExternalSubject is not null && ExternalSubject != subject)
+            throw new InvalidOperationException("This account is already linked to a different identity.");
+        ExternalSubject = subject;
+    }
+
     public void RecordSignIn(DateTimeOffset at) => LastSignInAt = at;
 
     public void Deactivate() => IsActive = false;

@@ -4,6 +4,14 @@ All notable changes are listed here, newest first, grouped by milestone.
 
 ## Unreleased
 
+### Added
+- **Sign in with your Liwa account** (Microsoft Entra ID, the same account as Blackboard and university email), using OpenID Connect with the code flow, PKCE, the account picker and only the `openid profile email` scopes. Microsoft's tokens are never stored, and our session token is handed to the app through a single-use 60-second code, never in a URL. Only people who already have a Smart Registration account get in: matched by university email on first sign-in, then linked permanently to their Entra object ID, and never re-linked to a different person. Plain-language messages (English and Arabic) for "not found", "switched off", "took too long" and "not available right now". If Microsoft can't be reached, people get a message instead of an error page. **Off by default** until university IT supplies the tenant ID, client ID and secret; the step-by-step guide for IT is in `docs/sso.md`.
+- Username/password sign-in can be kept next to SSO (behind "Sign in with a username instead") or switched off (`SSO_LOCAL_SIGNIN_ENABLED`).
+- Tests: 12 new unit tests (account matching and linking, single-use codes), 9 new integration tests (config, redirect to Microsoft with PKCE, unreachable provider, code exchange, local sign-in switch), 5 new frontend tests.
+
+### Fixed
+- nginx now forwards the original `Host` header with its port, and keeps a load balancer's `X-Forwarded-Proto`, so redirect addresses built by the API are correct.
+
 ### Changed
 - **Re-branded to match Liwa University's real identity:** charcoal `#272727` and sage `#b5b59e` (from the official logo) replace indigo and gold. A deep olive `#6b6a52` is the accent and focus colour on light backgrounds. Material palettes were regenerated from the new colours.
 - **Official logo:** the sign-in page shows the full bilingual lockup on a charcoal band (as on Liwa's Blackboard sign-in), and the top bar shows the shield mark. The favicon and touch icon are now the shield on charcoal. The placeholder `logo.svg` was removed.

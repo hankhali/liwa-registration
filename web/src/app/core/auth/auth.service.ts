@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -8,6 +9,15 @@ const STORAGE_KEY = 'liwa.session';
 
 export type SignInError = 'invalid' | 'throttled' | 'unavailable';
 
+/** Which sign-in options the server offers. */
+export interface SsoConfig {
+  enabled: boolean;
+  localSignInEnabled: boolean;
+}
+
+export const SSO_START_URL = '/api/auth/sso/start';
+const RETURN_URL_KEY = 'liwa.returnUrl';
+
 /**
  * The single source of truth for who is signed in. Components read signals; only this service
  * touches storage. When SSO arrives, a second sign-in method is added here and nothing else changes.
@@ -16,6 +26,7 @@ export type SignInError = 'invalid' | 'throttled' | 'unavailable';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   private expiryTimer: ReturnType<typeof setTimeout> | undefined;
 
   private readonly session = signal<Session | null>(null);
@@ -51,6 +62,48 @@ export class AuthService {
     } catch (e) {
       const status = e instanceof HttpErrorResponse ? e.status : 0;
       return { ok: false, error: status === 401 || status === 400 ? 'invalid' : status === 429 ? 'throttled' : 'unavailable' };
+    }
+  }
+
+  /** Sign-in options. If the server can't be reached, fall back to the username form. */
+  async ssoConfig(): Promise<SsoConfig> {
+    try {
+      return await firstValueFrom(this.http.get<SsoConfig>('/api/auth/sso/config'));
+    } catch {
+      return { enabled: false, localSignInEnabled: true };
+    }
+  }
+
+  /** Leaves the app for the university Microsoft sign-in page. Remembers where to return afterwards. */
+  startSso(returnUrl: string | null): void {
+    try {
+      if (returnUrl) sessionStorage.setItem(RETURN_URL_KEY, returnUrl);
+      else sessionStorage.removeItem(RETURN_URL_KEY);
+    } catch {
+      /* ignore: we'll land on the home page */
+    }
+    this.document.location.assign(SSO_START_URL);
+  }
+
+  /** Redeems the one-time code the server returned after Microsoft sign-in. */
+  async completeSso(code: string): Promise<{ ok: true; returnUrl: string | null } | { ok: false; error: 'expired' | 'unavailable' }> {
+    try {
+      const res = await firstValueFrom(this.http.post<SignInResponse>('/api/auth/sso/exchange', { code }));
+      this.start({ token: res.accessToken, expiresAt: Date.parse(res.expiresAt), user: res.user });
+      return { ok: true, returnUrl: this.takeReturnUrl() };
+    } catch (e) {
+      const status = e instanceof HttpErrorResponse ? e.status : 0;
+      return { ok: false, error: status === 400 ? 'expired' : 'unavailable' };
+    }
+  }
+
+  private takeReturnUrl(): string | null {
+    try {
+      const url = sessionStorage.getItem(RETURN_URL_KEY);
+      sessionStorage.removeItem(RETURN_URL_KEY);
+      return url;
+    } catch {
+      return null;
     }
   }
 

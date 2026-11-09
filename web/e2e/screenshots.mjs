@@ -38,11 +38,26 @@ const screens = [
     user: null,
     path: '/login',
     act: async (page) => {
+      await openUsernameForm(page);
       await page.fill('input[formcontrolname="username"]', 'student.new');
       await page.fill('input[formcontrolname="password"]', 'not-the-password');
       await page.click('button[type="submit"]');
       await page.waitForSelector('[role="alert"]');
     },
+  },
+  {
+    id: 'login-username',
+    title: 'Sign in — username form opened (only differs from "Sign in" when Liwa sign-in is on)',
+    user: null,
+    path: '/login',
+    act: openUsernameForm,
+  },
+  {
+    id: 'login-sso-not-registered',
+    title: 'Sign in — Liwa account not found in Smart Registration',
+    user: null,
+    path: '/login?sso=not_registered',
+    waitFor: '[role="alert"]',
   },
   { id: 'student-home', title: 'Student home', user: 'student.new', path: '/student' },
   { id: 'advisor-home', title: 'Advisor home', user: 'advisor.it', path: '/advisor' },
@@ -71,8 +86,16 @@ const screens = [
   },
 ];
 
+/** With "Sign in with your Liwa account" on, the username form sits behind a link; open it first. */
+async function openUsernameForm(page) {
+  await page.waitForSelector('.local-toggle, input[formcontrolname="username"]');
+  if (await page.$('.local-toggle')) await page.click('.local-toggle');
+  await page.waitForSelector('input[formcontrolname="username"]');
+}
+
 async function signIn(page, username, lang) {
   await page.goto(`${base}/login?lang=${lang}`);
+  await openUsernameForm(page);
   await page.fill('input[formcontrolname="username"]', username);
   await page.fill('input[formcontrolname="password"]', password);
   await Promise.all([page.waitForURL((u) => !u.pathname.startsWith('/login')), page.click('button[type="submit"]')]);
@@ -89,7 +112,7 @@ try {
         const context = await browser.newContext({ viewport, locale: lang === 'ar' ? 'ar-AE' : 'en-AE', deviceScaleFactor: 1 });
         const page = await context.newPage();
         if (screen.user) await signIn(page, screen.user, lang);
-        await page.goto(`${base}${screen.path}?lang=${lang}`);
+        await page.goto(`${base}${screen.path}${screen.path.includes("?") ? "&" : "?"}lang=${lang}`);
         await page.waitForLoadState('networkidle');
         if (screen.waitFor) await page.waitForSelector(screen.waitFor);
         if (screen.act) await screen.act(page);

@@ -101,4 +101,45 @@ describe('AuthService', () => {
       vi.useRealTimers();
     }
   });
+  describe('Sign in with your Liwa account', () => {
+    afterEach(() => sessionStorage.clear());
+
+    it('reads the sign-in options', async () => {
+      const { auth, http } = setup();
+      const pending = auth.ssoConfig();
+      http.expectOne('/api/auth/sso/config').flush({ enabled: true, localSignInEnabled: false });
+      expect(await pending).toEqual({ enabled: true, localSignInEnabled: false });
+    });
+
+    it('falls back to the username form when the options cannot be loaded', async () => {
+      const { auth, http } = setup();
+      const pending = auth.ssoConfig();
+      http.expectOne('/api/auth/sso/config').flush({}, { status: 503, statusText: 'x' });
+      expect(await pending).toEqual({ enabled: false, localSignInEnabled: true });
+    });
+
+    it('redeems the one-time code, starts the session and returns the remembered page once', async () => {
+      const { auth, http } = setup();
+      sessionStorage.setItem('liwa.returnUrl', '/student');
+      const pending = auth.completeSso('one-time-code');
+      const req = http.expectOne('/api/auth/sso/exchange');
+      expect(req.request.body).toEqual({ code: 'one-time-code' });
+      req.flush({ accessToken: 'tok', expiresAt: new Date(Date.now() + 3_600_000).toISOString(), user });
+
+      expect(await pending).toEqual({ ok: true, returnUrl: '/student' });
+      expect(auth.user()?.username).toBe('student.new');
+      expect(sessionStorage.getItem('liwa.returnUrl')).toBeNull();
+    });
+
+    it.each([
+      [400, 'expired'],
+      [503, 'unavailable'],
+    ])('maps a %s code exchange to "%s" and stays signed out', async (status, expected) => {
+      const { auth, http } = setup();
+      const pending = auth.completeSso('used-code');
+      http.expectOne('/api/auth/sso/exchange').flush({}, { status, statusText: 'x' });
+      expect(await pending).toEqual({ ok: false, error: expected });
+      expect(auth.isSignedIn()).toBe(false);
+    });
+  });
 });

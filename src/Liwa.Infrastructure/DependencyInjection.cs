@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<ITokenIssuer, JwtTokenIssuer>();
+        services.AddSingleton<ISignInHandoff, InMemorySignInHandoff>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<DemoSeeder>();
 

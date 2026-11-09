@@ -27,7 +27,10 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | B5 | Passwords use PBKDF2-HMAC-SHA256 with **600,000 iterations** (the OWASP 2023 minimum). | Configurable. Each hash records its own iteration count, so the number can be raised later. | — | Decided |
 | B6 | Swagger is **off** outside Development. When it is off, `/api/swagger` gets the same "sign-in required" response as any unknown API path. | Don't advertise the API surface in production. | — | Decided |
 | B7 | Demo accounts exist only when `DemoSeed:Enabled` is true. It defaults to false, and `.env.example` sets it to true for local Docker only, with a warning comment. | Required by the brief. | — | Decided |
-| B8 | Future SSO is Microsoft Entra ID, with PeopleSoft supplying the student ID (documented in `docs/sso.md` in M8). | From the brief. | University IT | Open |
+| B8 | Sign-in uses the **university Microsoft account (Entra ID)**, the same one behind "LU-AZURE" on Liwa's Blackboard sign-in page. It's built and switched off until IT registers the app ([docs/sso.md](sso.md)). The project owner chose this on 2026-11-09 over launching from inside Blackboard (LTI 1.3), which can still be added later. | Students use one account everywhere; we never handle their passwords. | University IT | Open |
+| B9 | On first SSO sign-in, people are matched to their Smart Registration account by **university email** (the `email` claim, then `preferred_username`). After that, the account is linked permanently to their Entra object ID and is never re-linked to another person. People without an account are refused with a plain message pointing to the Registrar. | Accounts and roles come from registrar data, not from Entra. | Registrar + IT (which email format accounts carry) | Open |
+| B10 | Username/password sign-in stays available next to SSO (`SSO_LOCAL_SIGNIN_ENABLED=true`) for demo accounts and emergency admin access. It can be switched off entirely. | Keeps a way in if Entra is unavailable. | University IT (security) | Open |
+| B11 | Single-use SSO handoff codes are kept in the API's memory (60 seconds). That's fine for one API instance; several instances need sticky sessions or a shared store. | Simplest safe option for the current single-server deployment. | University IT (hosting) | Open |
 
 ## Users and roles
 

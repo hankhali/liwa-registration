@@ -36,6 +36,12 @@ services:
       DemoSeed__Enabled: ${DEMO_SEED_ENABLED:-false}
       Swagger__Enabled: ${SWAGGER_ENABLED:-false}
       RateLimiting__SignInPermitsPerMinute: ${SIGNIN_PERMITS_PER_MINUTE:-10}
+      # Sign in with your Liwa account (Microsoft Entra ID). See docs/sso.md.
+      Sso__Enabled: ${SSO_ENABLED:-false}
+      Sso__TenantId: ${SSO_TENANT_ID:-}
+      Sso__ClientId: ${SSO_CLIENT_ID:-}
+      Sso__ClientSecret: ${SSO_CLIENT_SECRET:-}
+      Sso__LocalSignInEnabled: ${SSO_LOCAL_SIGNIN_ENABLED:-true}
     # Not published to the host: reachable only through the web container's /api proxy.
     expose:
       - "8080"

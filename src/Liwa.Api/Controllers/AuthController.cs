@@ -5,12 +5,13 @@ using Liwa.Application.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace Liwa.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(IAuthService auth, ICurrentUser currentUser) : ControllerBase
+public sealed class AuthController(IAuthService auth, ICurrentUser currentUser, IOptions<SsoOptions> sso) : ControllerBase
 {
     public sealed record SignInRequest([Required, MaxLength(100)] string Username, [Required, MaxLength(200)] string Password);
 
@@ -22,6 +23,9 @@ public sealed class AuthController(IAuthService auth, ICurrentUser currentUser) 
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(SignInRequest request, CancellationToken ct)
     {
+        // With SSO on, username/password can be switched off entirely (Sso:LocalSignInEnabled=false).
+        if (!sso.Value.LocalSignInAllowed) return NotFound();
+
         var result = await auth.SignInWithPasswordAsync(request.Username, request.Password, ct);
         if (!result.Succeeded)
             return Problem(statusCode: StatusCodes.Status401Unauthorized, title: "Username or password is incorrect.");
