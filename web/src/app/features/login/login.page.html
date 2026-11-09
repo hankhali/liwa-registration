@@ -20,7 +20,7 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <mat-form-field appearance="outline" class="field">
+      <mat-form-field appearance="outline" class="field" hideRequiredMarker subscriptSizing="dynamic">
         <mat-label>{{ 'login.username' | transloco }}</mat-label>
         <input #usernameInput matInput formControlName="username" autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" required />
         <mat-hint>{{ 'login.usernameHint' | transloco }}</mat-hint>
@@ -29,7 +29,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="field">
+      <mat-form-field appearance="outline" class="field" hideRequiredMarker>
         <mat-label>{{ 'login.password' | transloco }}</mat-label>
         <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" dir="ltr" required />
         <button

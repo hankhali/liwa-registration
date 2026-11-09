@@ -24,11 +24,32 @@ interface SystemStatus {
     <div class="grid">
       <section class="liwa-card" aria-labelledby="status-heading" [attr.aria-busy]="status.isLoading()">
         <h2 id="status-heading" class="card-title">
-          <mat-icon aria-hidden="true">monitor_heart</mat-icon>
+          <mat-icon aria-hidden="true">verified</mat-icon>
           {{ 'admin.home.systemStatus' | transloco }}
         </h2>
         @if (status.hasValue()) {
           @let s = status.value();
+          @let dbOk = s.database === 'Healthy';
+          <!-- One plain-language answer first; technical details only for IT, folded away. -->
+          @if (dbOk) {
+            <p class="summary summary-ok" role="status">
+              <mat-icon aria-hidden="true">check_circle</mat-icon>
+              {{ 'admin.home.allGood' | transloco }}
+            </p>
+          } @else {
+            <p class="summary summary-bad" role="alert">
+              <mat-icon aria-hidden="true">error</mat-icon>
+              {{ 'admin.home.dbDown' | transloco }}
+            </p>
+          }
+          @if (s.demoSeedEnabled) {
+            <p class="summary summary-warn">
+              <mat-icon aria-hidden="true">warning</mat-icon>
+              {{ 'admin.home.demoWarning' | transloco }}
+            </p>
+          }
+          <details class="details">
+            <summary><mat-icon aria-hidden="true">expand_more</mat-icon>{{ 'admin.home.details' | transloco }}</summary>
           <dl class="status-list">
             <div>
               <dt>{{ 'admin.home.database' | transloco }}</dt>
@@ -55,6 +76,7 @@ interface SystemStatus {
               </dd>
             </div>
           </dl>
+          </details>
         } @else if (status.error()) {
           <p class="error" role="alert">{{ 'admin.home.statusError' | transloco }}</p>
         } @else {

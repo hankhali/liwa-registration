@@ -1,7 +1,7 @@
 {
   "base": "http://127.0.0.1:8088",
   "milestone": "M1",
-  "generatedAt": "2026-11-09T06:36:54.054Z",
+  "generatedAt": "2026-11-09T06:54:43.049Z",
   "results": [
     {
       "screen": "login",
@@ -157,6 +157,38 @@
     },
     {
       "screen": "admin-home",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
       "lang": "ar",
       "viewport": "phone",
       "dir": "rtl",

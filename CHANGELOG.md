@@ -7,6 +7,7 @@ All notable changes are listed here, newest first, grouped by milestone.
 ### Changed
 - **Re-branded to match Liwa University's real identity:** charcoal `#272727` and sage `#b5b59e` (from the official logo) replace indigo and gold. A deep olive `#6b6a52` is the accent and focus colour on light backgrounds. Material palettes were regenerated from the new colours.
 - **Official logo:** the sign-in page shows the full bilingual lockup on a charcoal band (as on Liwa's Blackboard sign-in), and the top bar shows the shield mark. The favicon and touch icon are now the shield on charcoal. The placeholder `logo.svg` was removed.
+- **Plain language for non-technical users (all roles):** the admin "System status" card is now "Is everything working?", with one plain sentence ("Everything is working normally", or what to do if not) and a warning when practice accounts are on. Database, environment and version are folded under "Details for IT". Admin areas are reworded ("Courses and class times", "How many credits students can take", "Upload and download data (spreadsheets)"). Sign-in fields no longer show asterisks, the username hint explains what to type, and the "too many tries" message is friendlier. English and Arabic.
 - The Docker sign-in rate limit can now be set with `SIGNIN_PERMITS_PER_MINUTE` (default 10), so screenshots can be taken against the real production build.
 
 ### Fixed

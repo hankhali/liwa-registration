@@ -46,7 +46,18 @@ const screens = [
   },
   { id: 'student-home', title: 'Student home', user: 'student.new', path: '/student' },
   { id: 'advisor-home', title: 'Advisor home', user: 'advisor.it', path: '/advisor' },
-  { id: 'admin-home', title: 'Admin home', user: 'admin', path: '/admin', waitFor: 'dl.status-list' },
+  { id: 'admin-home', title: 'Admin home', user: 'admin', path: '/admin', waitFor: 'p.summary' },
+  {
+    id: 'admin-details',
+    title: 'Admin home — "Details for IT" opened',
+    user: 'admin',
+    path: '/admin',
+    waitFor: 'p.summary',
+    act: async (page) => {
+      await page.click('details.details > summary');
+      await page.waitForSelector('dl.status-list', { state: 'visible' });
+    },
+  },
   { id: 'forbidden', title: 'Not allowed (student opens an admin page)', user: 'student.new', path: '/admin' },
   {
     id: 'user-menu',

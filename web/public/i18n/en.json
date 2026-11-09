@@ -24,7 +24,7 @@
     "heading": "Sign in",
     "intro": "Plan your semester and send it to your advisor in a few minutes.",
     "username": "Username",
-    "usernameHint": "For example: student.new",
+    "usernameHint": "The username you were given, for example student.new",
     "usernameRequired": "Enter your username.",
     "password": "Password",
     "passwordRequired": "Enter your password.",
@@ -36,7 +36,7 @@
     "help": "Trouble signing in? Contact the IT Service Desk.",
     "errors": {
       "invalid": "That username and password don't match. Check them and try again.",
-      "throttled": "Too many attempts. Wait a minute, then try again.",
+      "throttled": "Too many tries. Please wait one minute, then try again.",
       "unavailable": "We can't reach the service right now. Please try again in a moment."
     }
   },
@@ -78,26 +78,30 @@
     "home": {
       "title": "Administration",
       "heading": "Administration",
-      "subtitle": "Manage terms, courses, degree plans and data.",
-      "systemStatus": "System status",
+      "subtitle": "Manage semesters, courses, study plans and student information.",
+      "systemStatus": "Is everything working?",
       "database": "Database",
       "healthy": "Working",
       "unhealthy": "Not reachable",
       "environment": "Environment",
       "version": "Version",
-      "demoAccounts": "Demo accounts",
-      "demoOn": "On (turn off for real use)",
+      "demoAccounts": "Practice accounts",
+      "demoOn": "On",
       "demoOff": "Off",
-      "statusError": "Couldn't load the system status.",
+      "statusError": "We couldn't check the system right now. Refresh the page or try again later.",
       "manage": "What you'll manage here",
-      "manageComingSoon": "These tools arrive in a later release.",
+      "manageComingSoon": "These tools are coming soon.",
       "areas": {
-        "terms": "Terms and teaching days",
-        "catalog": "Course catalog and sections",
-        "degreePlans": "Degree plans",
-        "creditPolicy": "Credit limits",
-        "imports": "Data import and export"
-      }
+        "terms": "Semesters and teaching days",
+        "catalog": "Courses and class times",
+        "degreePlans": "Study plans for each major",
+        "creditPolicy": "How many credits students can take",
+        "imports": "Upload and download data (spreadsheets)"
+      },
+      "allGood": "Everything is working normally.",
+      "dbDown": "The system can't load or save information right now. Please contact the IT Service Desk.",
+      "demoWarning": "Practice accounts are switched on. Ask IT to switch them off before students start using the system.",
+      "details": "Details for IT"
     }
   },
   "errors": {
