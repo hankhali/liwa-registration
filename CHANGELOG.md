@@ -2,7 +2,22 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
-## Unreleased
+## M2: data model, database, demo data, CSV import (2026-11-09)
+
+### Added
+- **Data model:** terms (teaching days per term, a Friday-afternoon switch, one current term); courses (credits 0–6, Arabic titles, prerequisite rules, usual seasons); sections with weekly meeting times; programs; degree plans per catalog year (required groups, choose-N-credits groups, free electives); student records (transcript, in-progress courses, transfer credits, advisor, registrar status); a configurable credit policy; versioned plans; an audit log; notifications. Migration `AcademicModel`.
+- **UAE calendar rules**, checked on every section: no Sunday classes, no Sunday/Tuesday/Thursday pattern, only the term's teaching days, and nothing after 12:00 on Friday unless the term allows it.
+- **Prerequisite rules as text** (`CSC101 AND (MTH102 OR MTH110:C)`, `COREQ(…)`, `STANDING(…)`, `CREDITS(…)`, `PERMISSION`), with a reader that explains each mistake and where it is.
+- **GPA, credits and standing** from a transcript. The latest or highest attempt counts; transfer and pass credit count toward the degree but not the GPA. **Credit limits** depend on season, standing, GPA band and probation, and are seeded from `appsettings.json`. They cover the brief's 3.50 boundary (21 credits) and the graduating-senior exemption from the minimum.
+- **CSV import** for terms, courses, programs, degree plans, sections, students and transcripts. Dry run by default, all-or-nothing, safe to repeat, with plain-language problems by line and column; saved imports go to the audit log. The contract for the Registrar and IT is in `docs/import-contract.md`. Admin endpoint: `POST /api/admin/imports/{kind}`.
+- **Demo data**, loaded through the real import: three programs at 120 credits each (including 1-, 2- and 4-credit courses), 97 courses, a Spring 2027 timetable of 169 classes (daytime, Monday/Wednesday/Friday mornings, evenings, online), and 10 students, including the five stories from the brief. The generator and its self-checks are in `scripts/generate-demo-data.py`.
+- **Home pages show real data, in plain words.** Students see their program, a progress bar ("36 of 120 credits done"), year of study, GPA and advisor, with a supportive note when on probation. Advisors see their students with credits, GPA and an "On probation" tag. Admins see what data is loaded and when it was last uploaded (in 12-hour time).
+- Tests: 116 .NET unit, 50 integration, 30 frontend. Screenshots in `docs/screenshots/M2/`.
+
+### Changed
+- API enums are sent as names (for example `"Probation"`), not numbers.
+
+## Between M1 and M2: Liwa sign-in, branding, plain language (2026-11-09)
 
 ### Added
 - **Sign in with your Liwa account** (Microsoft Entra ID, the same account as Blackboard and university email), using OpenID Connect with the code flow, PKCE, the account picker and only the `openid profile email` scopes. Microsoft's tokens are never stored, and our session token is handed to the app through a single-use 60-second code, never in a URL. Only people who already have a Smart Registration account get in: matched by university email on first sign-in, then linked permanently to their Entra object ID, and never re-linked to a different person. Plain-language messages (English and Arabic) for "not found", "switched off", "took too long" and "not available right now". If Microsoft can't be reached, people get a message instead of an error page. **Off by default** until university IT supplies the tenant ID, client ID and secret; the step-by-step guide for IT is in `docs/sso.md`.

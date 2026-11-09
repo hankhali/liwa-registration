@@ -1,0 +1,359 @@
+{
+  "base": "http://127.0.0.1:8088",
+  "milestone": "M2",
+  "generatedAt": "2026-11-09T08:47:36.430Z",
+  "results": [
+    {
+      "screen": "login",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-error",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-error",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-error",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-error",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-username",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-username",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-username",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-username",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-sso-not-registered",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-sso-not-registered",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-sso-not-registered",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "login-sso-not-registered",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home-probation",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home-probation",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home-probation",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "student-home-probation",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "advisor-home",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "advisor-home",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "advisor-home",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "advisor-home",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-home",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-home",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-home",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-home",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "admin-details",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "forbidden",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "forbidden",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "forbidden",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "forbidden",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "user-menu",
+      "lang": "en",
+      "viewport": "desktop",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "user-menu",
+      "lang": "en",
+      "viewport": "phone",
+      "dir": "ltr",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "user-menu",
+      "lang": "ar",
+      "viewport": "desktop",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    },
+    {
+      "screen": "user-menu",
+      "lang": "ar",
+      "viewport": "phone",
+      "dir": "rtl",
+      "horizontalOverflowPx": 0,
+      "violations": []
+    }
+  ]
+}

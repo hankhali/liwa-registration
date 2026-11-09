@@ -2,7 +2,7 @@
 
 A web app that builds each student a valid, graduation-optimised semester plan, lets them adjust it, and sends it to their academic advisor for approval. The full specification is in [docs/BRIEF.md](docs/BRIEF.md). Every assumption that still needs the university's confirmation is listed in [docs/assumptions.md](docs/assumptions.md).
 
-**Status:** milestone **M1** (scaffold, Docker, sign-in, role-based landing pages). See [CHANGELOG.md](CHANGELOG.md).
+**Status:** milestone **M2** (data model, database, demo data, CSV import). See [CHANGELOG.md](CHANGELOG.md).
 
 | Part | Technology |
 |---|---|
@@ -64,6 +64,7 @@ Open http://localhost:8088. Before any real deployment, set a real `JWT_SIGNING_
 | Script | What it does |
 |---|---|
 | `.\scripts\test.ps1` | Runs every test: .NET unit tests, .NET integration tests (throwaway Postgres containers) and Angular unit tests |
+| `python scripts/generate-demo-data.py src/Liwa.Infrastructure/Seeding/Demo` | Regenerates the illustrative demo CSV files and checks them: each program adds up to 120 credits, the timetable follows UAE rules, and each demo student matches their story |
 | `.\scripts\reset-db.ps1` | Deletes the local database volume and starts an empty database. Asks you to type `reset` first; `-Force` skips the prompt |
 | `cd web; npm run screenshots -- --base http://127.0.0.1:8088 --milestone M1` | Captures English/Arabic screenshots at desktop and phone widths, runs the axe accessibility check, and writes `docs/screenshots/<milestone>/index.html`. Point it at the Docker stack (8088), not the dev server: only the production build runs under the real Content-Security-Policy. The script signs in about 24 times, so start the stack with `$env:SIGNIN_PERMITS_PER_MINUTE=200; docker compose up -d api` first, then run plain `docker compose up -d api` afterwards to restore the limit of 10 |
 
@@ -83,7 +84,17 @@ Demo accounts are created only when `DemoSeed:Enabled` is true. It is on in Deve
 | `advisor.media` | Advisor | Mass Communication |
 | `admin` | Admin | Registrar administrator |
 
-The academic records behind these students (transcripts, standing, credits) arrive with the domain model in M2.
+Each demo student has a full academic record, loaded from the demo CSV files through the real import:
+
+| Student | Program | Story |
+|---|---|---|
+| `student.new` | Information Technology | First term (Spring 2027), only an AP English credit |
+| `student.probation` | Business (Management) | GPA 1.40, on academic probation |
+| `student.honors` | Information Technology | GPA exactly 3.50 (the high-GPA boundary), with Fall 2026 grades not yet posted |
+| `student.senior` | Information Technology | 114 of 120 credits: 6 left to graduate |
+| `student.repeat` | Mass Communication | Failed MCM201, which MCM301 needs with at least a C |
+
+Five more students (with no sign-in) give the advisors fuller lists. The data is illustrative: the three program names are real, but the courses, degree plans and timetable are invented until the Registrar supplies real data.
 
 ## Configuration
 
@@ -126,10 +137,10 @@ tests/
   Liwa.IntegrationTests/  real API against a throwaway Postgres container
 web/                    Angular app, nginx image, Playwright screenshot script
 scripts/                PowerShell helpers
-docs/                   brief, assumptions, screenshots (later: planner, SSO, PeopleSoft notes)
+docs/                   brief, assumptions, import contract, SSO guide, screenshots (later: planner, PeopleSoft notes)
 ```
 
-## API surface (M1)
+## API surface
 
 | Endpoint | Access |
 |---|---|
@@ -142,5 +153,9 @@ docs/                   brief, assumptions, screenshots (later: planner, SSO, Pe
 | `GET /api/health` | Anyone (liveness) |
 | `GET /api/health/ready` | Anyone (readiness: database reachable) |
 | `GET /api/admin/system` | Admin only (version, environment, database status) |
+| `GET /api/admin/overview` | Admin only (how much data is loaded, last upload) |
+| `POST /api/admin/imports/{kind}?dryRun=true` | Admin only. Uploads one CSV file (`file` form field). Checks only, unless `dryRun=false`. Kinds: terms, courses, programs, degree-plans, sections, students, transcripts. Format: [docs/import-contract.md](docs/import-contract.md) |
+| `GET /api/students/me/summary` | Student only (own program, credits, GPA, advisor) |
+| `GET /api/advisor/students` | Advisor only (own students) |
 
 Every endpoint requires sign-in unless it is explicitly marked anonymous. Errors are returned as RFC 7807 problem details with a `traceId`.
