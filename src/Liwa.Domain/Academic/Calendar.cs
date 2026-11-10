@@ -147,6 +147,13 @@ public sealed class Term
     /// <summary>The term students are currently planning and registering for.</summary>
     public bool IsCurrent { get; private set; }
 
+    /// <summary>
+    /// This term's override of the credit policy's "in-progress prerequisites count" switch (brief §4); null = use the policy.
+    /// </summary>
+    public bool? AllowInProgressPrerequisites { get; private set; }
+
+    public void SetInProgressPrerequisites(bool? allow) => AllowInProgressPrerequisites = allow;
+
     public void Update(string name, TermSeason season, int year, DateOnly startDate, DateOnly endDate)
     {
         if (endDate <= startDate) throw new ArgumentException("A term must end after it starts.", nameof(endDate));

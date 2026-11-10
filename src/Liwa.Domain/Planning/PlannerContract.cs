@@ -22,7 +22,8 @@ public sealed record PlannerInput(
     PlannerPreferences Preferences);
 
 /// <summary>The term being planned (normally the current term).</summary>
-public sealed record PlannerTerm(string Code, TermSeason Season, int Year);
+/// <param name="AllowInProgressPrerequisites">This term's override of the policy switch (null = use the policy).</param>
+public sealed record PlannerTerm(string Code, TermSeason Season, int Year, bool? AllowInProgressPrerequisites = null);
 
 /// <summary>
 /// What the student has done, already reduced to facts (the repeat-grade rule has been applied).
@@ -53,7 +54,9 @@ public sealed record PlannerRequirementGroup(string Key, string Name, Requiremen
 
 public sealed record PlannerRequirementCourse(string Code, int? SuggestedSemester);
 
-public sealed record PlannerSection(Guid Id, string CourseCode, string SectionCode, DeliveryMode Delivery, IReadOnlyList<MeetingTime> Meetings, int SeatsLeft);
+/// <param name="Capacity">Total seats (0 = unknown), used for the NearlyFull warning at 90%.</param>
+public sealed record PlannerSection(Guid Id, string CourseCode, string SectionCode, DeliveryMode Delivery, IReadOnlyList<MeetingTime> Meetings, int SeatsLeft,
+    int Capacity = 0);
 
 /// <summary>When the student is free. A meeting fits if it lies entirely inside one window on its day.</summary>
 public sealed record Availability(IReadOnlyList<TimeWindow> Windows)
@@ -167,6 +170,7 @@ public enum ReasonCode
     NotOfferedThisTerm = 46,      // Value = seasons it is offered
     NoSectionsThisTerm = 47,
     CorequisiteDoesNotFit = 48,   // Courses = the corequisite that can't be scheduled with it
+    GradeMustBePosted = 49,       // Courses = prerequisite in progress, while in-progress prerequisites are switched off
 
     // Why it didn't make the plan although eligible
     CreditLimitReached = 60,      // Value = maximum credits
@@ -187,6 +191,9 @@ public enum ReasonCode
     InProgressPrerequisite = 103, // Courses = planned courses that depend on a grade in progress
     GraduationNotReachable = 104,
     AccountHold = 105,            // Value = hold type (e.g. FINANCE): plan can be made, registration waits until it's cleared
+    FallOnlyMissed = 106,         // Courses = single-season courses offered now but not planned; Value = this season (skipping waits a year)
+    NearlyFull = 107,             // Courses = planned courses whose section is at least 90% full
+    PermissionAssumed = 108,      // Courses = later courses that need department permission; the projection assumes it is granted
 
     // Checking a plan the student changed by hand (Planner.Check)
     NotInDegreePlan = 120,        // Courses = course

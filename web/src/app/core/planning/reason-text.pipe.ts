@@ -45,7 +45,7 @@ export function reasonSentence(r: Reason, t: Translate, mode: 'plain' | 'action'
   const joiner = t(OR_LISTS.has(r.code) ? 'planner.join.or' : 'planner.join.and');
   const courses = codes.length <= 1 ? (codes[0] ?? '') : `${codes.slice(0, -1).join(', ')} ${joiner} ${codes.at(-1)}`;
   let value = r.value ?? '';
-  if (r.code === 'OnlyOfferedIn' || r.code === 'NotOfferedThisTerm')
+  if (r.code === 'OnlyOfferedIn' || r.code === 'NotOfferedThisTerm' || r.code === 'FallOnlyMissed')
     value = value
       .split(';')
       .filter(Boolean)

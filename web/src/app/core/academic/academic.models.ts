@@ -1,3 +1,5 @@
+import { dateLocale } from '../i18n/digits';
+
 export interface TermInfo {
   code: string;
   name: string;
@@ -65,7 +67,7 @@ export function percentOf(part: number, whole: number): number {
 
 /** Date and time in 12-hour format with lower-case am/pm, e.g. "9 Nov 2026, 5:00 pm" (brief §4), in the reader's language. */
 export function formatDateTime(iso: string, lang: string): string {
-  const text = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-AE' : 'en-AE', {
+  const text = new Intl.DateTimeFormat(dateLocale(lang), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

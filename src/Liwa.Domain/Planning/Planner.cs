@@ -37,8 +37,27 @@ public static partial class Planner
         bool AllowInProgress,
         bool AssumePermission);
 
+    /// <summary>The term's own switch wins over the policy (brief §4: AllowInProgressPrerequisites with a per-term override).</summary>
+    internal static bool AllowInProgress(PlannerInput input) => input.Term.AllowInProgressPrerequisites ?? input.Policy.AllowInProgressPrerequisites;
+
+    /// <summary>A section with this share of its seats taken (or more) gets a NearlyFull warning (brief §4: warn at 90%).</summary>
+    public const decimal NearlyFullShare = 0.9m;
+
+    /// <summary>
+    /// Puts the input in a canonical order (catalog and sections by code, each group's courses by code), so the result
+    /// never depends on the order a database or a file happened to return rows in (brief §5: CSV and database give
+    /// identical output). Groups keep their order: it is meaningful (the degree plan's sort order).
+    /// </summary>
+    internal static PlannerInput Canonical(PlannerInput input) => input with
+    {
+        Catalog = input.Catalog.OrderBy(c => c.Code, StringComparer.Ordinal).ToList(),
+        Sections = input.Sections.OrderBy(s => s.CourseCode, StringComparer.Ordinal).ThenBy(s => s.SectionCode, StringComparer.Ordinal).ToList(),
+        DegreePlan = input.DegreePlan.Select(g => g with { Courses = g.Courses.OrderBy(c => c.Code, StringComparer.Ordinal).ToList() }).ToList(),
+    };
+
     public static PlannerResult Plan(PlannerInput input)
     {
+        input = Canonical(input);
         var student = input.Student;
         var catalog = input.Catalog.ToDictionary(c => c.Code, StringComparer.OrdinalIgnoreCase);
         var policy = input.Policy;
@@ -63,7 +82,7 @@ public static partial class Planner
         // 3. Eligibility this term ------------------------------------------------------------
         var standing = AcademicSummary.StandingFor(student.CreditsEarned);
         var state = new State(student.Passed, student.InProgress, student.Failed, student.CreditsEarned, student.PermissionsGranted,
-            policy.AllowInProgressPrerequisites, AssumePermission: false);
+            AllowInProgress(input), AssumePermission: false);
         var sectionsByCourse = input.Sections
             .GroupBy(s => s.CourseCode, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.OrderBy(s => s.SectionCode, StringComparer.Ordinal).ToList(), StringComparer.OrdinalIgnoreCase);
@@ -253,8 +272,33 @@ public static partial class Planner
         var withoutSummer = Project(input, catalog, ordered, chosen.Select(c => c.Need.Code).ToList(), total, quota, freeRemaining, includeSummer: false);
         if (withSummer.GraduationTerm is null || withoutSummer.GraduationTerm is null) warnings.Add(PlannerReason.Of(ReasonCode.GraduationNotReachable));
 
+        // Courses offered in only one season, eligible now, but not in the plan: skipping them waits a year.
+        var missed = ordered.Where(n => SeasonCount(n.Offered) == 1 && n.Offered.Includes(input.Term.Season) && !chosenCodes.Contains(n.Code)
+                && status[n.Code] is CourseStatus.Eligible or CourseStatus.EligibleWithCondition)
+            .Select(n => n.Code).Order(StringComparer.Ordinal).ToList();
+        if (missed.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.FallOnlyMissed, missed, input.Term.Season.ToString()));
+
+        var nearlyFull = chosen.Where(c => IsNearlyFull(c.Section)).Select(c => c.Need.Code).Order(StringComparer.Ordinal).ToList();
+        if (nearlyFull.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.NearlyFull, nearlyFull));
+
+        // The projection assumes department permission (capstone, internship) is granted later; say so (brief §4).
+        var assumed = withSummer.Terms.Skip(1).SelectMany(t => t.Courses)
+            .Where(code => catalog.TryGetValue(code, out var pc) && NeedsPermission(pc.Prerequisite) && !student.PermissionsGranted.Contains(code))
+            .Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
+        if (assumed.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.PermissionAssumed, assumed));
+
         return new PlannerResult(input.Term.Code, limits, maxCredits, plan, total, assessments, warnings, new GraduationProjection(withSummer, withoutSummer));
     }
+
+    internal static bool IsNearlyFull(PlannerSection s) => s.Capacity > 0 && s.SeatsLeft > 0 && s.Capacity - s.SeatsLeft >= s.Capacity * NearlyFullShare;
+
+    private static bool NeedsPermission(Prerequisite? p) => p switch
+    {
+        DepartmentPermission => true,
+        AllOf a => a.Items.Any(NeedsPermission),
+        AnyOf o => o.Items.All(NeedsPermission),
+        _ => false,
+    };
 
     // ------------------------------------------------------------------------------ step 1
 
@@ -381,6 +425,12 @@ public static partial class Planner
                 {
                     e.Result = Sat.Conditional;
                     e.WaitingFor.Add(c.CourseCode);
+                }
+                else if (st.InProgress.Contains(c.CourseCode))
+                {
+                    // In-progress prerequisites are switched off (policy or this term): the grade must be posted first.
+                    e.Result = Sat.No;
+                    e.Failures.Add(PlannerReason.Of(ReasonCode.GradeMustBePosted, [c.CourseCode]));
                 }
                 else
                 {

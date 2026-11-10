@@ -67,6 +67,12 @@
         "expired": "That sign-in took too long. Please try again.",
         "unavailable": "Liwa sign-in isn't available right now. Please try again later."
       }
+    },
+    "demo": {
+      "heading": "Practice accounts (development only)",
+      "intro": "Password for all: {{ password }}",
+      "students": "Students",
+      "staff": "Staff"
     }
   },
   "student": {
@@ -525,7 +531,11 @@
       "SectionFullSection": "All seats are taken",
       "OutsideAvailabilitySection": "Outside the times you're free",
       "ClashesWithOne": "Clashes with {{ courses }}",
-      "AccountHold": "There is a {{ value }} hold on your account: you can't register until it's cleared"
+      "AccountHold": "There is a {{ value }} hold on your account: you can't register until it's cleared",
+      "GradeMustBePosted": "Your grade in {{ courses }} must be posted first",
+      "FallOnlyMissed": "{{ courses }} is only offered in {{ value }}: if you skip it now, it waits a whole year",
+      "NearlyFull": "Almost full: {{ courses }} has only a few seats left",
+      "PermissionAssumed": "Your path assumes the department gives permission for {{ courses }} when the time comes"
     },
     "actions": {
       "BelowMinimumCredits": "Add {{ missing }} more credits to reach the {{ value }}-credit minimum, or ask your advisor to approve a lighter load.",
@@ -537,7 +547,9 @@
       "OutsideAvailability": "{{ courses }} is outside the times you said you're free. Pick another class time, or keep it if that's fine.",
       "NotInDegreePlan": "Remove {{ courses }}: it isn't part of your degree plan.",
       "AlreadyTaken": "Remove {{ courses }}: you've already taken it.",
-      "AccountHold": "There is a {{ value }} hold on your account. You can send your plan, but contact the office to clear it before registration."
+      "AccountHold": "There is a {{ value }} hold on your account. You can send your plan, but contact the office to clear it before registration.",
+      "FallOnlyMissed": "Try to fit {{ courses }} in now: it's only offered in {{ value }}, so skipping it can delay graduation.",
+      "NearlyFull": "{{ courses }} is almost full. Send your plan soon, or pick another class time."
     },
     "holds": {
       "FINANCE": "finance",

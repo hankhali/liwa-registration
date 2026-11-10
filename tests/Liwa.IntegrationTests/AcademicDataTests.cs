@@ -106,7 +106,7 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     public async Task An_advisor_sees_only_their_own_students()
     {
         var students = await GetAsync<List<AdviseeBody>>("advisor.it", "/api/advisor/students");
-        Assert.Equal(5, students.Count);
+        Assert.Equal(7, students.Count);
         Assert.All(students, s => Assert.Equal("BIT", s.ProgramCode));
         Assert.Contains(students, s => s.StudentId == "202500103");
         Assert.DoesNotContain(students, s => s.StudentId == "202500102");
@@ -120,7 +120,7 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
         Assert.Equal(3, o.Programs);
         Assert.True(o.Courses >= 90);
         Assert.True(o.SectionsThisTerm > 100);
-        Assert.Equal(10, o.Students);
+        Assert.True(o.Students >= 15); // 15 demo students (other tests in this collection may import more)
         Assert.NotNull(o.LastImportAt);
     }
 

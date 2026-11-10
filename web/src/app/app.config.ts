@@ -1,4 +1,5 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { setArabicDigits } from './core/i18n/digits';
 import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { TitleStrategy, provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -21,6 +22,10 @@ export const appConfig: ApplicationConfig = {
     // Load the starting language before first render so no untranslated keys flash on screen.
     provideAppInitializer(() => {
       inject(ThemeService); // apply the saved light/dark choice everywhere, including the sign-in page
+      // Deployment-wide digits setting (UI_ARABIC_DIGITS); don't block start-up on it.
+      void firstValueFrom(inject(HttpClient).get<{ arabicDigits?: boolean }>('/api/auth/sso/config'))
+        .then((c) => setArabicDigits(!!c.arabicDigits))
+        .catch(() => undefined);
       const lang = inject(LanguageService).lang();
       return firstValueFrom(inject(TranslocoService).load(lang));
     }),

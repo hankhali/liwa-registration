@@ -1,0 +1,666 @@
+# Arabic translations for native review
+
+Every Arabic string in the app was drafted by machine and needs review by a native speaker before students
+see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
+`python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
+
+- Programs: 3 · Courses: 97 · UI strings: 543
+- Official university, college and program names should be checked against https://lu.ac.ae/ar/.
+
+## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
+
+| OK | Code | English | Arabic (draft) |
+|---|---|---|---|
+| [ ] | BIT | Bachelor of Information Technology (BIT) — General Track | بكالوريوس تقنية المعلومات - المسار العام |
+| [ ] | BBA-MGT | BBA in Management | بكالوريوس إدارة الأعمال - تخصص الإدارة |
+| [ ] | BMC | Bachelor of Mass Communication Concentration in Public Relations | بكالوريوس الاتصال الجماهيري - تخصص العلاقات العامة |
+
+## Course titles (`courses.csv`, `title_ar`)
+
+| OK | Code | English | Arabic (draft) |
+|---|---|---|---|
+| [ ] | ENG101 | English Composition I | الكتابة الإنجليزية 1 |
+| [ ] | ENG102 | English Composition II | الكتابة الإنجليزية 2 |
+| [ ] | ENG201 | Technical and Professional Writing | الكتابة التقنية والمهنية |
+| [ ] | ARB101 | Arabic Language Skills | مهارات اللغة العربية |
+| [ ] | ISL101 | Islamic Culture | الثقافة الإسلامية |
+| [ ] | GEN100 | Student Success Seminar | ندوة النجاح الجامعي |
+| [ ] | GEN101 | UAE Society | المجتمع الإماراتي |
+| [ ] | GEN110 | Innovation and Entrepreneurship | الابتكار وريادة الأعمال |
+| [ ] | GEN120 | Critical Thinking | التفكير الناقد |
+| [ ] | PED101 | Health and Wellness | الصحة واللياقة |
+| [ ] | MTH101 | College Mathematics | الرياضيات الجامعية |
+| [ ] | MTH110 | Calculus I | التفاضل والتكامل 1 |
+| [ ] | STA201 | Introduction to Statistics | مقدمة في الإحصاء |
+| [ ] | CSC101 | Introduction to Programming | مقدمة في البرمجة |
+| [ ] | CSC101L | Programming Lab | مختبر البرمجة |
+| [ ] | CSC102 | Object-Oriented Programming | البرمجة كائنية التوجه |
+| [ ] | CSC201 | Data Structures | هياكل البيانات |
+| [ ] | CSC210 | Discrete Mathematics | الرياضيات المتقطعة |
+| [ ] | ITC101 | Introduction to Information Technology | مقدمة في تقنية المعلومات |
+| [ ] | ITC110 | Computer Hardware Fundamentals | أساسيات عتاد الحاسوب |
+| [ ] | ITC110L | Computer Hardware Lab | مختبر عتاد الحاسوب |
+| [ ] | ITC201 | Database Systems | نظم قواعد البيانات |
+| [ ] | ITC202 | Computer Networks | شبكات الحاسوب |
+| [ ] | ITC202L | Computer Networks Lab | مختبر شبكات الحاسوب |
+| [ ] | ITC210 | Web Development | تطوير الويب |
+| [ ] | ITC220 | Operating Systems | نظم التشغيل |
+| [ ] | ITC250 | Software Engineering | هندسة البرمجيات |
+| [ ] | ITC301 | Systems Analysis and Design | تحليل النظم وتصميمها |
+| [ ] | ITC304 | Information Security | أمن المعلومات |
+| [ ] | ITC310 | Cloud Computing | الحوسبة السحابية |
+| [ ] | ITC320 | Mobile App Development | تطوير تطبيقات الهاتف |
+| [ ] | ITC330 | Human-Computer Interaction | التفاعل بين الإنسان والحاسوب |
+| [ ] | ITC340 | IT Project Management | إدارة مشاريع تقنية المعلومات |
+| [ ] | ITC350 | Data Analytics | تحليل البيانات |
+| [ ] | ITC360 | Artificial Intelligence Fundamentals | أساسيات الذكاء الاصطناعي |
+| [ ] | ITC370 | Network Administration | إدارة الشبكات |
+| [ ] | ITC380 | Digital Forensics | التحقيق الجنائي الرقمي |
+| [ ] | ITC390 | Special Topics in IT | موضوعات خاصة في تقنية المعلومات |
+| [ ] | ITC401 | Capstone Project I | مشروع التخرج 1 |
+| [ ] | ITC402 | Capstone Project II | مشروع التخرج 2 |
+| [ ] | ITC410 | IT Internship | التدريب العملي في تقنية المعلومات |
+| [ ] | BUS101 | Introduction to Business | مقدمة في إدارة الأعمال |
+| [ ] | BUS110 | Business Communication | الاتصال في الأعمال |
+| [ ] | BUS120 | Microeconomics | الاقتصاد الجزئي |
+| [ ] | BUS121 | Macroeconomics | الاقتصاد الكلي |
+| [ ] | BUS205 | Spreadsheet Modelling Lab | مختبر نمذجة الجداول الإلكترونية |
+| [ ] | BUS210 | Business Law | قانون الأعمال |
+| [ ] | BUS220 | Business Statistics | إحصاء الأعمال |
+| [ ] | BUS230 | Management Information Systems | نظم المعلومات الإدارية |
+| [ ] | BUS301 | Business Ethics | أخلاقيات الأعمال |
+| [ ] | BUS310 | Business Research Methods | مناهج البحث في الأعمال |
+| [ ] | BUS401 | Strategic Management | الإدارة الاستراتيجية |
+| [ ] | BUS410 | Business Internship | التدريب العملي في الأعمال |
+| [ ] | ACC101 | Financial Accounting | المحاسبة المالية |
+| [ ] | ACC102 | Managerial Accounting | المحاسبة الإدارية |
+| [ ] | FIN201 | Principles of Finance | مبادئ التمويل |
+| [ ] | FIN301 | Corporate Finance | تمويل الشركات |
+| [ ] | MGT201 | Principles of Management | مبادئ الإدارة |
+| [ ] | MGT210 | Organizational Behavior | السلوك التنظيمي |
+| [ ] | MGT220 | Human Resource Management | إدارة الموارد البشرية |
+| [ ] | MGT230 | Operations Management | إدارة العمليات |
+| [ ] | MGT290 | Professional Skills Workshop | ورشة المهارات المهنية |
+| [ ] | MGT301 | Leadership | القيادة |
+| [ ] | MGT310 | Project Management | إدارة المشاريع |
+| [ ] | MGT320 | Entrepreneurship and Small Business | ريادة الأعمال والمشروعات الصغيرة |
+| [ ] | MGT330 | International Business | الأعمال الدولية |
+| [ ] | MGT340 | Change Management | إدارة التغيير |
+| [ ] | MGT350 | Quality Management | إدارة الجودة |
+| [ ] | MGT360 | Negotiation | التفاوض |
+| [ ] | MGT370 | Strategic Human Resource Management | الإدارة الاستراتيجية للموارد البشرية |
+| [ ] | MGT380 | Business Analytics | تحليلات الأعمال |
+| [ ] | MCM101 | Introduction to Mass Communication | مقدمة في الاتصال الجماهيري |
+| [ ] | MCM110 | Media Writing | الكتابة الإعلامية |
+| [ ] | MCM120 | Visual Communication | الاتصال البصري |
+| [ ] | MCM130 | Photography | التصوير الفوتوغرافي |
+| [ ] | MCM130L | Photography Lab | مختبر التصوير |
+| [ ] | MCM201 | Principles of Journalism | مبادئ الصحافة |
+| [ ] | MCM210 | Principles of Public Relations | مبادئ العلاقات العامة |
+| [ ] | MCM220 | Media Law and Ethics | قوانين الإعلام وأخلاقياته |
+| [ ] | MCM230 | Broadcast Production | الإنتاج الإذاعي والتلفزيوني |
+| [ ] | MCM240 | Digital Media | الإعلام الرقمي |
+| [ ] | MCM250 | Arabic Media Writing | الكتابة الإعلامية باللغة العربية |
+| [ ] | MCM290 | Portfolio Workshop | ورشة الملف المهني |
+| [ ] | MCM301 | News Reporting and Editing | كتابة الأخبار وتحريرها |
+| [ ] | MCM310 | Advertising | الإعلان |
+| [ ] | MCM320 | Media Research Methods | مناهج البحث الإعلامي |
+| [ ] | MCM330 | Social Media Strategy | استراتيجية وسائل التواصل الاجتماعي |
+| [ ] | MCM340 | Crisis Communication | اتصال الأزمات |
+| [ ] | MCM350 | Documentary Production | إنتاج الأفلام الوثائقية |
+| [ ] | MCM360 | Media and Society in the UAE | الإعلام والمجتمع في الإمارات |
+| [ ] | MCM370 | Corporate Communication | الاتصال المؤسسي |
+| [ ] | MCM380 | Data Journalism | صحافة البيانات |
+| [ ] | MCM390 | Investigative Journalism | الصحافة الاستقصائية |
+| [ ] | MCM395 | Event Management | إدارة الفعاليات |
+| [ ] | MCM401 | Graduation Project I | مشروع التخرج 1 |
+| [ ] | MCM402 | Graduation Project II | مشروع التخرج 2 |
+| [ ] | MCM410 | Media Internship | التدريب العملي في الإعلام |
+
+## App text (`web/public/i18n/ar.json`)
+
+| OK | Key | English | Arabic (draft) |
+|---|---|---|---|
+| [ ] | `admin.home.allGood` | Everything is working normally. | كل شيء يعمل بشكل طبيعي. |
+| [ ] | `admin.home.areas.catalog` | Courses and class times | المواد ومواعيد المحاضرات |
+| [ ] | `admin.home.areas.creditPolicy` | How many credits students can take | عدد الساعات المعتمدة المسموح بها للطالب |
+| [ ] | `admin.home.areas.degreePlans` | Study plans for each major | الخطة الدراسية لكل تخصص |
+| [ ] | `admin.home.areas.imports` | Upload and download data (spreadsheets) | رفع البيانات وتنزيلها (جداول البيانات) |
+| [ ] | `admin.home.areas.terms` | Semesters and teaching days | الفصول الدراسية وأيام التدريس |
+| [ ] | `admin.home.data.advisors` | Advisors | المرشدون |
+| [ ] | `admin.home.data.courses` | Courses | المواد |
+| [ ] | `admin.home.data.currentTerm` | Current term | الفصل الحالي |
+| [ ] | `admin.home.data.error` | We couldn't load the data summary right now. Please refresh the page. | تعذّر تحميل ملخص البيانات الآن. يرجى تحديث الصفحة. |
+| [ ] | `admin.home.data.heading` | Data in the system | البيانات في النظام |
+| [ ] | `admin.home.data.lastUpload` | Last data upload | آخر رفع للبيانات |
+| [ ] | `admin.home.data.never` | No uploads yet | لم يتم رفع بيانات بعد |
+| [ ] | `admin.home.data.noTerm` | Not set | غير محدد |
+| [ ] | `admin.home.data.programs` | Study programs | البرامج الدراسية |
+| [ ] | `admin.home.data.sections` | Classes this term | الشُّعب هذا الفصل |
+| [ ] | `admin.home.data.students` | Students | الطلاب |
+| [ ] | `admin.home.database` | Database | قاعدة البيانات |
+| [ ] | `admin.home.dbDown` | The system can't load or save information right now. Please contact the IT Service Desk. | لا يستطيع النظام تحميل المعلومات أو حفظها الآن. يرجى التواصل مع مكتب خدمات تقنية المعلومات. |
+| [ ] | `admin.home.demoAccounts` | Practice accounts | حسابات التدريب |
+| [ ] | `admin.home.demoOff` | Off | متوقفة |
+| [ ] | `admin.home.demoOn` | On | مفعّلة |
+| [ ] | `admin.home.demoWarning` | Practice accounts are switched on. Ask IT to switch them off before students start using the system. | حسابات التدريب مفعّلة. اطلب من فريق تقنية المعلومات إيقافها قبل أن يبدأ الطلاب باستخدام النظام. |
+| [ ] | `admin.home.details` | Details for IT | تفاصيل لفريق تقنية المعلومات |
+| [ ] | `admin.home.environment` | Environment | البيئة |
+| [ ] | `admin.home.heading` | Administration | الإدارة |
+| [ ] | `admin.home.healthy` | Working | تعمل |
+| [ ] | `admin.home.manage` | What you'll manage here | ما ستديره هنا |
+| [ ] | `admin.home.manageComingSoon` | These tools are coming soon. | ستتوفر هذه الأدوات قريباً. |
+| [ ] | `admin.home.statusError` | We couldn't check the system right now. Refresh the page or try again later. | تعذّر علينا فحص النظام الآن. حدّث الصفحة أو حاول لاحقاً. |
+| [ ] | `admin.home.subtitle` | Manage semesters, courses, study plans and student information. | إدارة الفصول الدراسية والمواد والخطط الدراسية ومعلومات الطلاب. |
+| [ ] | `admin.home.systemStatus` | Is everything working? | هل كل شيء يعمل؟ |
+| [ ] | `admin.home.title` | Administration | الإدارة |
+| [ ] | `admin.home.unhealthy` | Not reachable | غير متاحة |
+| [ ] | `admin.home.version` | Version | الإصدار |
+| [ ] | `advisor.advisees.cols.activity` | Last activity | آخر نشاط |
+| [ ] | `advisor.advisees.cols.credits` | Credits | الساعات |
+| [ ] | `advisor.advisees.cols.gpa` | GPA | المعدل |
+| [ ] | `advisor.advisees.cols.graduation` | Projected graduation | التخرج المتوقع |
+| [ ] | `advisor.advisees.cols.plan` | Plan this semester | خطة هذا الفصل |
+| [ ] | `advisor.advisees.cols.standing` | Year | السنة |
+| [ ] | `advisor.advisees.heading` | My students | طلابي |
+| [ ] | `advisor.advisees.noPlan` | No plan yet | لا توجد خطة بعد |
+| [ ] | `advisor.advisees.subtitle` | Everyone assigned to you, with where their plan is and when they could graduate. | جميع الطلاب المسندين إليك، وأين وصلت خططهم ومتى يمكنهم التخرج. |
+| [ ] | `advisor.home.advisees` | My students | طلابي |
+| [ ] | `advisor.home.adviseesComingSoon` | Your list of students will appear here. | ستظهر قائمة طلابك هنا. |
+| [ ] | `advisor.home.allPlans` | See all plans | عرض كل الخطط |
+| [ ] | `advisor.home.allStudents` | See all my students | اعرض جميع طلابي |
+| [ ] | `advisor.home.needsAttention` | Needs attention | بحاجة إلى متابعة |
+| [ ] | `advisor.home.nothingWaiting` | No plans are waiting for you right now. | لا توجد خطط بانتظارك حالياً. |
+| [ ] | `advisor.home.stats.approved` | Approved this semester | اعتُمدت هذا الفصل الدراسي |
+| [ ] | `advisor.home.stats.awaiting` | Plans waiting for review | خطط بانتظار المراجعة |
+| [ ] | `advisor.home.stats.needsReview` | Need review after new grades | تحتاج إلى مراجعة بعد درجات جديدة |
+| [ ] | `advisor.home.stats.proposed` | Changes suggested, waiting for the student | تعديلات مقترحة بانتظار الطالب |
+| [ ] | `advisor.home.students.count` | {{ count }} students | {{ count }} طلاب |
+| [ ] | `advisor.home.students.credits` | {{ earned }} of {{ required }} credits | {{ earned }} من {{ required }} ساعة |
+| [ ] | `advisor.home.students.error` | We couldn't load your students right now. Please refresh the page. | تعذّر تحميل قائمة طلابك الآن. يرجى تحديث الصفحة. |
+| [ ] | `advisor.home.students.gpa` | GPA {{ gpa }} | المعدل {{ gpa }} |
+| [ ] | `advisor.home.students.noGpa` | No grades yet | لا توجد درجات بعد |
+| [ ] | `advisor.home.students.none` | No students are assigned to you yet. | لم يُسند إليك أي طالب بعد. |
+| [ ] | `advisor.home.students.probation` | On probation | تحت الإنذار |
+| [ ] | `advisor.home.subtitle` | Review your students' plans and help them stay on track. | راجع خطط طلابك وساعدهم على الالتزام بمسارهم. |
+| [ ] | `advisor.home.title` | Advisor home | الصفحة الرئيسية للمرشد |
+| [ ] | `advisor.home.welcome` | Welcome, {{ name }} | أهلاً بك يا {{ name }} |
+| [ ] | `advisor.queue.allPrograms` | All programs | كل البرامج |
+| [ ] | `advisor.queue.cols.credits` | Credits | الساعات |
+| [ ] | `advisor.queue.cols.program` | Program | البرنامج |
+| [ ] | `advisor.queue.cols.status` | Status | الحالة |
+| [ ] | `advisor.queue.cols.student` | Student | الطالب |
+| [ ] | `advisor.queue.cols.updated` | Last change | آخر تغيير |
+| [ ] | `advisor.queue.empty` | No plans here. | لا توجد خطط هنا. |
+| [ ] | `advisor.queue.error` | We couldn't load the plans. Please refresh the page. | تعذّر تحميل الخطط. يرجى تحديث الصفحة. |
+| [ ] | `advisor.queue.filterLabel` | Show plans | عرض الخطط |
+| [ ] | `advisor.queue.filters.Approved` | Approved | معتمدة |
+| [ ] | `advisor.queue.filters.ChangesProposed` | Changes suggested | مقترح تعديلات |
+| [ ] | `advisor.queue.filters.NeedsReview` | Need review after new grades | تحتاج إلى مراجعة بعد درجات جديدة |
+| [ ] | `advisor.queue.filters.Rejected` | Sent back | أُعيدت |
+| [ ] | `advisor.queue.filters.all` | All | الكل |
+| [ ] | `advisor.queue.filters.waiting` | Waiting for you | بانتظارك |
+| [ ] | `advisor.queue.heading` | Plans to review | خطط للمراجعة |
+| [ ] | `advisor.queue.markers.hold` | Hold | إيقاف |
+| [ ] | `advisor.queue.markers.nearGraduation` | Graduating soon | قريب من التخرج |
+| [ ] | `advisor.queue.markers.probation` | Probation | إنذار أكاديمي |
+| [ ] | `advisor.queue.notes` | {{ n }} notes confirmed | أكّد الطالب {{ n }} ملاحظات |
+| [ ] | `advisor.queue.program` | Program | البرنامج |
+| [ ] | `advisor.queue.sort` | Sort by | الترتيب حسب |
+| [ ] | `advisor.queue.sorts.name` | Student name | اسم الطالب |
+| [ ] | `advisor.queue.sorts.newest` | Most recent | الأحدث |
+| [ ] | `advisor.queue.sorts.oldest` | Waiting longest | الأطول انتظاراً |
+| [ ] | `advisor.queue.subtitle` | Plans your students have sent. The oldest and most urgent come first. | الخطط التي أرسلها طلابك. تظهر الأقدم والأكثر إلحاحاً أولاً. |
+| [ ] | `advisor.queue.title` | Plans to review | خطط للمراجعة |
+| [ ] | `advisor.queue.urgent` | Urgent | عاجل |
+| [ ] | `advisor.record.back` | All my students | جميع طلابي |
+| [ ] | `advisor.record.cols.course` | Course | المادة |
+| [ ] | `advisor.record.cols.credits` | Credits | الساعات |
+| [ ] | `advisor.record.cols.grade` | Grade | التقدير |
+| [ ] | `advisor.record.cols.term` | Term | الفصل |
+| [ ] | `advisor.record.hold` | Hold on the account ({{ hold }}): the student can't register until it's cleared. | يوجد إيقاف على الحساب ({{ hold }}): لا يمكن للطالب التسجيل حتى يُرفع. |
+| [ ] | `advisor.record.inProgress` | In progress | قيد الدراسة |
+| [ ] | `advisor.record.noPlan` | Not sent yet | لم تُرسل بعد |
+| [ ] | `advisor.record.notFound` | This student isn't one of your advisees. | هذا الطالب ليس من الطلاب المسندين إليك. |
+| [ ] | `advisor.record.plan` | Plan this term | خطة هذا الفصل |
+| [ ] | `advisor.record.probation` | On academic probation: a lower credit limit applies this term. | تحت الإنذار الأكاديمي: يُطبق حد أقل للساعات هذا الفصل. |
+| [ ] | `advisor.record.title` | Student record | سجل الطالب |
+| [ ] | `advisor.record.transcript` | Transcript | كشف الدرجات |
+| [ ] | `advisor.record.transfer` | Transfer | معادلة |
+| [ ] | `advisor.record.transferGrade` | Transfer credit | ساعات معادلة |
+| [ ] | `advisor.review.allChecksPass` | All checks pass. | اجتازت الخطة كل الفحوصات. |
+| [ ] | `advisor.review.anyTime` | Any time | أي وقت |
+| [ ] | `advisor.review.approve` | Approve | اعتماد |
+| [ ] | `advisor.review.approveBlocked` | Approve is turned off until the problems listed under Checks are fixed. | زر الاعتماد متوقف حتى تُصلح المشكلات المذكورة في قسم الفحص. |
+| [ ] | `advisor.review.back` | All plans | كل الخطط |
+| [ ] | `advisor.review.checks` | Checks | الفحص |
+| [ ] | `advisor.review.confirmed` | The student confirmed they understand: | أكّد الطالب أنه فهم ما يلي: |
+| [ ] | `advisor.review.courses` | Classes ({{ n }} credits) | المواد ({{ n }} ساعة) |
+| [ ] | `advisor.review.creditsDone` | Credits done | الساعات المنجزة |
+| [ ] | `advisor.review.decision` | Your decision | قرارك |
+| [ ] | `advisor.review.delay` | This plan delays graduation by {{ n }} semesters compared with the recommendation. | هذه الخطة تؤخر التخرج {{ n }} فصول دراسية مقارنةً بالخطة المقترحة. |
+| [ ] | `advisor.review.delayOne` | This plan delays graduation by one semester compared with the recommendation. | هذه الخطة تؤخر التخرج فصلًا دراسيًا واحدًا مقارنةً بالخطة المقترحة. |
+| [ ] | `advisor.review.done.Approve` | Approved. {{ student }} has been told. | تم الاعتماد وإبلاغ {{ student }}. |
+| [ ] | `advisor.review.done.ProposeChanges` | Suggested changes sent. {{ student }} has been told. | أُرسلت التعديلات المقترحة وتم إبلاغ {{ student }}. |
+| [ ] | `advisor.review.done.Reject` | Sent back. {{ student }} has been told. | أُعيدت الخطة وتم إبلاغ {{ student }}. |
+| [ ] | `advisor.review.failed` | That didn't work. Please check the plan and try again. | لم تنجح العملية. يرجى مراجعة الخطة والمحاولة مرة أخرى. |
+| [ ] | `advisor.review.freeTime` | When they are free | أوقات فراغه |
+| [ ] | `advisor.review.fullRecord` | See full record and transcript | عرض السجل الكامل وكشف الدرجات |
+| [ ] | `advisor.review.graduation` | Graduation | التخرج |
+| [ ] | `advisor.review.limit` | Credit limit | حد الساعات |
+| [ ] | `advisor.review.noDelay` | This plan keeps the same graduation date as the recommendation. | هذه الخطة تحافظ على موعد التخرج نفسه في الخطة المقترحة. |
+| [ ] | `advisor.review.noSummer` | Without summer | دون الصيف |
+| [ ] | `advisor.review.notDecidable` | There is nothing to decide right now. | لا يوجد ما يتطلب قراراً الآن. |
+| [ ] | `advisor.review.notFound` | This plan isn't available. | هذه الخطة غير متاحة. |
+| [ ] | `advisor.review.noteOptional` | Note for the student (optional) | ملاحظة للطالب (اختيارية) |
+| [ ] | `advisor.review.noteRequired` | Note for the student (required) | ملاحظة للطالب (مطلوبة) |
+| [ ] | `advisor.review.otherTimes` | Why other class times were not chosen: | لماذا لم تُختر المواعيد الأخرى: |
+| [ ] | `advisor.review.propose` | Suggest changes | اقتراح تعديلات |
+| [ ] | `advisor.review.proposeHeading` | Suggest changes for {{ student }} | اقتراح تعديلات لـ {{ student }} |
+| [ ] | `advisor.review.proposeHint` | Write a note explaining your changes. The student can accept them or change the plan and send it again. | اكتب ملاحظة تشرح تعديلاتك. يمكن للطالب قبولها أو تعديل الخطة وإرسالها مرة أخرى. |
+| [ ] | `advisor.review.ranking` | Priority #{{ rank }}: unlocks {{ unlocks }} courses; a chain of {{ chain }} terms depends on it. | الأولوية رقم {{ rank }}: تفتح {{ unlocks }} مواد، وتعتمد عليها سلسلة من {{ chain }} فصول. |
+| [ ] | `advisor.review.recommended` | Recommended plan | الخطة المقترحة |
+| [ ] | `advisor.review.recommendedNotChosen` | Recommended but not in this plan: | مقترحة لكنها ليست في هذه الخطة: |
+| [ ] | `advisor.review.reject` | Send back | إعادة للطالب |
+| [ ] | `advisor.review.rejectHint` | Tell the student what to change. They will see your comment. | أخبر الطالب بما يجب تغييره. سيرى تعليقك. |
+| [ ] | `advisor.review.seats` | {{ n }} seats left | متبقٍ {{ n }} مقعداً |
+| [ ] | `advisor.review.section` | section {{ s }} | الشعبة {{ s }} |
+| [ ] | `advisor.review.sendBack` | Send back to student | إعادة الخطة للطالب |
+| [ ] | `advisor.review.sendProposal` | Send suggested changes | إرسال التعديلات المقترحة |
+| [ ] | `advisor.review.standing` | Standing | الوضع الأكاديمي |
+| [ ] | `advisor.review.student` | Student | الطالب |
+| [ ] | `advisor.review.studentAdded` | The student added this course themselves. | أضاف الطالب هذه المادة بنفسه. |
+| [ ] | `advisor.review.studentChangedTime` | The student picked a different class time from the one recommended. | اختار الطالب موعداً مختلفاً عن الموعد المقترح. |
+| [ ] | `advisor.review.thisPlan` | This plan | هذه الخطة |
+| [ ] | `advisor.review.title` | Review plan | مراجعة الخطة |
+| [ ] | `advisor.review.unknownTerm` | Not worked out | غير محدد |
+| [ ] | `advisor.review.version` | version {{ n }} | النسخة {{ n }} |
+| [ ] | `advisor.review.withSummer` | With summer | مع الصيف |
+| [ ] | `app.name` | Liwa Smart Registration | التسجيل الذكي - جامعة ليوا |
+| [ ] | `app.product` | Smart Registration | التسجيل الذكي |
+| [ ] | `app.university` | Liwa University | جامعة ليوا |
+| [ ] | `availability.error` | We couldn't save your free time. Please try again. | تعذّر حفظ أوقات فراغك. يُرجى المحاولة مرة أخرى. |
+| [ ] | `availability.gridHeading` | Your free time each week | أوقات فراغك كل أسبوع |
+| [ ] | `availability.gridHint` | Green hours are free. Tap an hour to change it, or tap a day to select the whole day. There are never classes on Friday afternoon. | الساعات الخضراء هي أوقات فراغك. اضغط على ساعة لتغييرها، أو على يوم لاختياره كاملًا. لا توجد محاضرات بعد ظهر الجمعة أبدًا. |
+| [ ] | `availability.heading` | When are you free? | متى تكون متفرغًا؟ |
+| [ ] | `availability.intro` | Pick the times you're free, or skip this to see every class. | اختر الأوقات التي تكون فيها متفرغًا، أو تخطَّ هذه الخطوة لترى كل المحاضرات. |
+| [ ] | `availability.loadError` | We couldn't load your free time. Please refresh the page. | تعذّر تحميل أوقات فراغك. يُرجى تحديث الصفحة. |
+| [ ] | `availability.pickSome` | Pick at least one hour, or skip this step. | اختر ساعة واحدة على الأقل، أو تخطَّ هذه الخطوة. |
+| [ ] | `availability.presets.custom.body` | I'll pick the days and hours myself | سأختار الأيام والساعات بنفسي |
+| [ ] | `availability.presets.custom.title` | Custom | مخصص |
+| [ ] | `availability.presets.daytime.body` | Monday to Friday, 8 am to 5 pm | من الاثنين إلى الجمعة، من 8 ص إلى 5 م |
+| [ ] | `availability.presets.daytime.title` | Full-time daytime | دوام كامل نهارًا |
+| [ ] | `availability.presets.evenings.body` | I work during the day. Monday to Thursday, 5 to 8 pm | أعمل خلال النهار. من الاثنين إلى الخميس، من 5 إلى 8 م |
+| [ ] | `availability.presets.evenings.title` | Evenings only | مساءً فقط |
+| [ ] | `availability.presets.weekends.body` | Weekday evenings, Friday morning and Saturday | مساء أيام الأسبوع وصباح الجمعة ويوم السبت |
+| [ ] | `availability.presets.weekends.title` | Weekends + evenings | عطلة نهاية الأسبوع + المساء |
+| [ ] | `availability.presetsHeading` | Choose what fits your week | اختر ما يناسب أسبوعك |
+| [ ] | `availability.save` | Save and see my plan | احفظ واعرض خطتي |
+| [ ] | `availability.skip` | Skip this and show me every class | تخطَّ هذه الخطوة واعرض كل المحاضرات |
+| [ ] | `availability.toPlanner` | Go to my plan | انتقل إلى خطتي |
+| [ ] | `common.loading` | Loading… | جارٍ التحميل… |
+| [ ] | `days.Friday` | Friday | الجمعة |
+| [ ] | `days.Monday` | Monday | الاثنين |
+| [ ] | `days.Saturday` | Saturday | السبت |
+| [ ] | `days.Sunday` | Sunday | الأحد |
+| [ ] | `days.Thursday` | Thursday | الخميس |
+| [ ] | `days.Tuesday` | Tuesday | الثلاثاء |
+| [ ] | `days.Wednesday` | Wednesday | الأربعاء |
+| [ ] | `daysShort.Friday` | Fri | الجمعة |
+| [ ] | `daysShort.Monday` | Mon | الاثنين |
+| [ ] | `daysShort.Saturday` | Sat | السبت |
+| [ ] | `daysShort.Sunday` | Sun | الأحد |
+| [ ] | `daysShort.Thursday` | Thu | الخميس |
+| [ ] | `daysShort.Tuesday` | Tue | الثلاثاء |
+| [ ] | `daysShort.Wednesday` | Wed | الأربعاء |
+| [ ] | `errors.backHome` | Go to my home page | الذهاب إلى صفحتي الرئيسية |
+| [ ] | `errors.forbidden.body` | Your account doesn't have access to this page. | لا يملك حسابك صلاحية الوصول إلى هذه الصفحة. |
+| [ ] | `errors.forbidden.heading` | This page isn't available to you | هذه الصفحة غير متاحة لك |
+| [ ] | `errors.forbidden.title` | Not available | غير متاحة |
+| [ ] | `errors.notFound.body` | The link may be old or mistyped. | ربما يكون الرابط قديماً أو مكتوباً بشكل خاطئ. |
+| [ ] | `errors.notFound.heading` | We couldn't find that page | لم نعثر على هذه الصفحة |
+| [ ] | `errors.notFound.title` | Page not found | الصفحة غير موجودة |
+| [ ] | `graduation.both` | With your selection you graduate in {{ mine }}; with the recommended plan in {{ rec }}. | باختيارك تتخرج في {{ mine }}؛ وبالخطة المقترحة في {{ rec }}. |
+| [ ] | `graduation.columns` | Semesters until graduation | الفصول الدراسية حتى التخرج |
+| [ ] | `graduation.compare` | Which plan to show | أي خطة تُعرض |
+| [ ] | `graduation.creditLimit` | there isn't room within your credit limit this semester | لا يوجد متسع ضمن حدّ ساعاتك هذا الفصل الدراسي |
+| [ ] | `graduation.date` | You could graduate in {{ term }}. | يمكنك التخرج في {{ term }}. |
+| [ ] | `graduation.delay` | Your selection delays graduation by {{ n }} semesters. | اختيارك يؤخر تخرجك {{ n }} فصول دراسية. |
+| [ ] | `graduation.delayOne` | Your selection delays graduation by one semester. | اختيارك يؤخر تخرجك فصلًا دراسيًا واحدًا. |
+| [ ] | `graduation.electives` | {{ n }} credits of free electives (any course) | {{ n }} ساعات من المقررات الحرة (أي مقرر) |
+| [ ] | `graduation.fix` | Change my plan | عدّل خطتي |
+| [ ] | `graduation.heading` | Graduation Path | مسار التخرج |
+| [ ] | `graduation.legend` | Gold courses must be taken on time, or you graduate later. | المقررات الذهبية يجب أخذها في وقتها، وإلا تأخر تخرجك. |
+| [ ] | `graduation.mySelection` | My selection | اختياري |
+| [ ] | `graduation.none` | We couldn't work out your path yet. Your advisor will help. | لم نتمكن من تحديد مسارك بعد. سيساعدك مرشدك. |
+| [ ] | `graduation.now` | this semester | هذا الفصل |
+| [ ] | `graduation.recommended` | Recommended | المقترحة |
+| [ ] | `graduation.subtitle` | Every semester until you graduate, if you keep to the plan. | كل فصل دراسي حتى تخرجك، إذا التزمت بالخطة. |
+| [ ] | `graduation.summer` | Include summer classes | تضمين الفصل الصيفي |
+| [ ] | `graduation.whyWait` | Why some courses wait | لماذا تنتظر بعض المقررات |
+| [ ] | `history.accepted` | {{ actor }} accepted the suggested changes | قبل {{ actor }} التعديلات المقترحة |
+| [ ] | `history.added` | Added: | أُضيف: |
+| [ ] | `history.approved` | {{ actor }} approved the plan | اعتمد {{ actor }} الخطة |
+| [ ] | `history.empty` | Nothing has happened yet. | لم يحدث شيء بعد. |
+| [ ] | `history.heading` | Plan history | سجل الخطة |
+| [ ] | `history.needsReview` | New grades were posted: the plan needs review | رُصدت درجات جديدة: الخطة تحتاج إلى مراجعة |
+| [ ] | `history.proposed` | {{ actor }} suggested changes (version {{ version }}) | اقترح {{ actor }} تعديلات (النسخة {{ version }}) |
+| [ ] | `history.rejected` | {{ actor }} sent the plan back | أعاد {{ actor }} الخطة |
+| [ ] | `history.removed` | Removed: | أُزيل: |
+| [ ] | `history.reviewing` | {{ actor }} started reviewing | بدأ {{ actor }} المراجعة |
+| [ ] | `history.saved` | {{ actor }} saved a draft (version {{ version }}) | حفظ {{ actor }} مسودة (النسخة {{ version }}) |
+| [ ] | `history.submitted` | {{ actor }} sent the plan (version {{ version }}) | أرسل {{ actor }} الخطة (النسخة {{ version }}) |
+| [ ] | `history.system` | The system | النظام |
+| [ ] | `history.versionStep` | Version {{ from }} → {{ to }} | النسخة {{ from }} ← {{ to }} |
+| [ ] | `login.demo.heading` | Practice accounts (development only) | حسابات تجريبية (لبيئة التطوير فقط) |
+| [ ] | `login.demo.intro` | Password for all: {{ password }} | كلمة المرور للجميع: {{ password }} |
+| [ ] | `login.demo.staff` | Staff | الموظفون |
+| [ ] | `login.demo.students` | Students | الطلاب |
+| [ ] | `login.errors.invalid` | That username and password don't match. Check them and try again. | اسم المستخدم وكلمة المرور غير متطابقين. تحقّق منهما وحاول مرة أخرى. |
+| [ ] | `login.errors.throttled` | Too many tries. Please wait one minute, then try again. | محاولات كثيرة. يرجى الانتظار دقيقة واحدة ثم المحاولة مرة أخرى. |
+| [ ] | `login.errors.unavailable` | We can't reach the service right now. Please try again in a moment. | لا يمكننا الوصول إلى الخدمة الآن. يرجى المحاولة بعد قليل. |
+| [ ] | `login.expired` | You were signed out to keep your account safe. Please sign in again. | تم تسجيل خروجك حفاظاً على أمان حسابك. يرجى تسجيل الدخول مرة أخرى. |
+| [ ] | `login.heading` | Sign in | تسجيل الدخول |
+| [ ] | `login.help` | Trouble signing in? Contact the IT Service Desk. | تواجه مشكلة في الدخول؟ تواصل مع مكتب خدمات تقنية المعلومات. |
+| [ ] | `login.hidePassword` | Hide password | إخفاء كلمة المرور |
+| [ ] | `login.intro` | Plan your semester and send it to your advisor in a few minutes. | خطّط لفصلك الدراسي وأرسله إلى مرشدك خلال دقائق. |
+| [ ] | `login.password` | Password | كلمة المرور |
+| [ ] | `login.passwordRequired` | Enter your password. | أدخل كلمة المرور. |
+| [ ] | `login.showPassword` | Show password | إظهار كلمة المرور |
+| [ ] | `login.signingIn` | Signing in | جارٍ تسجيل الدخول |
+| [ ] | `login.sso.button` | Sign in with your Liwa account | الدخول بحساب جامعة ليوا |
+| [ ] | `login.sso.completing` | Signing you in… | جارٍ تسجيل دخولك… |
+| [ ] | `login.sso.errors.expired` | That sign-in took too long. Please try again. | استغرق تسجيل الدخول وقتاً طويلاً. يرجى المحاولة مرة أخرى. |
+| [ ] | `login.sso.errors.failed` | Signing in with your Liwa account didn't work. Please try again. | لم ينجح الدخول بحساب جامعة ليوا. يرجى المحاولة مرة أخرى. |
+| [ ] | `login.sso.errors.inactive` | Your Smart Registration account is switched off. Please contact the Registrar's Office. | حسابك في نظام التسجيل الذكي متوقف. يرجى التواصل مع مكتب التسجيل. |
+| [ ] | `login.sso.errors.not_registered` | We couldn't find your Liwa account in Smart Registration. Please contact the Registrar's Office. | لم نجد حسابك في نظام التسجيل الذكي. يرجى التواصل مع مكتب التسجيل. |
+| [ ] | `login.sso.errors.unavailable` | Liwa sign-in isn't available right now. Please try again later. | الدخول بحساب جامعة ليوا غير متاح الآن. يرجى المحاولة لاحقاً. |
+| [ ] | `login.sso.hint` | Use the same account you use for Blackboard and your university email. | استخدم الحساب نفسه الذي تستخدمه في Blackboard وبريدك الجامعي. |
+| [ ] | `login.sso.redirecting` | Taking you to the Liwa sign-in page | جارٍ نقلك إلى صفحة الدخول لجامعة ليوا |
+| [ ] | `login.sso.useUsername` | Sign in with a username instead | الدخول باسم المستخدم بدلاً من ذلك |
+| [ ] | `login.submit` | Sign in | دخول |
+| [ ] | `login.title` | Sign in | تسجيل الدخول |
+| [ ] | `login.username` | Username | اسم المستخدم |
+| [ ] | `login.usernameHint` | The username you were given, for example student.new | اسم المستخدم الذي حصلت عليه، مثال: student.new |
+| [ ] | `login.usernameRequired` | Enter your username. | أدخل اسم المستخدم. |
+| [ ] | `messages.empty` | No messages yet | لا توجد رسائل بعد |
+| [ ] | `messages.emptyBody` | You'll get a message here whenever a plan changes status. | ستصلك رسالة هنا كلما تغيّرت حالة خطة. |
+| [ ] | `messages.error` | We couldn't load your messages. Please refresh the page. | تعذّر تحميل رسائلك. يُرجى تحديث الصفحة. |
+| [ ] | `messages.heading` | Messages | الرسائل |
+| [ ] | `messages.markRead` | Mark all as read | تعليم الكل كمقروء |
+| [ ] | `messages.new` | new | جديدة |
+| [ ] | `messages.subtitle` | Updates about your plans, newest first. | تحديثات خططك، الأحدث أولًا. |
+| [ ] | `myPlan.changeInstead` | Change the plan myself instead | سأعدّل الخطة بنفسي |
+| [ ] | `myPlan.heading` | My Plan | خطتي |
+| [ ] | `myPlan.needsReview` | New grades were posted, so this plan needs another look. | رُصدت درجات جديدة، لذا تحتاج هذه الخطة إلى مراجعة. |
+| [ ] | `myPlan.none` | You haven't saved or sent a plan yet | لم تحفظ أو ترسل خطة بعد |
+| [ ] | `myPlan.noneBody` | Start from the plan we recommend. | ابدأ بالخطة التي نقترحها. |
+| [ ] | `myPlan.notes` | Notes from your advisor | ملاحظات مرشدك |
+| [ ] | `myPlan.proposed` | {{ advisor }} suggested these changes | اقترح {{ advisor }} هذه التعديلات |
+| [ ] | `myPlan.status` | Status | الحالة |
+| [ ] | `myPlan.steps.decided` | Advisor's decision | قرار المرشد |
+| [ ] | `myPlan.steps.reviewing` | Advisor reviewing | المرشد يراجعها |
+| [ ] | `myPlan.steps.saved` | Plan made | أُعدّت الخطة |
+| [ ] | `myPlan.steps.submitted` | Sent to your advisor | أُرسلت إلى مرشدك |
+| [ ] | `myPlan.subtitle` | Where your plan is, what your advisor said, and every change. | أين وصلت خطتك، وما قاله مرشدك، وكل تغيير. |
+| [ ] | `myPlan.toPlanner` | Go to the planner | انتقل إلى الخطة |
+| [ ] | `myPlan.version` | version {{ n }} | النسخة {{ n }} |
+| [ ] | `nav.advisees` | My students | طلابي |
+| [ ] | `nav.availability` | Availability | أوقات الفراغ |
+| [ ] | `nav.graduation` | Graduation Path | مسار التخرج |
+| [ ] | `nav.home` | Home | الرئيسية |
+| [ ] | `nav.messages` | Messages | الرسائل |
+| [ ] | `nav.myPlan` | My Plan | خطتي |
+| [ ] | `nav.planner` | Planner | الخطة |
+| [ ] | `nav.queue` | Plans to review | خطط للمراجعة |
+| [ ] | `notifications.planAccepted` | {{ student }} accepted your suggested changes for {{ term }}. | قبل {{ student }} التعديلات المقترحة لفصل {{ term }}. |
+| [ ] | `notifications.planApproved` | {{ advisor }} approved your plan. | اعتمد {{ advisor }} خطتك. |
+| [ ] | `notifications.planChangesProposed` | {{ advisor }} suggested changes to your plan. | اقترح {{ advisor }} تعديلات على خطتك. |
+| [ ] | `notifications.planNeedsReviewAdvisor` | New grades were posted: {{ student }}'s approved plan for {{ term }} needs review. | رُصدت درجات جديدة: خطة {{ student }} المعتمدة لفصل {{ term }} تحتاج إلى مراجعة. |
+| [ ] | `notifications.planNeedsReviewStudent` | New grades were posted: your approved plan for {{ term }} needs another look with your advisor. | رُصدت درجات جديدة: خطتك المعتمدة لفصل {{ term }} تحتاج إلى مراجعة مع مرشدك. |
+| [ ] | `notifications.planRejected` | {{ advisor }} sent your plan back with a comment. | أعاد {{ advisor }} خطتك مع تعليق. |
+| [ ] | `notifications.planReviewing` | {{ advisor }} is reviewing your plan. | {{ advisor }} يراجع خطتك الآن. |
+| [ ] | `notifications.planSubmitted` | {{ student }} sent a plan for {{ term }}. | أرسل {{ student }} خطة لفصل {{ term }}. |
+| [ ] | `notifications.you.accepted` | You accepted your advisor's changes. Your plan for {{ term }} is approved. | قبلت تعديلات مرشدك. خطتك لفصل {{ term }} معتمدة. |
+| [ ] | `notifications.you.approved` | You approved {{ student }}'s plan. | اعتمدت خطة {{ student }}. |
+| [ ] | `notifications.you.proposed` | You suggested changes to {{ student }}'s plan. | اقترحت تعديلات على خطة {{ student }}. |
+| [ ] | `notifications.you.rejected` | You sent {{ student }}'s plan back. | أعدت خطة {{ student }}. |
+| [ ] | `notifications.you.reviewing` | You started reviewing {{ student }}'s plan. | بدأت مراجعة خطة {{ student }}. |
+| [ ] | `notifications.you.submitted` | You sent your plan for {{ term }} to your advisor. | أرسلت خطتك لفصل {{ term }} إلى مرشدك. |
+| [ ] | `notificationsUi.empty` | No notifications yet. | لا توجد إشعارات بعد. |
+| [ ] | `notificationsUi.label` | Notifications, {{ count }} unread | الإشعارات، {{ count }} غير مقروءة |
+| [ ] | `plan.autosaved` | Your changes are saved automatically. | تُحفظ تغييراتك تلقائيًا. |
+| [ ] | `plan.building` | Building your plan… | جارٍ إعداد خطتك… |
+| [ ] | `plan.change` | Change courses | تغيير المواد |
+| [ ] | `plan.confirm.cancel` | Not yet | ليس الآن |
+| [ ] | `plan.confirm.heading` | Send your plan to {{ advisor }}? | هل تريد إرسال خطتك إلى {{ advisor }}؟ |
+| [ ] | `plan.confirm.intro` | Before you send it, please read each note and tick "I understand". | قبل الإرسال، يرجى قراءة كل ملاحظة ووضع علامة على "فهمت". |
+| [ ] | `plan.confirm.send` | Send now | أرسل الآن |
+| [ ] | `plan.confirm.understand` | I understand | فهمت |
+| [ ] | `plan.credit1` | 1 credit | ساعة واحدة |
+| [ ] | `plan.credits` | {{ n }} credits | {{ n }} ساعات |
+| [ ] | `plan.critical` | Take on time | خذه في وقته |
+| [ ] | `plan.criticalHint` | Other courses depend on this one. Taking it later would delay your graduation. | تعتمد عليه مقررات أخرى. تأجيله سيؤخر تخرجك. |
+| [ ] | `plan.dayJoin` |  &  |  و |
+| [ ] | `plan.details` | Details | التفاصيل |
+| [ ] | `plan.doneChanging` | Done changing | انتهيت من التغيير |
+| [ ] | `plan.draftRestored` | We kept the changes you made last time. | احتفظنا بالتغييرات التي أجريتها في المرة السابقة. |
+| [ ] | `plan.editor.canTake` | Courses you can take this semester | المقررات التي يمكنك أخذها هذا الفصل الدراسي |
+| [ ] | `plan.editor.classTime` | Class time | موعد المحاضرة |
+| [ ] | `plan.editor.counter` | {{ n }} credits | {{ n }} ساعة معتمدة |
+| [ ] | `plan.editor.counterLimits` | Your limit: {{ min }}–{{ max }} credits | حدّك: {{ min }}–{{ max }} ساعة معتمدة |
+| [ ] | `plan.editor.full` | Full | مكتملة |
+| [ ] | `plan.editor.groups.moreCredits` | Need more credits first ({{ n }}) | تحتاج إلى ساعات أكثر أولاً ({{ n }}) |
+| [ ] | `plan.editor.groups.notOffered` | Not offered this semester ({{ n }}) | لا تُطرح هذا الفصل الدراسي ({{ n }}) |
+| [ ] | `plan.editor.groups.other` | Other reasons ({{ n }}) | أسباب أخرى ({{ n }}) |
+| [ ] | `plan.editor.groups.permission` | Need permission from the department ({{ n }}) | تحتاج إلى موافقة القسم ({{ n }}) |
+| [ ] | `plan.editor.groups.prerequisite` | Need to pass another course first ({{ n }}) | يجب اجتياز مادة أخرى أولاً ({{ n }}) |
+| [ ] | `plan.editor.notAvailable` | Not eligible this semester ({{ n }}) | غير متاحة لك هذا الفصل الدراسي ({{ n }}) |
+| [ ] | `plan.empty` | No classes fit your choices right now. Try different times, or tap "Change courses". | لا توجد شُعب تناسب اختياراتك الآن. جرّب أوقاتاً مختلفة، أو اضغط "تغيير المواد". |
+| [ ] | `plan.fixFirst` | Please fix these before sending: | يرجى إصلاح ما يلي قبل الإرسال: |
+| [ ] | `plan.freeTime.day` | Day | اليوم |
+| [ ] | `plan.freeTime.gridCaption` | Times you are free each week | أوقات فراغك كل أسبوع |
+| [ ] | `plan.freeTime.heading` | When are you free? | متى تكون متفرغاً؟ |
+| [ ] | `plan.freeTime.hint` | Pick when you're free, or skip this and we'll show everything. | اختر أوقات فراغك، أو تجاوز هذه الخطوة وسنعرض لك كل الخيارات. |
+| [ ] | `plan.freeTime.periods.afternoon` | Afternoon | بعد الظهر |
+| [ ] | `plan.freeTime.periods.evening` | Evening | مساءً |
+| [ ] | `plan.freeTime.periods.morning` | Morning | صباحاً |
+| [ ] | `plan.freeTime.presets.any.body` | Show me everything | اعرض لي كل الخيارات |
+| [ ] | `plan.freeTime.presets.any.title` | Any time | أي وقت |
+| [ ] | `plan.freeTime.presets.custom.body` | Pick days and times myself | أختار الأيام والأوقات بنفسي |
+| [ ] | `plan.freeTime.presets.custom.title` | Let me choose | دعني أختار |
+| [ ] | `plan.freeTime.presets.daytime.body` | Mon–Fri, before 5 pm | من الاثنين إلى الجمعة، قبل 5 مساءً |
+| [ ] | `plan.freeTime.presets.daytime.title` | Daytime | خلال النهار |
+| [ ] | `plan.freeTime.presets.evenings.body` | I work during the day. Mon–Thu, 5–8 pm | أعمل خلال النهار. من الاثنين إلى الخميس، 5–8 مساءً |
+| [ ] | `plan.freeTime.presets.evenings.title` | Evenings only | مساءً فقط |
+| [ ] | `plan.freeTime.presets.mornings.body` | Mon–Fri, before 12 noon | من الاثنين إلى الجمعة، قبل 12 ظهراً |
+| [ ] | `plan.freeTime.presets.mornings.title` | Mornings only | صباحاً فقط |
+| [ ] | `plan.freeTimeFirst` | Tell us when you're free so we only pick classes that fit. | أخبرنا متى تكون متفرغًا حتى نختار محاضرات تناسبك. |
+| [ ] | `plan.freeTimeLink` | Choose your free time | اختر أوقات فراغك |
+| [ ] | `plan.goodToKnow` | Good to know: | معلومات مهمة: |
+| [ ] | `plan.graduate` | If you follow this plan, you could graduate in {{ term }}. | إذا اتبعت هذه الخطة، يمكنك التخرج في {{ term }}. |
+| [ ] | `plan.graduateSummer` | With summer classes: {{ term }}. | مع الدراسة الصيفية: {{ term }}. |
+| [ ] | `plan.heading` | Here is the plan we recommend for {{ term }} | هذه هي الخطة التي نقترحها لفصل {{ term }} |
+| [ ] | `plan.headingSent` | Your plan for {{ term }} | خطتك لفصل {{ term }} |
+| [ ] | `plan.intro` | We only picked classes you can take, with no time clashes. Happy with it? Send it to your advisor. | اخترنا لك فقط المحاضرات التي يمكنك أخذها، دون أي تعارض. هل أعجبتك؟ أرسلها إلى مرشدك. |
+| [ ] | `plan.limits` | You can take {{ min }}–{{ max }} credits this semester. | يمكنك تسجيل {{ min }}–{{ max }} ساعة معتمدة هذا الفصل الدراسي. |
+| [ ] | `plan.listLabel` | Courses in your plan | المواد في خطتك |
+| [ ] | `plan.messages.accepted` | Done. Your plan is approved. | تم. خطتك معتمدة الآن. |
+| [ ] | `plan.messages.error` | Your plan couldn't be sent. Please check the notes above and try again. | تعذّر إرسال خطتك. يرجى مراجعة الملاحظات أعلاه والمحاولة مرة أخرى. |
+| [ ] | `plan.messages.saved` | Saved. You can come back and send it later. | تم الحفظ. يمكنك العودة وإرسالها لاحقاً. |
+| [ ] | `plan.messages.sent` | Your plan has been sent to {{ advisor }}. | تم إرسال خطتك إلى {{ advisor }}. |
+| [ ] | `plan.noClasses` | No classes | لا توجد محاضرات |
+| [ ] | `plan.notReady` | We can't build your plan yet because your study record or this semester's timetable hasn't arrived. Please check again later. | لا يمكننا إعداد خطتك بعد لأن سجلك الدراسي أو جدول هذا الفصل لم يصل. يُرجى المحاولة لاحقًا. |
+| [ ] | `plan.onlineAnyTime` | Online, study any time | عن بُعد، ادرس في أي وقت |
+| [ ] | `plan.onlineList` | Online (no fixed time): | عن بُعد (دون وقت محدد): |
+| [ ] | `plan.prefs.delivery` | How do you want to study? | كيف تفضّل أن تدرس؟ |
+| [ ] | `plan.prefs.deliveryAny` | On campus or online | في الحرم الجامعي أو عن بُعد |
+| [ ] | `plan.prefs.deliveryCampus` | On campus only | في الحرم الجامعي فقط |
+| [ ] | `plan.prefs.deliveryOnline` | Online only | عن بُعد فقط |
+| [ ] | `plan.prefs.maxCredits` | How many credits? | كم عدد الساعات؟ |
+| [ ] | `plan.prefs.noLimit` | As many as I can | أكبر عدد ممكن |
+| [ ] | `plan.prefs.upTo` | Up to {{ n }} credits | حتى {{ n }} ساعة |
+| [ ] | `plan.reply.ChangesProposed` | {{ advisor }} suggested some changes. | اقترح {{ advisor }} بعض التعديلات. |
+| [ ] | `plan.reply.ChangesProposedHint` | The plan below shows the suggested changes. Accept them, or change the plan and send it again. | تعرض الخطة أدناه التعديلات المقترحة. اقبلها، أو عدّل الخطة وأرسلها مرة أخرى. |
+| [ ] | `plan.reply.NeedsReview` | New grades were posted, so your approved plan needs another look. | رُصدت درجات جديدة، لذا تحتاج خطتك المعتمدة إلى مراجعة. |
+| [ ] | `plan.reply.NeedsReviewHint` | Some classes can't go ahead now. Change your plan and send it again, or talk to your advisor. | لم يعد بالإمكان أخذ بعض المحاضرات. عدّل خطتك وأرسلها مرة أخرى، أو تحدث إلى مرشدك. |
+| [ ] | `plan.reply.Rejected` | {{ advisor }} sent your plan back. | أعاد {{ advisor }} خطتك. |
+| [ ] | `plan.reply.RejectedHint` | Make the changes below, then send it again. | أجرِ التعديلات أدناه ثم أرسلها مرة أخرى. |
+| [ ] | `plan.reply.accept` | Accept the changes | قبول التعديلات |
+| [ ] | `plan.reply.seeChanges` | See what changed | اعرض ما تغيّر |
+| [ ] | `plan.saveLater` | Save for later | احفظها لوقت لاحق |
+| [ ] | `plan.seeMyPlan` | See where it is | اعرف أين وصلت |
+| [ ] | `plan.seePath` | See your graduation path | اعرض مسار تخرجك |
+| [ ] | `plan.send` | Send to my advisor | أرسلها إلى مرشدي |
+| [ ] | `plan.sentHint` | You'll get a notification when they reply. | سيصلك إشعار عندما يرد المرشد. |
+| [ ] | `plan.status.AdvisorReviewing` | {{ advisor }} is reviewing your plan. | {{ advisor }} يراجع خطتك الآن. |
+| [ ] | `plan.status.Approved` | Approved by {{ advisor }}. | وافق عليها {{ advisor }}. |
+| [ ] | `plan.status.Submitted` | Sent to {{ advisor }}. Waiting for their review. | أُرسلت إلى {{ advisor }} بانتظار المراجعة. |
+| [ ] | `plan.total` | Total: {{ n }} credits | المجموع: {{ n }} ساعة |
+| [ ] | `plan.useRecommendation` | Go back to the recommended plan | العودة إلى الخطة المقترحة |
+| [ ] | `plan.week` | Your week | أسبوعك |
+| [ ] | `plan.why` | Why? | لماذا؟ |
+| [ ] | `plan.yourAdvisor` | your advisor | مرشدك |
+| [ ] | `planStatus.AdvisorReviewing` | Being reviewed | قيد المراجعة |
+| [ ] | `planStatus.Approved` | Approved | معتمدة |
+| [ ] | `planStatus.ChangesProposed` | Changes suggested | مقترح تعديلات |
+| [ ] | `planStatus.Draft` | Draft | مسودة |
+| [ ] | `planStatus.NeedsReview` | Needs another look | تحتاج إلى مراجعة جديدة |
+| [ ] | `planStatus.Rejected` | Sent back | أُعيدت للطالب |
+| [ ] | `planStatus.Submitted` | Waiting for review | بانتظار المراجعة |
+| [ ] | `planner.actions.AccountHold` | There is a {{ value }} hold on your account. You can send your plan, but contact the office to clear it before registration. | يوجد إيقاف ({{ value }}) على حسابك. يمكنك إرسال خطتك، لكن تواصل مع المكتب لرفعه قبل التسجيل. |
+| [ ] | `planner.actions.AlreadyTaken` | Remove {{ courses }}: you've already taken it. | احذف {{ courses }}: سبق أن أخذته. |
+| [ ] | `planner.actions.BelowMinimumCredits` | Add {{ missing }} more credits to reach the {{ value }}-credit minimum, or ask your advisor to approve a lighter load. | أضف {{ missing }} ساعات معتمدة أخرى لتصل إلى الحد الأدنى وهو {{ value }} ساعة، أو اطلب من مرشدك الموافقة على عبء أخف. |
+| [ ] | `planner.actions.ClashesWith` | {{ first }} and {{ second }} are at the same time. Pick a different class time for one of them. | {{ first }} و{{ second }} في الوقت نفسه. اختر وقتًا آخر لأحدهما. |
+| [ ] | `planner.actions.DuplicateCourse` | You picked {{ courses }} twice. Remove one of them. | اخترت {{ courses }} مرتين. احذف إحداهما. |
+| [ ] | `planner.actions.FallOnlyMissed` | Try to fit {{ courses }} in now: it's only offered in {{ value }}, so skipping it can delay graduation. | حاول أن تضيف {{ courses }} الآن: لا يُطرح إلا في فصل {{ value }}، وتأجيله قد يؤخر تخرجك. |
+| [ ] | `planner.actions.NearlyFull` | {{ courses }} is almost full. Send your plan soon, or pick another class time. | {{ courses }} يكاد يمتلئ. أرسل خطتك قريبًا، أو اختر وقتًا آخر. |
+| [ ] | `planner.actions.NotEligibleNow` | Remove {{ courses }}: you can't take it yet. | احذف {{ courses }}: لا يمكنك أخذه بعد. |
+| [ ] | `planner.actions.NotInDegreePlan` | Remove {{ courses }}: it isn't part of your degree plan. | احذف {{ courses }}: ليس جزءًا من خطتك الدراسية. |
+| [ ] | `planner.actions.OutsideAvailability` | {{ courses }} is outside the times you said you're free. Pick another class time, or keep it if that's fine. | {{ courses }} خارج الأوقات التي قلت إنك متفرغ فيها. اختر وقتًا آخر، أو أبقِه إن كان ذلك مناسبًا. |
+| [ ] | `planner.actions.OverCreditLimit` | Remove {{ over }} credits to get back under your limit of {{ value }} credits. | احذف {{ over }} ساعات معتمدة لتعود ضمن حدّك وهو {{ value }} ساعة. |
+| [ ] | `planner.actions.SectionFull` | {{ courses }} is full. Pick another class time. | {{ courses }} ممتلئ. اختر وقتًا آخر. |
+| [ ] | `planner.holds.ADVISING` | advising | إرشادي |
+| [ ] | `planner.holds.FINANCE` | finance | مالي |
+| [ ] | `planner.holds.REGISTRAR` | Registrar | من التسجيل |
+| [ ] | `planner.join.and` | and | و |
+| [ ] | `planner.join.or` | or | أو |
+| [ ] | `planner.reasons.AccountHold` | There is a {{ value }} hold on your account: you can't register until it's cleared | يوجد إيقاف ({{ value }}) على حسابك: لا يمكنك التسجيل حتى يُرفع |
+| [ ] | `planner.reasons.AlreadyTaken` | You've already taken {{ courses }} | لقد درست {{ courses }} من قبل |
+| [ ] | `planner.reasons.BelowMinimumCredits` | This is below the usual minimum of {{ value }} credits | هذا أقل من الحد الأدنى المعتاد وهو {{ value }} ساعة |
+| [ ] | `planner.reasons.ClashesWith` | {{ courses }} are at the same time | {{ courses }} في الوقت نفسه |
+| [ ] | `planner.reasons.ClashesWithOne` | Clashes with {{ courses }} | يتعارض مع {{ courses }} |
+| [ ] | `planner.reasons.CorequisiteDoesNotFit` | Must be taken with {{ courses }}, but they don't fit together in your free time | يجب تسجيلها مع {{ courses }}، لكن لا يمكن جمعهما في أوقات فراغك |
+| [ ] | `planner.reasons.CorequisiteMissing` | Add {{ second }} too: it must be taken with {{ first }} | أضف {{ second }} أيضاً: يجب تسجيلها مع {{ first }} |
+| [ ] | `planner.reasons.CountsTowardElectives` | Counts toward your electives | تُحتسب ضمن موادك الاختيارية |
+| [ ] | `planner.reasons.CreditLimitReached` | Would go over your credit limit ({{ value }}) | ستتجاوز الحد المسموح من الساعات ({{ value }}) |
+| [ ] | `planner.reasons.CreditsRequired` | You need {{ value }} credits first | تحتاج إلى {{ value }} ساعة معتمدة أولاً |
+| [ ] | `planner.reasons.DeliveryNotPreferred` | Not the way you prefer to study | ليست بطريقة الدراسة التي تفضّلها |
+| [ ] | `planner.reasons.DuplicateCourse` | You picked {{ courses }} twice | اخترت {{ courses }} مرتين |
+| [ ] | `planner.reasons.ElectiveQuotaMet` | You already have enough electives planned | لديك ما يكفي من المواد الاختيارية في خطتك |
+| [ ] | `planner.reasons.FallOnlyMissed` | {{ courses }} is only offered in {{ value }}: if you skip it now, it waits a whole year | لا يُطرح {{ courses }} إلا في فصل {{ value }}: إذا لم تأخذه الآن فسينتظر سنة كاملة |
+| [ ] | `planner.reasons.FewerSeatsLeft` | Another class time had more seats | كان لموعد آخر مقاعد أكثر |
+| [ ] | `planner.reasons.GradeMustBePosted` | Your grade in {{ courses }} must be posted first | يجب رصد درجتك في {{ courses }} أولًا |
+| [ ] | `planner.reasons.GraduationNotReachable` | We couldn't work out your graduation date. Your advisor will help. | لم نتمكن من تحديد موعد تخرجك. سيساعدك مرشدك. |
+| [ ] | `planner.reasons.InProgressPrerequisite` | Some courses depend on grades you haven't received yet: {{ courses }} | بعض المواد تعتمد على درجات لم تصلك بعد: {{ courses }} |
+| [ ] | `planner.reasons.MinimumGradeNotMet` | You need at least a {{ value }} in {{ courses }} | تحتاج إلى تقدير {{ value }} على الأقل في {{ courses }} |
+| [ ] | `planner.reasons.NearlyFull` | Almost full: {{ courses }} has only a few seats left | يكاد يمتلئ: بقيت مقاعد قليلة في {{ courses }} |
+| [ ] | `planner.reasons.NoCreditRule` | We couldn't find your credit limit. Please contact the Registrar. | لم نتمكن من معرفة الحد المسموح لك من الساعات. يرجى التواصل مع مكتب التسجيل. |
+| [ ] | `planner.reasons.NoSectionFits` | No class times match when you're free | لا توجد أوقات محاضرات تناسب أوقات فراغك |
+| [ ] | `planner.reasons.NoSectionsThisTerm` | No classes scheduled this semester | لا توجد شُعب مجدولة هذا الفصل الدراسي |
+| [ ] | `planner.reasons.NotEligibleNow` | You can't take {{ courses }} yet | لا يمكنك تسجيل {{ courses }} بعد |
+| [ ] | `planner.reasons.NotInDegreePlan` | {{ courses }} isn't part of your degree plan | {{ courses }} ليست ضمن خطتك الدراسية |
+| [ ] | `planner.reasons.NotOfferedThisTerm` | Not offered this semester (usually in {{ value }}) | لا يُطرح هذا الفصل الدراسي (يُطرح عادةً في {{ value }}) |
+| [ ] | `planner.reasons.OfferedButNoSections` | Some courses have no classes scheduled this semester: {{ courses }} | بعض المقررات ليس لها شُعب مجدولة هذا الفصل الدراسي: {{ courses }} |
+| [ ] | `planner.reasons.OnlyOfferedIn` | Only offered in {{ value }}, so take it now | تُطرح في {{ value }} فقط، لذا سجّلها الآن |
+| [ ] | `planner.reasons.OutsideAvailability` | {{ courses }} is outside the times you said you're free | {{ courses }} خارج الأوقات التي اخترت أنك متفرغ فيها |
+| [ ] | `planner.reasons.OutsideAvailabilitySection` | Outside the times you're free | خارج أوقات فراغك |
+| [ ] | `planner.reasons.OverCreditLimit` | That's more than your limit of {{ value }} credits | هذا أكثر من الحد المسموح لك وهو {{ value }} ساعة |
+| [ ] | `planner.reasons.PermissionAssumed` | Your path assumes the department gives permission for {{ courses }} when the time comes | يفترض مسارك أن القسم سيوافق على {{ courses }} عندما يحين وقته |
+| [ ] | `planner.reasons.PermissionRequired` | Needs permission from the department | تحتاج إلى موافقة القسم |
+| [ ] | `planner.reasons.PrerequisiteFailed` | You need to pass {{ courses }} first, with at least a {{ value }} | يجب أن تنجح في {{ courses }} أولاً بتقدير {{ value }} على الأقل |
+| [ ] | `planner.reasons.PrerequisiteFailedAny` | You need to pass {{ courses }} first | يجب أن تنجح في {{ courses }} أولاً |
+| [ ] | `planner.reasons.PrerequisiteNotMet` | You need to pass {{ courses }} first | يجب أن تنجح في {{ courses }} أولاً |
+| [ ] | `planner.reasons.RequiredForDegree` | Needed for your degree | مطلوبة لشهادتك |
+| [ ] | `planner.reasons.SectionFull` | {{ courses }} is full | {{ courses }} مكتملة |
+| [ ] | `planner.reasons.SectionFullSection` | All seats are taken | جميع المقاعد محجوزة |
+| [ ] | `planner.reasons.StandingRequired` | Open from your {{ value }} onward | متاحة ابتداءً من {{ value }} |
+| [ ] | `planner.reasons.SuggestedForThisSemester` | Planned for this point in your degree | مقررة لهذه المرحلة من دراستك |
+| [ ] | `planner.reasons.TakeWithCorequisite` | Taken together with {{ courses }} | تُسجَّل مع {{ courses }} |
+| [ ] | `planner.reasons.UnknownSection` | One of these classes is no longer available. Please refresh the page. | إحدى هذه الشُّعب لم تعد متاحة. يرجى تحديث الصفحة. |
+| [ ] | `planner.reasons.UnlocksOtherCourses` | Take this soon: {{ value }} other courses depend on it | سجّلها قريباً: {{ value }} مواد أخرى تعتمد عليها |
+| [ ] | `planner.reasons.UnlocksOtherCoursesOne` | Take this soon: 1 other course depends on it | سجّلها قريباً: مادة أخرى تعتمد عليها |
+| [ ] | `planner.reasons.WaitingForGrade` | Waiting for a grade: you can take {{ first }} if you pass {{ second }} | بانتظار درجة: يمكنك أخذ {{ first }} إذا نجحت في {{ second }} |
+| [ ] | `planner.season.Fall` | Fall | الخريف |
+| [ ] | `planner.season.Spring` | Spring | الربيع |
+| [ ] | `planner.season.Summer` | Summer | الصيف |
+| [ ] | `roles.Admin` | Administrator | مسؤول النظام |
+| [ ] | `roles.Advisor` | Academic advisor | مرشد أكاديمي |
+| [ ] | `roles.Student` | Student | طالب |
+| [ ] | `shell.accountMenu` | Account menu for {{ name }} | قائمة حساب {{ name }} |
+| [ ] | `shell.badge` | {{ n }} waiting | {{ n }} بانتظار المراجعة |
+| [ ] | `shell.closeMenu` | Close menu | إغلاق القائمة |
+| [ ] | `shell.collapseMenu` | Hide menu labels | إخفاء أسماء القائمة |
+| [ ] | `shell.expandMenu` | Show menu labels | إظهار أسماء القائمة |
+| [ ] | `shell.homeLink` | Smart Registration home | الصفحة الرئيسية للتسجيل الذكي |
+| [ ] | `shell.more` | More | المزيد |
+| [ ] | `shell.navLabel` | Main menu | القائمة الرئيسية |
+| [ ] | `shell.openMenu` | Open menu | فتح القائمة |
+| [ ] | `shell.signOut` | Sign out | تسجيل الخروج |
+| [ ] | `shell.skipToContent` | Skip to main content | الانتقال إلى المحتوى الرئيسي |
+| [ ] | `shell.switchLanguage` | Switch language to Arabic | تغيير اللغة إلى الإنجليزية |
+| [ ] | `shell.term` | Semester | الفصل الدراسي |
+| [ ] | `shell.termClosed` | not open for planning | غير متاح للتخطيط |
+| [ ] | `shell.termHint` | Planning is open for the current semester | التخطيط متاح للفصل الدراسي الحالي |
+| [ ] | `shell.theme.dark` | Theme: dark | المظهر: داكن |
+| [ ] | `shell.theme.light` | Theme: light | المظهر: فاتح |
+| [ ] | `shell.theme.system` | Theme: same as my device | المظهر: مثل جهازي |
+| [ ] | `student.home.hold` | There is a hold on your account. You can still make your plan, but you can't register until it's cleared. | يوجد إيقاف على حسابك. ما زال بإمكانك إعداد خطتك، لكن لا يمكنك التسجيل حتى يُرفع. |
+| [ ] | `student.home.next` | Your plan | خطتك |
+| [ ] | `student.home.nextBy.AdvisorReviewing` | Your advisor is looking at your plan now. | مرشدك يراجع خطتك الآن. |
+| [ ] | `student.home.nextBy.Approved` | Your plan is approved. You're ready to register. | اعتُمدت خطتك. أنت جاهز للتسجيل. |
+| [ ] | `student.home.nextBy.ChangesProposed` | Your advisor suggested changes. Have a look. | اقترح مرشدك تعديلات. ألقِ نظرة عليها. |
+| [ ] | `student.home.nextBy.Draft` | Your plan is saved but not sent yet. | خطتك محفوظة لكنها لم تُرسل بعد. |
+| [ ] | `student.home.nextBy.NeedsReview` | New grades were posted. Your plan needs another look. | رُصدت درجات جديدة. خطتك تحتاج إلى مراجعة. |
+| [ ] | `student.home.nextBy.Rejected` | Your advisor sent your plan back. See their comment. | أعاد مرشدك خطتك. اطّلع على تعليقه. |
+| [ ] | `student.home.nextBy.Submitted` | Your plan is with your advisor. | خطتك لدى مرشدك. |
+| [ ] | `student.home.nextBy.none` | We've built a plan for you with {{ n }} credits. Have a look and send it to your advisor. | أعددنا لك خطة من {{ n }} ساعة معتمدة. ألقِ نظرة عليها وأرسلها إلى مرشدك. |
+| [ ] | `student.home.planComingSoon` | Soon you'll find the plan we recommend for you right here. You'll be able to change it and send it to your advisor. | قريباً ستجد هنا الخطة التي نقترحها لك، وستتمكن من تعديلها وإرسالها إلى مرشدك. |
+| [ ] | `student.home.planHeading` | Your plan for next semester | خطتك للفصل القادم |
+| [ ] | `student.home.seePlan` | See the plan we recommend | اعرض الخطة التي نقترحها |
+| [ ] | `student.home.steps.availability.body` | Pick the days and times that suit you, like evenings only. | اختر الأيام والأوقات التي تناسبك، مثل المساء فقط. |
+| [ ] | `student.home.steps.availability.title` | Tell us when you're free | أخبرنا بأوقات فراغك |
+| [ ] | `student.home.steps.review.body` | We only choose classes you can take, with no time clashes. | نختار فقط المواد التي يمكنك تسجيلها، دون تعارض في المواعيد. |
+| [ ] | `student.home.steps.review.title` | Check the plan we build for you | راجع الخطة التي نعدّها لك |
+| [ ] | `student.home.steps.send.body` | Your advisor approves it or suggests changes. | يوافق مرشدك عليها أو يقترح تعديلات. |
+| [ ] | `student.home.steps.send.title` | Send it to your advisor | أرسلها إلى مرشدك |
+| [ ] | `student.home.studies.advisor` | Your advisor | مرشدك الأكاديمي |
+| [ ] | `student.home.studies.error` | We couldn't load your study details right now. Please refresh the page. | تعذّر تحميل تفاصيل دراستك الآن. يرجى تحديث الصفحة. |
+| [ ] | `student.home.studies.gpa` | GPA | المعدل التراكمي |
+| [ ] | `student.home.studies.heading` | Your studies | دراستك |
+| [ ] | `student.home.studies.inProgress` | Plus {{ credits }} credits in progress, waiting for final grades. | بالإضافة إلى {{ credits }} ساعة قيد الدراسة بانتظار الدرجات النهائية. |
+| [ ] | `student.home.studies.noGpa` | No grades yet | لا توجد درجات بعد |
+| [ ] | `student.home.studies.noRecord` | We haven't received your study record from the Registrar yet. Please check again later. | لم يصلنا سجلك الدراسي من مكتب التسجيل بعد. يرجى المحاولة لاحقاً. |
+| [ ] | `student.home.studies.percent` | You're {{ percent }}% of the way to graduating. | أنجزت {{ percent }}٪ من طريقك إلى التخرج. |
+| [ ] | `student.home.studies.probation` | You're on academic probation, so you can take fewer credits this semester. Your advisor is there to help you get back on track. | أنت تحت الإنذار الأكاديمي، لذا يمكنك تسجيل ساعات أقل هذا الفصل الدراسي. مرشدك موجود لمساعدتك على العودة إلى المسار الصحيح. |
+| [ ] | `student.home.studies.progress` | {{ earned }} of {{ required }} credits done | أنجزت {{ earned }} من {{ required }} ساعة معتمدة |
+| [ ] | `student.home.studies.progressLabel` | Progress toward graduation | التقدم نحو التخرج |
+| [ ] | `student.home.studies.standing.Freshman` | Freshman (1st year) | مستجد (السنة الأولى) |
+| [ ] | `student.home.studies.standing.Junior` | Junior (3rd year) | السنة الثالثة |
+| [ ] | `student.home.studies.standing.Senior` | Senior (4th year) | السنة الرابعة |
+| [ ] | `student.home.studies.standing.Sophomore` | Sophomore (2nd year) | السنة الثانية |
+| [ ] | `student.home.studies.year` | Year of study | السنة الدراسية |
+| [ ] | `student.home.subtitle` | Let's get your next semester sorted. | لنجهّز فصلك الدراسي القادم. |
+| [ ] | `student.home.title` | My plan | خطتي |
+| [ ] | `student.home.welcome` | Welcome, {{ name }} | أهلاً بك يا {{ name }} |
+| [ ] | `timetable.blockedFriday` | No classes Friday afternoon | لا محاضرات بعد ظهر الجمعة |
+| [ ] | `timetable.caption` | Your classes this week | محاضراتك هذا الأسبوع |
+| [ ] | `timetable.clash` | Time clash | تعارض في الوقت |
+| [ ] | `timetable.clashNote` | Two classes are at the same time. Pick a different class time for one of them. | هناك محاضرتان في الوقت نفسه. اختر وقتًا آخر لإحداهما. |
+| [ ] | `timetable.editCaption` | Tap the hours you're free | اضغط على الساعات التي تكون فيها متفرغًا |
+| [ ] | `timetable.noClasses` | No classes yet | لا توجد محاضرات بعد |
+| [ ] | `timetable.online` | Online, no fixed time: | عن بُعد، دون وقت محدد: |
+| [ ] | `timetable.showGrid` | Show week grid | عرض جدول الأسبوع |
+| [ ] | `timetable.showList` | Show as a list | عرض كقائمة |
+| [ ] | `walkthrough.dismiss` | Got it, don't show again | فهمت، لا تُظهرها مرة أخرى |
+| [ ] | `walkthrough.heading` | Three steps to your next semester | ثلاث خطوات لفصلك الدراسي القادم |

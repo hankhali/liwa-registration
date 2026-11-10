@@ -7,7 +7,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { AuthService, SignInError, SsoConfig } from '../../core/auth/auth.service';
+
+interface DemoAccounts {
+  password: string;
+  accounts: { username: string; role: string; description: string }[];
+}
 import { LanguageService } from '../../core/i18n/language.service';
 
 const SSO_ERRORS = ['failed', 'not_registered', 'inactive', 'expired', 'unavailable'] as const;
@@ -71,6 +78,20 @@ export class LoginPage {
       await this.router.navigate([], { queryParams: { sso_code: null }, queryParamsHandling: 'merge', replaceUrl: true });
     }
     this.ssoConfig.set(await this.auth.ssoConfig());
+    // Practice accounts: the API only answers in Development with demo data on (404 everywhere else).
+    try {
+      this.demo.set(await firstValueFrom(this.http.get<DemoAccounts>('/api/auth/demo-accounts')));
+    } catch {
+      this.demo.set(null);
+    }
+  }
+
+  protected readonly demo = signal<DemoAccounts | null>(null);
+  private readonly http = inject(HttpClient);
+
+  protected useDemo(username: string, password: string): void {
+    this.showLocal.set(true);
+    this.form.setValue({ username, password });
   }
 
   protected startSso(): void {

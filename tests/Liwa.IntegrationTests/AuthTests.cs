@@ -124,7 +124,11 @@ public sealed class AuthTests(LiwaApiFactory factory)
         });
 
         // Students created by an import sign in with their university account: they never get a password.
+        var imports = scope.ServiceProvider.GetRequiredService<Liwa.Application.Imports.IImportService>();
+        var csv = "student_id,display_name,program_code,catalog_year,admit_term\n202799901,Imported Student,BIT,2024,2027SP\n";
+        var report = await imports.ImportAsync(Liwa.Application.Imports.ImportKind.Students, new MemoryStream(System.Text.Encoding.UTF8.GetBytes(csv)), dryRun: false, null, default);
+        Assert.True(report.Saved);
         Assert.True(await db.Users.AnyAsync(u => !demoNames.Contains(u.Username)));
-        Assert.All(await db.Users.Where(u => !demoNames.Contains(u.Username)).ToListAsync(), u => Assert.Null(u.PasswordHash));
+        Assert.All(await db.Users.AsNoTracking().Where(u => !demoNames.Contains(u.Username)).ToListAsync(), u => Assert.Null(u.PasswordHash));
     }
 }

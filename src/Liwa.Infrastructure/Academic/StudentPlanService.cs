@@ -167,12 +167,12 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
 
         var input = new PlannerInput(
             DateOnly.FromDateTime(clock.GetLocalNow().DateTime),
-            new PlannerTerm(term.Code, term.Season, term.Year),
+            new PlannerTerm(term.Code, term.Season, term.Year, term.AllowInProgressPrerequisites),
             PlannerFacts.StudentFacts(record, policy.RepeatGradeRule, codeById, program.TotalCredits),
             courses.Select(c => new PlannerCourse(c.Code, c.Credits, PrerequisiteParser.TryParse(c.Prerequisites, out var p, out _) ? p : null, c.Offered)).ToList(),
             plan.Groups.OrderBy(g => g.SortOrder).Select(g => new PlannerRequirementGroup(g.Key, g.Name, g.Kind, g.CreditsRequired,
                 g.Courses.Select(c => new PlannerRequirementCourse(codeById[c.CourseId], c.SuggestedSemester)).ToList())).ToList(),
-            sections.Select(s => new PlannerSection(s.Id, codeById[s.CourseId], s.SectionCode, s.Delivery, s.Meetings.ToList(), s.SeatsLeft)).ToList(),
+            sections.Select(s => new PlannerSection(s.Id, codeById[s.CourseId], s.SectionCode, s.Delivery, s.Meetings.ToList(), s.SeatsLeft, s.Capacity)).ToList(),
             policy, availability, preferences);
 
         var groups = plan.Groups.OrderBy(g => g.SortOrder).Select(g => new RequirementGroupInfo(g.Key, g.Name, g.Kind)).ToList();

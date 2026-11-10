@@ -143,3 +143,45 @@ form.secondary {
   font-size: 0.875rem;
   text-align: center;
 }
+
+.demo {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--liwa-border);
+  font-size: 0.875rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 16rem;
+    overflow-y: auto;
+  }
+
+  li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding: 0.125rem 0;
+  }
+}
+
+.demo-user {
+  font: inherit;
+  font-weight: 600;
+  color: var(--liwa-primary);
+  background: none;
+  border: 0;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  text-decoration: underline;
+  min-height: 32px;
+}

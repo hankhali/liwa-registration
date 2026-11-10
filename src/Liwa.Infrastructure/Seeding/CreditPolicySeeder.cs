@@ -58,13 +58,19 @@ public sealed class CreditPolicySeeder(LiwaDbContext db, IOptions<CreditPolicyDe
             return;
         }
 
+        db.CreditPolicies.Add(Build(defaults));
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Created the credit policy from configuration with {Count} rule(s).", defaults.Rules.Count);
+    }
+
+    /// <summary>The policy entity for a set of configured defaults (also used by tests on the seeded data).</summary>
+    public static CreditPolicy Build(CreditPolicyDefaults defaults)
+    {
         var policy = new CreditPolicy(Guid.NewGuid(), defaults.Name);
         policy.SetSwitches(defaults.RepeatGradeRule, defaults.AllowInProgressPrerequisites, defaults.GraduatingStudentsExemptFromMinimum);
         policy.ReplaceRules(defaults.Rules.Select((r, i) =>
             new CreditLimitRule(Guid.NewGuid(), i + 1, r.Name, r.MinCredits, r.MaxCredits)
                 .When(r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation)));
-        db.CreditPolicies.Add(policy);
-        await db.SaveChangesAsync(ct);
-        logger.LogInformation("Created the credit policy from configuration with {Count} rule(s).", defaults.Rules.Count);
+        return policy;
     }
 }

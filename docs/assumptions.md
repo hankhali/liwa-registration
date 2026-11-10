@@ -87,6 +87,22 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | S4 | Changing courses shows only courses from the degree plan. Free electives outside the plan aren't offered on this screen yet. | The brief says plans contain only degree-plan courses. | Academic advisors | Open |
 | S5 | **No screenshot routine and no Playwright** (removed 2026-11-10, brief §13). The M1/M2 screenshots stay in `docs/screenshots/` as history. Contrast and RTL are checked by scripts and unit tests instead. | Brief §13; Playwright needs a browser download. | — | Decided |
 
+## Usability and data (audit of M1–M5, 2026-11-10)
+
+| # | Assumption / decision | Why | Confirm with | Status |
+|---|---|---|---|---|
+| S6 | The four first-run free-time cards are: **Full-time daytime** (Mon–Fri 8 am–5 pm, Friday until noon), **Evenings only** (Mon–Thu 5–8 pm), **Weekends + evenings** (Mon–Thu 5–8 pm, Friday morning, Saturday 8 am–5 pm; Saturday classes only appear in terms that teach on Saturday) and **Custom** (hour-by-hour grid). "Skip" shows every class. | Brief §9. In the UAE the weekend is Saturday–Sunday; there is no Sunday teaching. | Student Affairs | Open |
+| S7 | Unsent changes in the planner **autosave as a draft** (not a plan version, not sent to anyone, not audited). "Save for later" still creates a saved version. | Brief §9 ("drafts autosave") without filling the audit log with every click. | — | Decided |
+| S8 | **Critical path ("gold") courses** are those on, or one step short of, the longest prerequisite chain left in the student's own plan (chain length ≥ 2). | Brief §8/§9: delaying them delays graduation. | Academic advisors | Open |
+| S9 | Section capacity: full sections are never recommended; a section with **90% or more** of its seats taken gets a `NearlyFull` warning. | Brief §4. | Registrar | Decided |
+| S10 | `FallOnlyMissed` is raised for **any** single-season course (Fall-only or Spring-only) that is offered and eligible now but isn't in the plan, because skipping it waits a full year. | Brief §8 warning list; the same logic applies to Spring-only courses. | Academic advisors | Open |
+| S11 | The graduation projection assumes department permission (capstone, internship) is granted when the time comes, and says so with a `PermissionAssumed` note listing those courses. | Brief §4. **Question for the Registrar:** is that a safe assumption? | Registrar | Open |
+| S12 | The planner puts its input in a **canonical order** (catalog and sections by code, each requirement group's courses by code) before planning, so the order rows come back from the database or a file never changes the result. | Brief §5: identical output from CSV and database (tested). | — | Decided |
+| S13 | Program titles are the brief's: "Bachelor of Information Technology (BIT) — General Track", "BBA in Management", "Bachelor of Mass Communication Concentration in Public Relations". The Arabic titles are drafts until checked against lu.ac.ae/ar ([translations/REVIEW.md](../translations/REVIEW.md)). | Brief §3. | University marketing / Registrar | Open |
+| S14 | 15 demo students cover every story in brief §5, each with a sign-in. "Major change" is a student who took Mass Communication courses before moving to Business; those courses count only as free electives. | Brief §5. | — | Decided |
+| S15 | Digits are Western (0–9) in both languages. `UI_ARABIC_DIGITS=true` switches the Arabic UI to Arabic-Indic digits. Dates are Gregorian with Arabic month names. | Brief §4. | Student Affairs | Open |
+| S16 | Demo credentials are listed on the sign-in page **only** when the API runs in Development with the demo seed on (`GET /api/auth/demo-accounts` is 404 otherwise). | Brief §4. | — | Decided |
+
 ## Advisor portal (M5)
 
 | # | Assumption / decision | Why | Confirm with | Status |

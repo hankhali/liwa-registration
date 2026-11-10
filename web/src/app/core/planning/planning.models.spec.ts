@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { setArabicDigits } from '../i18n/digits';
 import {
   CourseAssessment,
   PRESETS,
@@ -19,6 +20,17 @@ describe('planning helpers', () => {
     expect(formatTime('09:05:00', 'en')).toBe('9:05 am');
     expect(formatTime('12:30:00', 'en')).toBe('12:30 pm');
     expect(formatTime('17:00:00', 'ar')).toBe('5:00 م');
+  });
+
+  it('uses Western digits in Arabic unless UI_ARABIC_DIGITS is on', () => {
+    expect(formatTime('17:30:00', 'ar')).toBe('5:30 م');
+    setArabicDigits(true);
+    try {
+      expect(formatTime('17:30:00', 'ar')).toBe('٥:٣٠ م');
+      expect(formatTime('17:30:00', 'en')).toBe('5:30 pm');
+    } finally {
+      setArabicDigits(false);
+    }
   });
 
   it('offers the four first-run preset cards from the brief', () => {

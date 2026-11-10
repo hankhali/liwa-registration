@@ -21,7 +21,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
     public static readonly IReadOnlyDictionary<ImportKind, (string[] Required, string[] Optional)> Columns =
         new Dictionary<ImportKind, (string[], string[])>
         {
-            [ImportKind.Terms] = (["term_code", "name", "season", "year", "start_date", "end_date"], ["teaching_days", "friday_afternoon", "is_current"]),
+            [ImportKind.Terms] = (["term_code", "name", "season", "year", "start_date", "end_date"], ["teaching_days", "friday_afternoon", "is_current", "in_progress_prerequisites"]),
             [ImportKind.Courses] = (["course_code", "title", "credits"], ["title_ar", "department", "prerequisites", "offered", "description", "active"]),
             [ImportKind.Programs] = (["program_code", "name", "total_credits"], ["name_ar", "college"]),
             [ImportKind.DegreePlans] = (["program_code", "catalog_year", "group_key", "group_type"], ["group_name", "group_credits", "course_code", "suggested_semester"]),
@@ -116,6 +116,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             var days = r.WeekDays("teaching_days", WeekDays.MondayToFriday);
             var friday = r.Bool("friday_afternoon", false);
             var current = r.Bool("is_current", false);
+            bool? inProgress = r.Optional("in_progress_prerequisites") is null ? null : r.Bool("in_progress_prerequisites", true);
             if (!r.Ok) continue;
 
             if (!TermCodes.TryParse(code, out var codeYear, out var codeSeason)) { r.Fail("term_code", $"'{code}' should look like 2027SP (year + SP, SU or FA)."); continue; }
@@ -138,6 +139,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
 
             term.SetTeachingDays(days, friday);
             term.SetCurrent(current);
+            term.SetInProgressPrerequisites(inProgress);
             Count(term, isNew, report);
         }
 
@@ -154,6 +156,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
         var existing = await db.Courses.ToDictionaryAsync(c => c.Code, ct);
         var codesInFile = table.Rows.Select(r => r["course_code"]?.ToUpperInvariant()).Where(Course.IsValidCode).Select(c => c!).ToHashSet();
         var seen = new HashSet<string>();
+        var lineOf = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var row in table.Rows)
         {
@@ -193,6 +196,16 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             course.SetOffering(offered);
             course.SetActive(active);
             Count(course, isNew, report);
+            lineOf[code] = r.Line;
+        }
+
+        // A prerequisite cycle (A needs B, B needs A) would make both courses impossible to take.
+        if (!report.HasErrors)
+        {
+            var rules = existing.Values.ToDictionary(c => c.Code, c => PrerequisiteParser.TryParse(c.Prerequisites, out var p, out _) ? p : null, StringComparer.OrdinalIgnoreCase);
+            if (PrerequisiteGraph.FindCycle(rules) is { } cycle)
+                report.Error(lineOf.GetValueOrDefault(cycle[0], 1), "prerequisites",
+                    $"These prerequisites go round in a circle, so none of these courses could ever be taken: {string.Join(" → ", cycle)}.");
         }
     }
 

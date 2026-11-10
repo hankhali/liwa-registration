@@ -120,15 +120,15 @@ for x in C:
 
 GENED = ['ENG101', 'ENG102', 'ARB101', 'ISL101', 'GEN100', 'GEN101', 'GEN110', 'PED101', 'MTH101', 'STA201']
 progs = {
-    'BIT': dict(name='Bachelor of Information Technology', ar='بكالوريوس تقنية المعلومات', college='College of Engineering and Computing',
+    'BIT': dict(name='Bachelor of Information Technology (BIT) — General Track', ar='بكالوريوس تقنية المعلومات - المسار العام', college='College of Engineering and Computing',
                 core=['MTH110', 'CSC101', 'CSC101L', 'CSC102', 'CSC201', 'CSC210', 'ITC101', 'ITC110', 'ITC110L', 'ITC201', 'ITC202', 'ITC202L',
                       'ITC210', 'ITC220', 'ITC250', 'ITC301', 'ITC304', 'ITC340', 'ITC401', 'ITC402', 'ITC410', 'GEN120', 'ENG201', 'BUS101'],
                 elect=['ITC310', 'ITC320', 'ITC330', 'ITC350', 'ITC360', 'ITC370', 'ITC380', 'ITC390']),
-    'BBA-MGT': dict(name='Bachelor of Business Administration in Management', ar='بكالوريوس إدارة الأعمال في الإدارة', college='College of Business',
+    'BBA-MGT': dict(name='BBA in Management', ar='بكالوريوس إدارة الأعمال - تخصص الإدارة', college='College of Business',
                     core=['BUS101', 'BUS110', 'BUS120', 'BUS121', 'BUS205', 'BUS210', 'BUS220', 'BUS230', 'BUS301', 'BUS310', 'BUS401', 'BUS410',
                           'ACC101', 'ACC102', 'FIN201', 'FIN301', 'MGT201', 'MGT210', 'MGT220', 'MGT230', 'MGT290', 'MGT301', 'GEN120'],
                     elect=['MGT310', 'MGT320', 'MGT330', 'MGT340', 'MGT350', 'MGT360', 'MGT370', 'MGT380']),
-    'BMC': dict(name='Bachelor of Mass Communication', ar='بكالوريوس الاتصال الجماهيري', college='College of Media and Public Relations',
+    'BMC': dict(name='Bachelor of Mass Communication Concentration in Public Relations', ar='بكالوريوس الاتصال الجماهيري - تخصص العلاقات العامة', college='College of Media and Public Relations',
                 core=['MCM101', 'MCM110', 'MCM120', 'MCM130', 'MCM130L', 'MCM201', 'MCM210', 'MCM220', 'MCM230', 'MCM240', 'MCM250', 'MCM290',
                       'MCM301', 'MCM310', 'MCM320', 'MCM360', 'MCM401', 'MCM402', 'MCM410', 'GEN120', 'ENG201', 'BUS101'],
                 elect=['MCM330', 'MCM340', 'MCM350', 'MCM370', 'MCM380', 'MCM390', 'MCM395']),
@@ -216,6 +216,29 @@ for i, (code, title, ar, cr, dept, pre, off) in enumerate([x for x in C if 'Spri
         row('E1', eve[i % 4], f'A{300 + i}', instructors[(i + 5) % 10], k=2)
     if i % 5 == 0:
         row('W1', ('', '', ''), '', instructors[(i + 7) % 10], k=3, delivery='Online', capacity=40)
+    # Popular major courses get a second daytime section; general education gets a second evening block.
+    if dept != GE and cr in (3, 4) and i % 3 == 1 and code not in ('CSC101', 'CSC102', 'ITC201', 'MGT201', 'MCM101', 'BUS101', 'ACC101'):
+        row('02', day_slots[(i + 2) % 6], f'A{400 + i}', instructors[(i + 4) % 10], k=4)
+    if dept == GE and i % 2 == 1:
+        row('E2', eve[(i + 1) % 4], f'A{500 + i}', instructors[(i + 6) % 10], k=5)
+
+# Some sections are full, so the planner has to pick another (never the only section of a course).
+by_course = {}
+for r in sec:
+    by_course.setdefault(r[1], []).append(r)
+full = 0
+for n, (code, rows) in enumerate(sorted(by_course.items())):
+    if len(rows) >= 2 and n % 6 == 3:
+        rows[0][7] = rows[0][6]
+        full += 1
+# Seats decide between two class times: MTH110 section 02 has more seats left than 01 (brief §8 decision log test).
+for r in by_course.get('MTH110', []):
+    if r[2] == '01':
+        r[7] = r[6] - 5
+    if r[2] == '02':
+        r[7] = 5
+assert {r[2] for r in by_course['MTH110']} >= {'01', '02'}
+print('full sections', full, file=sys.stderr)
 
 for r in sec:
     if r[8]:
@@ -225,19 +248,26 @@ for r in sec:
 write('sections.csv', ['term_code', 'course_code', 'section', 'delivery', 'instructor', 'room', 'capacity', 'enrolled', 'days', 'start_time', 'end_time'], sec)
 print('sections', len(sec), file=sys.stderr)
 
+# 15 demo students (brief §5), each with a sign-in and a story. The hold column is the PeopleSoft service indicator.
 students = [
-    ['202700101', 'Mariam Al Mansoori', '202700101@lu.ac.ae', 'student.new', 'BIT', 2024, '2027SP', 'Good', 'advisor.it'],
-    ['202500102', 'Khalid Al Hammadi', '202500102@lu.ac.ae', 'student.probation', 'BBA-MGT', 2024, '2025FA', 'Probation', 'advisor.business'],
-    ['202500103', 'Aisha Al Nuaimi', '202500103@lu.ac.ae', 'student.honors', 'BIT', 2024, '2025FA', 'Good', 'advisor.it'],
-    ['202300104', 'Omar Al Shamsi', '202300104@lu.ac.ae', 'student.senior', 'BIT', 2024, '2023FA', 'Good', 'advisor.it'],
-    ['202500105', 'Noura Al Ketbi', '202500105@lu.ac.ae', 'student.repeat', 'BMC', 2024, '2025FA', 'Good', 'advisor.media'],
-    ['202600106', 'Saeed Al Dhaheri', '202600106@lu.ac.ae', '', 'BIT', 2024, '2026FA', 'Good', 'advisor.it'],
-    ['202600107', 'Fatima Al Kaabi', '202600107@lu.ac.ae', '', 'BBA-MGT', 2024, '2026FA', 'Good', 'advisor.business'],
-    ['202500108', 'Hamad Al Marri', '202500108@lu.ac.ae', '', 'BBA-MGT', 2024, '2025FA', 'Good', 'advisor.business'],
-    ['202400109', 'Latifa Al Suwaidi', '202400109@lu.ac.ae', '', 'BMC', 2024, '2024FA', 'Good', 'advisor.media'],
-    ['202400110', 'Rashid Al Falasi', '202400110@lu.ac.ae', '', 'BIT', 2024, '2024FA', 'Good', 'advisor.it'],
+    ['202700101', 'Mariam Al Mansoori', '202700101@lu.ac.ae', 'student.new', 'BIT', 2024, '2027SP', 'Good', 'advisor.it', ''],
+    ['202500102', 'Khalid Al Hammadi', '202500102@lu.ac.ae', 'student.probation', 'BBA-MGT', 2024, '2025FA', 'Probation', 'advisor.business', ''],
+    ['202500103', 'Aisha Al Nuaimi', '202500103@lu.ac.ae', 'student.honors', 'BIT', 2024, '2025FA', 'Good', 'advisor.it', ''],
+    ['202300104', 'Omar Al Shamsi', '202300104@lu.ac.ae', 'student.senior', 'BIT', 2024, '2023FA', 'Good', 'advisor.it', ''],
+    ['202500105', 'Noura Al Ketbi', '202500105@lu.ac.ae', 'student.repeat', 'BMC', 2024, '2025FA', 'Good', 'advisor.media', ''],
+    ['202600106', 'Saeed Al Dhaheri', '202600106@lu.ac.ae', 'student.first', 'BIT', 2024, '2026FA', 'Good', 'advisor.it', ''],
+    ['202600107', 'Fatima Al Kaabi', '202600107@lu.ac.ae', 'student.switch', 'BBA-MGT', 2024, '2025FA', 'Good', 'advisor.business', ''],
+    ['202500108', 'Hamad Al Marri', '202500108@lu.ac.ae', 'student.mid1', 'BBA-MGT', 2024, '2025FA', 'Good', 'advisor.business', ''],
+    ['202400109', 'Latifa Al Suwaidi', '202400109@lu.ac.ae', 'student.media', 'BMC', 2024, '2024FA', 'Good', 'advisor.media', ''],
+    ['202400110', 'Rashid Al Falasi', '202400110@lu.ac.ae', 'student.mid2', 'BIT', 2024, '2024FA', 'Good', 'advisor.it', ''],
+    ['202600111', 'Yousef Al Hosani', '202600111@lu.ac.ae', 'student.evening', 'BIT', 2024, '2026FA', 'Good', 'advisor.it', ''],
+    ['202500112', 'Maryam Al Blooshi', '202500112@lu.ac.ae', 'student.transfer', 'BBA-MGT', 2024, '2025FA', 'Good', 'advisor.business', ''],
+    ['202500113', 'Sultan Al Mehairi', '202500113@lu.ac.ae', 'student.hold', 'BMC', 2024, '2025FA', 'Good', 'advisor.media', 'FINANCE'],
+    ['202600114', 'Hessa Al Ali', '202600114@lu.ac.ae', 'student.parttime', 'BBA-MGT', 2024, '2026FA', 'Good', 'advisor.business', ''],
+    ['202300115', 'Mohammed Al Junaibi', '202300115@lu.ac.ae', 'student.intern', 'BIT', 2024, '2023FA', 'Good', 'advisor.it', ''],
 ]
-write('students.csv', ['student_id', 'display_name', 'email', 'username', 'program_code', 'catalog_year', 'admit_term', 'status', 'advisor_username'], students)
+assert len(students) == 15 and all(s[3] for s in students)
+write('students.csv', ['student_id', 'display_name', 'email', 'username', 'program_code', 'catalog_year', 'admit_term', 'status', 'advisor_username', 'hold'], students)
 
 PTS = {'A': 4, 'A-': 3.7, 'B+': 3.3, 'B': 3, 'B-': 2.7, 'C+': 2.3, 'C': 2, 'C-': 1.7, 'D+': 1.3, 'D': 1, 'F': 0}
 tr = []
@@ -291,7 +321,10 @@ add_all('202500105', [('2025FA', 'ENG101', 'B'), ('2025FA', 'MCM101', 'B+'), ('2
                       ('2026FA', 'MCM201', 'F'), ('2026FA', 'MCM210', 'B'), ('2026FA', 'STA201', 'C'), ('2026FA', 'GEN101', 'B+'), ('2026FA', 'ISL101', 'A-')])
 # Extra students without a sign-in, so advisors have fuller lists.
 add_all('202600106', [('2026FA', 'ENG101', 'B'), ('2026FA', 'MTH101', 'B+'), ('2026FA', 'CSC101', 'A-'), ('2026FA', 'CSC101L', 'A'), ('2026FA', 'ITC101', 'B')])
-add_all('202600107', [('2026FA', 'ENG101', 'A'), ('2026FA', 'BUS101', 'A-'), ('2026FA', 'MTH101', 'B+'), ('2026FA', 'ISL101', 'A')])
+# Major change: started in Mass Communication (Fall 2025), switched to Business in Fall 2026. The MCM courses stay on the
+# transcript but don't count toward the BBA (only as free electives).
+add_all('202600107', [('2025FA', 'MCM101', 'B'), ('2025FA', 'MCM120', 'B+'), ('2025FA', 'GEN100', 'A-'),
+                      ('2026FA', 'ENG101', 'A'), ('2026FA', 'BUS101', 'A-'), ('2026FA', 'MTH101', 'B+'), ('2026FA', 'ISL101', 'A')])
 add_all('202500108', [('2025FA', 'ENG101', 'B'), ('2025FA', 'BUS101', 'B'), ('2025FA', 'MTH101', 'C+'), ('2026SP', 'ENG102', 'B'), ('2026SP', 'BUS120', 'B-'),
                       ('2026SP', 'ACC101', 'C'), ('2026FA', 'MGT201', 'B'), ('2026FA', 'STA201', 'C+'), ('2026FA', 'ACC102', 'B-')])
 add_all('202400109', [('2024FA', 'ENG101', 'A'), ('2024FA', 'MCM101', 'A'), ('2024FA', 'MCM120', 'A-'), ('2025SP', 'ENG102', 'A-'), ('2025SP', 'MCM110', 'A'),
@@ -300,6 +333,25 @@ add_all('202400109', [('2024FA', 'ENG101', 'A'), ('2024FA', 'MCM101', 'A'), ('20
 add_all('202400110', [('2024FA', 'ENG101', 'C+'), ('2024FA', 'MTH101', 'B-'), ('2024FA', 'CSC101', 'C'), ('2024FA', 'CSC101L', 'B'), ('2025SP', 'ENG102', 'C+'),
                       ('2025SP', 'CSC102', 'C-'), ('2025SP', 'ITC101', 'B'), ('2025FA', 'CSC201', 'C'), ('2025FA', 'ITC110', 'B-'), ('2025FA', 'ITC110L', 'B'),
                       ('2026SP', 'ITC201', 'C+'), ('2026SP', 'ITC210', 'B'), ('2026FA', 'ITC202', 'C'), ('2026FA', 'ITC202L', 'B-')])
+# Evening-only working student (BIT): first semester done; can only study Mon–Thu 5–8 pm.
+add_all('202600111', [('2026FA', 'ENG101', 'B'), ('2026FA', 'MTH101', 'C+'), ('2026FA', 'CSC101', 'B'), ('2026FA', 'CSC101L', 'B+'), ('2026FA', 'ITC101', 'B-')])
+# Transfer credits (BBA): three courses accepted from another university, then two semesters here.
+for code in ('ENG101', 'MTH101', 'ISL101'):
+    tr.append(['202500112', '', code, '', '', 'Transfer', 'Higher Colleges of Technology'])
+add_all('202500112', [('2025FA', 'BUS101', 'B+'), ('2025FA', 'ENG102', 'B'), ('2025FA', 'GEN100', 'A-'), ('2025FA', 'ARB101', 'A'),
+                      ('2026SP', 'BUS120', 'B'), ('2026SP', 'ACC101', 'B-'), ('2026SP', 'MTH110', 'C+'), ('2026SP', 'PED101', 'A'),
+                      ('2026FA', 'MGT201', 'B'), ('2026FA', 'STA201', 'B-'), ('2026FA', 'ACC102', 'C+'), ('2026FA', 'GEN101', 'B')])
+# Hold on the account (BMC): a FINANCE hold; good record otherwise.
+add_all('202500113', [('2025FA', 'ENG101', 'B+'), ('2025FA', 'MCM101', 'A-'), ('2025FA', 'MCM120', 'B'), ('2025FA', 'ARB101', 'A'),
+                      ('2026SP', 'ENG102', 'B'), ('2026SP', 'MCM110', 'B+'), ('2026SP', 'MTH101', 'C+'), ('2026SP', 'ISL101', 'A-'),
+                      ('2026FA', 'MCM201', 'B'), ('2026FA', 'MCM210', 'B-'), ('2026FA', 'GEN100', 'A')])
+# Part-time (BBA): two courses a semester while working.
+add_all('202600114', [('2026FA', 'ENG101', 'B'), ('2026FA', 'BUS101', 'B+')])
+# Pending internship permission (BIT): over 90 credits; the internship (Summer, needs department permission) and the
+# capstone are still to come.
+intern_done = [x for x in GENED + bit['core'] if x not in ('ITC304', 'ITC401', 'ITC402', 'ITC410')] + ['ITC310', 'ITC320', 'ITC330']
+for n, code in enumerate(sorted(intern_done, key=lambda x: int(re.search(r'\d{3}', x).group()))):
+    add('202300115', cycle[min(n * len(cycle) // len(intern_done), len(cycle) - 1)], code, grades[(n + 3) % len(grades)])
 write('transcripts.csv', ['student_id', 'term_code', 'course_code', 'credits', 'grade', 'status', 'source'], tr)
 
 g, e = summary('202500103'); print('honors', g, e, file=sys.stderr); assert g == 3.50
@@ -307,4 +359,7 @@ g, e = summary('202500102'); print('probation', g, e, file=sys.stderr); assert g
 g, e = summary('202300104'); print('senior', g, e, file=sys.stderr); assert e == 114
 g, e = summary('202700101'); print('new', g, e, file=sys.stderr); assert e == 3
 assert any(r[0] == '202500105' and r[2] == 'MCM201' and r[4] == 'F' for r in tr)
+g, e = summary('202300115'); print('intern', g, e, file=sys.stderr); assert e >= 90
+assert sum(1 for r in tr if r[0] == '202500112' and r[5] == 'Transfer') == 3
+assert 190 <= len(sec) <= 215, len(sec)
 print('all checks passed', file=sys.stderr)

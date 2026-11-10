@@ -41,6 +41,16 @@ public sealed class DemoSeeder(
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000003"), "student.honors", "Aisha Al Nuaimi", UserRole.Student, "202500103", "High GPA"),
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000004"), "student.senior", "Omar Al Shamsi", UserRole.Student, "202300104", "Graduating senior, 6 credits left"),
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000005"), "student.repeat", "Noura Al Ketbi", UserRole.Student, "202500105", "Failed a prerequisite"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000006"), "student.first", "Saeed Al Dhaheri", UserRole.Student, "202600106", "Second semester, everything passed"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000007"), "student.switch", "Fatima Al Kaabi", UserRole.Student, "202600107", "Changed major (Media to Business)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000008"), "student.mid1", "Hamad Al Marri", UserRole.Student, "202500108", "Mid-programme (Business)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000009"), "student.media", "Latifa Al Suwaidi", UserRole.Student, "202400109", "Strong record (Mass Communication)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000010"), "student.mid2", "Rashid Al Falasi", UserRole.Student, "202400110", "Mid-programme (IT)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000011"), "student.evening", "Yousef Al Hosani", UserRole.Student, "202600111", "Works during the day: evenings only"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000012"), "student.transfer", "Maryam Al Blooshi", UserRole.Student, "202500112", "Transfer credits"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000013"), "student.hold", "Sultan Al Mehairi", UserRole.Student, "202500113", "Hold on account (finance)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000014"), "student.parttime", "Hessa Al Ali", UserRole.Student, "202600114", "Part-time (up to 9 credits)"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000015"), "student.intern", "Mohammed Al Junaibi", UserRole.Student, "202300115", "Internship needs department permission"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000001"), "advisor.it", "Dr. Ahmed Al Zaabi", UserRole.Advisor, "E1001", "Advisor, Information Technology"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000002"), "advisor.business", "Dr. Fatima Al Suwaidi", UserRole.Advisor, "E1002", "Advisor, Business"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000003"), "advisor.media", "Dr. Saeed Al Mazrouei", UserRole.Advisor, "E1003", "Advisor, Mass Communication"),
@@ -76,6 +86,28 @@ public sealed class DemoSeeder(
                     string.Join(" | ", report.Issues.Where(i => i.Severity == IssueSeverity.Error).Take(5).Select(i => $"line {i.Line}: {i.Message}")));
             logger.LogInformation("Demo data {File}: {Created} created, {Warnings} warning(s).", file, report.Created, report.WarningCount);
         }
+
+        await SeedPreferencesAsync(ct);
+    }
+
+    private static readonly System.Text.Json.JsonSerializerOptions WebJson = new(System.Text.Json.JsonSerializerDefaults.Web);
+
+    /// <summary>Saved free time for the stories that depend on it (evening-only, part-time).</summary>
+    private async Task SeedPreferencesAsync(CancellationToken ct)
+    {
+        var now = clock.GetUtcNow();
+        var evenings = System.Text.Json.JsonSerializer.Serialize(
+            new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday }
+                .Select(d => new Domain.Planning.TimeWindow(d, new TimeOnly(17, 0), new TimeOnly(20, 0))),
+            WebJson);
+        var evening = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.evening").Id, now);
+        evening.SetAvailability("evenings", evenings, Domain.Planning.DeliveryPreference.Any, null, now);
+        var partTime = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.parttime").Id, now);
+        partTime.SetAvailability("any", null, Domain.Planning.DeliveryPreference.Any, 9, now);
+        var ids = new[] { evening.UserId, partTime.UserId };
+        if (await db.StudentPreferences.AnyAsync(p => ids.Contains(p.UserId), ct)) return;
+        db.StudentPreferences.AddRange(evening, partTime);
+        await db.SaveChangesAsync(ct);
     }
 
     /// <summary>Import order matters: later files refer to earlier ones.</summary>

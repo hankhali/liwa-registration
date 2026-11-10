@@ -100,5 +100,21 @@
     }
 
     <p class="help liwa-muted">{{ 'login.help' | transloco }}</p>
+
+    @if (demo(); as d) {
+      <!-- Only returned by the API in Development with demo data on. -->
+      <details class="demo">
+        <summary>{{ 'login.demo.heading' | transloco }}</summary>
+        <p class="liwa-muted">{{ 'login.demo.intro' | transloco: { password: d.password } }}</p>
+        <ul>
+          @for (a of d.accounts; track a.username) {
+            <li>
+              <button type="button" class="demo-user" (click)="useDemo(a.username, d.password)"><bdi dir="ltr">{{ a.username }}</bdi></button>
+              <span class="liwa-muted">{{ a.description }}</span>
+            </li>
+          }
+        </ul>
+      </details>
+    }
   </main>
 </div>

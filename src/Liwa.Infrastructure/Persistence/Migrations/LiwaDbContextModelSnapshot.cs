@@ -447,6 +447,10 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("allow_friday_afternoon");
 
+                    b.Property<bool?>("AllowInProgressPrerequisites")
+                        .HasColumnType("boolean")
+                        .HasColumnName("allow_in_progress_prerequisites");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)

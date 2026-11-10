@@ -13,6 +13,7 @@ public static partial class Planner
     /// </summary>
     public static PlanCheckResult Check(PlannerInput input, IReadOnlyCollection<Guid> sectionIds)
     {
+        input = Canonical(input);
         var errors = new List<PlannerReason>();
         var warnings = new List<PlannerReason>();
         var student = input.Student;
@@ -36,7 +37,7 @@ public static partial class Planner
                     errors.Add(PlannerReason.Of(ReasonCode.ClashesWith, [picked[i].CourseCode, picked[j].CourseCode]));
 
         var state = new State(student.Passed, student.InProgress, student.Failed, student.CreditsEarned, student.PermissionsGranted,
-            input.Policy.AllowInProgressPrerequisites, AssumePermission: false);
+            AllowInProgress(input), AssumePermission: false);
         var pickedCodes = picked.Select(s => s.CourseCode).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var waiting = new List<string>();
 
@@ -63,6 +64,7 @@ public static partial class Planner
                 errors.Add(PlannerReason.Of(ReasonCode.CorequisiteMissing, [code, co]));
 
             if (s.SeatsLeft <= 0) errors.Add(PlannerReason.Of(ReasonCode.SectionFull, [code]));
+            else if (IsNearlyFull(s)) warnings.Add(PlannerReason.Of(ReasonCode.NearlyFull, [code]));
             if (input.Availability is { Windows.Count: > 0 } a && !a.Fits(s.Meetings))
                 warnings.Add(PlannerReason.Of(ReasonCode.OutsideAvailability, [code]));
         }
@@ -105,6 +107,7 @@ public static partial class Planner
     /// </summary>
     public static GraduationProjection ProjectPlan(PlannerInput input, IReadOnlyCollection<Guid> sectionIds)
     {
+        input = Canonical(input);
         var catalog = input.Catalog.ToDictionary(c => c.Code, StringComparer.OrdinalIgnoreCase);
         var (needs, chooseRemaining, _, free) = RemainingRequirements(input, catalog);
         var needByCode = needs.ToDictionary(n => n.Code, StringComparer.Ordinal);

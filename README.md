@@ -67,29 +67,29 @@ Open http://localhost:4200. On start, the API applies migrations and loads the d
 
 Demo accounts are created only when `DemoSeed:Enabled` is true. It is on in Development and off everywhere else by default. Every account uses the password **`Liwa#2027`**.
 
-| Username | Role | Who |
-|---|---|---|
-| `student.new` | Student | New first-year |
-| `student.probation` | Student | On academic probation |
-| `student.honors` | Student | High GPA |
-| `student.senior` | Student | Graduating senior, 6 credits left |
-| `student.repeat` | Student | Failed a prerequisite |
-| `advisor.it` | Advisor | Information Technology |
-| `advisor.business` | Advisor | Business |
-| `advisor.media` | Advisor | Mass Communication |
-| `admin` | Admin | Registrar administrator |
+In Development the sign-in page also lists these accounts under "Practice accounts" (click one to fill the form).
 
-Each demo student has a full academic record, loaded from the demo CSV files through the real import:
+| Username | Role | Program | Story (brief §5) |
+|---|---|---|---|
+| `student.new` | Student | IT | New first-year (first semester), AP English credit; CSC101 + lab corequisite pair |
+| `student.evening` | Student | IT | Works during the day: free time saved as evenings only |
+| `student.repeat` | Student | Mass Communication | Failed MCM201, which MCM301 needs with at least a C |
+| `student.transfer` | Student | Business | Three transfer credits (count toward the degree, not the GPA) |
+| `student.probation` | Student | Business | GPA 1.40, on probation (12-credit cap); repeated BUS120 (F, then C-) |
+| `student.senior` | Student | IT | 114 of 120 credits: 6 left, not forced to the 12 minimum |
+| `student.hold` | Student | Mass Communication | FINANCE hold: can plan, can't register until cleared |
+| `student.honors` | Student | IT | GPA exactly 3.50 (21-credit cap), Fall 2026 grades not posted yet (in-progress prerequisites) |
+| `student.parttime` | Student | Business | Part-time: saved cap of 9 credits |
+| `student.intern` | Student | IT | 91 credits; internship needs department permission (assumed in the projection) |
+| `student.switch` | Student | Business | Changed major from Mass Communication |
+| `student.mid1`, `student.mid2` | Student | Business, IT | Mid-programme students |
+| `student.first`, `student.media` | Student | IT, Mass Communication | Steady progress (second semester; strong record) |
+| `advisor.it` | Advisor | IT | 7 students |
+| `advisor.business` | Advisor | Business | 5 students |
+| `advisor.media` | Advisor | Mass Communication | 3 students |
+| `admin` | Admin | | Registrar administrator |
 
-| Student | Program | Story |
-|---|---|---|
-| `student.new` | Information Technology | First term (Spring 2027), only an AP English credit |
-| `student.probation` | Business (Management) | GPA 1.40, on academic probation |
-| `student.honors` | Information Technology | GPA exactly 3.50 (the high-GPA boundary), with Fall 2026 grades not yet posted |
-| `student.senior` | Information Technology | 114 of 120 credits: 6 left to graduate |
-| `student.repeat` | Mass Communication | Failed MCM201, which MCM301 needs with at least a C |
-
-Five more students (with no sign-in) give the advisors fuller lists. The data is illustrative: the three program names are real, but the courses, degree plans and timetable are invented until the Registrar supplies real data.
+Each demo student has a full academic record, loaded from the demo CSV files through the real import. The Spring 2027 timetable has 196 sections (some full, some nearly full, evening blocks, online sections, labs; nothing on Sunday or Friday afternoon). The data is illustrative: the three program titles are real, but the courses, degree plans and timetable are invented until the Registrar supplies real data. Arabic strings are listed for native review in [translations/REVIEW.md](translations/REVIEW.md).
 
 ## Configuration
 

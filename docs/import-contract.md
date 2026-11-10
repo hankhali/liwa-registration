@@ -49,6 +49,7 @@ Common value formats:
 | `teaching_days` | no | Default `Mon;Tue;Wed;Thu;Fri`. **Sunday is never allowed.** Saturday is allowed (with a warning to confirm). | |
 | `friday_afternoon` | no | `yes` lets classes run after 12:00 on Friday. Default `no` (Jumu'ah). | |
 | `is_current` | no | `yes` for the term students are planning now. Only one term can be current. | |
+| `in_progress_prerequisites` | no | `yes` / `no` overrides the credit policy's "courses in progress count as prerequisites" for this term; empty = use the policy. With `no`, the student sees "your grade in … must be posted first". | |
 
 ## 2. `courses` — the catalog
 

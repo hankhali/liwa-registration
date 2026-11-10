@@ -1,4 +1,6 @@
-export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+import { localDigits } from '../i18n/digits';
+
+export type Day ='Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 export const TEACHING_DAYS: Day[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 export interface TimeWindow {
@@ -194,7 +196,7 @@ export function formatTime(t: string, lang: string): string {
   const [h, m] = t.split(':').map(Number);
   const suffix = lang === 'ar' ? (h < 12 ? 'ص' : 'م') : h < 12 ? 'am' : 'pm';
   const hour = h % 12 === 0 ? 12 : h % 12;
-  return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
+  return localDigits(`${hour}:${String(m).padStart(2, '0')} ${suffix}`, lang);
 }
 
 export function timeRange(m: Meeting, lang: string): string {
@@ -250,7 +252,7 @@ export type BlockedGroup = 'prerequisite' | 'notOffered' | 'moreCredits' | 'perm
 
 export function blockedGroup(reasons: Reason[]): BlockedGroup {
   const codes = reasons.map((r) => r.code);
-  if (codes.some((c) => ['PrerequisiteNotMet', 'PrerequisiteFailed', 'MinimumGradeNotMet'].includes(c))) return 'prerequisite';
+  if (codes.some((c) => ['PrerequisiteNotMet', 'PrerequisiteFailed', 'MinimumGradeNotMet', 'GradeMustBePosted'].includes(c))) return 'prerequisite';
   if (codes.some((c) => ['NotOfferedThisTerm', 'NoSectionsThisTerm'].includes(c))) return 'notOffered';
   if (codes.some((c) => ['StandingRequired', 'CreditsRequired'].includes(c))) return 'moreCredits';
   if (codes.includes('PermissionRequired')) return 'permission';

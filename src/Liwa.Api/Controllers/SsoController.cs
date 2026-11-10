@@ -17,6 +17,27 @@ namespace Liwa.Api.Controllers;
 /// redeems a one-time code at exchange for our usual access token. Microsoft's tokens are never kept,
 /// and our token never appears in a URL.
 /// </summary>
+/// <summary>
+/// The practice accounts, for the sign-in page. Only in Development with the demo seed on (brief §4: demo
+/// credentials shown on the login page only in Development); everywhere else it is 404.
+/// </summary>
+[ApiController]
+[Route("api/auth/demo-accounts")]
+[AllowAnonymous]
+public sealed class DemoAccountsController(IWebHostEnvironment env, IOptions<Liwa.Infrastructure.Seeding.DemoSeedOptions> demo) : ControllerBase
+{
+    public sealed record DemoAccountInfo(string Username, string Role, string Description);
+
+    public sealed record DemoAccounts(string Password, IReadOnlyList<DemoAccountInfo> Accounts);
+
+    [HttpGet]
+    public IActionResult Get() =>
+        env.IsDevelopment() && demo.Value.Enabled
+            ? Ok(new DemoAccounts(demo.Value.Password, Liwa.Infrastructure.Seeding.DemoSeeder.Accounts
+                .Select(a => new DemoAccountInfo(a.Username, a.Role.ToString(), a.Description)).ToList()))
+            : NotFound();
+}
+
 [ApiController]
 [Route("api/auth/sso")]
 [AllowAnonymous]
@@ -24,17 +45,20 @@ public sealed class SsoController(
     IOptions<SsoOptions> options,
     IAuthService auth,
     ISignInHandoff handoff,
+    IConfiguration config,
     ILogger<SsoController> logger) : ControllerBase
 {
     private SsoOptions Sso => options.Value;
 
-    public sealed record SsoConfig(bool Enabled, bool LocalSignInEnabled);
+    /// <param name="ArabicDigits">UI_ARABIC_DIGITS (brief §4): Arabic-Indic digits in the Arabic UI; default Western 0–9.</param>
+    public sealed record SsoConfig(bool Enabled, bool LocalSignInEnabled, bool ArabicDigits);
 
     public sealed record ExchangeRequest([Required, MaxLength(100)] string Code);
 
     /// <summary>Which sign-in options the sign-in page should show.</summary>
     [HttpGet("config")]
-    public SsoConfig Config() => new(Sso.Enabled, Sso.LocalSignInAllowed);
+    public SsoConfig Config() => new(Sso.Enabled, Sso.LocalSignInAllowed,
+        config.GetValue("UI_ARABIC_DIGITS", config.GetValue("Ui:ArabicDigits", false)));
 
     /// <summary>Sends the browser to the university Microsoft sign-in page.</summary>
     [HttpGet("start")]
