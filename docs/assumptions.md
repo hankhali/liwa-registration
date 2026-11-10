@@ -10,11 +10,12 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 |---|---|---|---|---|
 | A1 | Backend targets **.NET 10** (latest LTS installed: SDK 10.0.302). | The brief asks for the latest LTS. | University IT (hosting) | Decided |
 | A2 | Frontend is **Angular 22** with Angular Material 22, on Node 26 LTS. | The brief asks for the latest Angular. | — | Decided |
-| A3 | On the development machine, **Docker Engine runs inside WSL Ubuntu** instead of Docker Desktop. The code and the dev servers still run natively on Windows. | Docker Desktop needs admin rights, which this machine doesn't have. Nothing in the project depends on this, so it works unchanged with Docker Desktop. | — | Decided |
+| A3 | **No Docker.** Development and tests use the locally installed **PostgreSQL 18** (`localhost:5432`, role and database `liwa`, created by `scripts/create-db.sql`). Integration tests create a uniquely named database per fixture and drop it afterwards. Docker files and the screenshot script were removed on 2026-11-10 (brief §0/§13). A Docker packaging can be added later. | Endpoint security on the development machine kills downloads of images and binaries. | — | Decided |
 | A4 | UI language switches **in the running app** (Transloco) rather than through Angular's compile-time i18n. | One build serves both English and Arabic, and the language can change without reloading the page. | — | Decided |
 | A5 | Fonts (Open Sans, Noto Sans Arabic) and icons are **self-hosted**, not loaded from Google's CDN. | Lets a strict Content-Security-Policy work, needs no third-party requests, and works on locked-down campus networks. | University IT | Decided |
-| A6 | Ports: Postgres **5433**, API dev **5080**, Angular dev **4200**, full stack **8088**. | All were checked as free on this machine. 5433 avoids clashing with a local Postgres. | — | Decided |
-| A7 | Production images: PostgreSQL **17**, nginx serving the built app, and the API on the .NET 10 ASP.NET runtime image. | Current supported versions. | University IT | Open |
+| A6 | Ports: Postgres **5432** (local service), API dev **5080**, Angular dev **4200** (proxies `/api`, same origin). | Brief §13. | — | Decided |
+| A7 | Server install: PostgreSQL 16 or later, the .NET 10 ASP.NET Core runtime, the API as a service on localhost, and the built Angular app behind IIS or nginx ([docs/INSTALL.md](INSTALL.md)). | Brief §14. | University IT | Open |
+| A8 | Built projects have **no native `.exe` launcher** (`UseAppHost=false`). Run the API with `dotnet Liwa.Api.dll`. | Application Control on the development machine blocks unsigned local executables. Production is unaffected (services run `dotnet Liwa.Api.dll` anyway). | — | Decided |
 
 ## Authentication and security
 
@@ -23,10 +24,10 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | B1 | Local sign-in uses a **username** (for example `student.new`), not an email or university ID. | Demo accounts have no email addresses. SSO will replace this anyway. | Registrar / IT | Open |
 | B2 | A sign-in lasts **8 hours** (`Jwt:LifetimeMinutes` = 480), with no refresh token. | Covers a working day of registration. Configurable. | University IT | Open |
 | B3 | The browser keeps the access token in `localStorage`. | Simple, and works with the bearer interceptor. With SSO (M8), this should move to the identity provider's flow or to secure cookies. | University IT (security) | Open |
-| B4 | Sign-in is limited to **10 attempts per minute per IP** (200 in Development, where automated screenshots sign in repeatedly). There is no per-account lockout yet. | Slows down password guessing without locking out shared campus IPs. | University IT (security) | Open |
+| B4 | Sign-in is limited to **10 attempts per minute per IP** (200 in Development, for repeated manual testing). There is no per-account lockout yet. | Slows down password guessing without locking out shared campus IPs. | University IT (security) | Open |
 | B5 | Passwords use PBKDF2-HMAC-SHA256 with **600,000 iterations** (the OWASP 2023 minimum). | Configurable. Each hash records its own iteration count, so the number can be raised later. | — | Decided |
 | B6 | Swagger is **off** outside Development. When it is off, `/api/swagger` gets the same "sign-in required" response as any unknown API path. | Don't advertise the API surface in production. | — | Decided |
-| B7 | Demo accounts exist only when `DemoSeed:Enabled` is true. It defaults to false, and `.env.example` sets it to true for local Docker only, with a warning comment. | Required by the brief. | — | Decided |
+| B7 | Demo accounts exist only when `DemoSeed:Enabled` is true. It defaults to false and is on only in `appsettings.Development.json`; `.env.example` carries a warning comment. | Required by the brief. | — | Decided |
 | B8 | Sign-in uses the **university Microsoft account (Entra ID)**, the same one behind "LU-AZURE" on Liwa's Blackboard sign-in page. It's built and switched off until IT registers the app ([docs/sso.md](sso.md)). The project owner chose this on 2026-11-09 over launching from inside Blackboard (LTI 1.3), which can still be added later. | Students use one account everywhere; we never handle their passwords. | University IT | Open |
 | B9 | On first SSO sign-in, people are matched to their Smart Registration account by **university email** (the `email` claim, then `preferred_username`). After that, the account is linked permanently to their Entra object ID and is never re-linked to another person. People without an account are refused with a plain message pointing to the Registrar. | Accounts and roles come from registrar data, not from Entra. | Registrar + IT (which email format accounts carry) | Open |
 | B10 | Username/password sign-in stays available next to SSO (`SSO_LOCAL_SIGNIN_ENABLED=true`) for demo accounts and emergency admin access. It can be switched off entirely. | Keeps a way in if Entra is unavailable. | University IT (security) | Open |
@@ -84,4 +85,14 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | S2 | When checking a hand-picked plan, these **block saving**: classes at the same time, the same course twice, a course the student can't take yet, a missing lab or corequisite, a full class, going over the credit limit. These are **allowed, but need "I understand" when sending**: below the minimum, waiting for a grade, a class outside the times the student said they're free. | Errors would make registration fail; warnings are informed choices. | Registrar | Open |
 | S3 | Once a plan is sent, the student can't change it until the advisor responds (M5 adds approve / reject / propose changes, after which the student can edit and resend). | Avoids the advisor reviewing a moving target. | Academic advisors | Open |
 | S4 | Changing courses shows only courses from the degree plan. Free electives outside the plan aren't offered on this screen yet. | The brief says plans contain only degree-plan courses. | Academic advisors | Open |
-| S5 | **Milestone screenshots are no longer captured** (from M4 onward), at the project owner's request on 2026-11-09. Automated tests and the production-build check still run. | Faster milestones. | — | Decided |
+| S5 | **No screenshot routine and no Playwright** (removed 2026-11-10, brief §13). The M1/M2 screenshots stay in `docs/screenshots/` as history. Contrast and RTL are checked by scripts and unit tests instead. | Brief §13; Playwright needs a browser download. | — | Decided |
+
+## Pending verification — Smart App Control
+
+Windows **Smart App Control** on the development machine sometimes blocks loading a freshly built, unsigned `Liwa.Api.dll` (Code Integrity events 3077/3118, 2026-11-10). It judges each build separately: two builds were blocked, the next one loaded. When a build is blocked, nothing that loads `Liwa.Api.dll` can run: the API and every integration test. Rebuilding after a code change produced a build that loaded. Items that could not be run against the real API stay **Pending** here until they have been.
+
+| # | Needs | What to verify | Status |
+|---|---|---|---|
+| V1 | Integration tests | `LiwaApiFactory` on the local PostgreSQL: each fixture creates `liwa_test_xxxxxxxx`, migrates, seeds and drops it. | Verified 2026-11-10: 70/70 pass |
+| V2 | API running | API on 5080 against `localhost:5432`, web app on 4200; demo sign-in works through the proxy. | Verified 2026-11-10 (`student.new` signs in through 4200) |
+| V3 | API running | `scripts/reset-db.ps1` drops and recreates `liwa`; the next API start migrates and seeds it. | Pending (not run, to keep the running demo) |

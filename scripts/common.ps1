@@ -11,44 +11,45 @@ function Import-DotEnv {
     }
     $values = @{}
     foreach ($line in Get-Content $envFile) {
-        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$') { $values[$Matches[1]] = $Matches[2] }
+        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$') { $values[$Matches[1]] = $Matches[2] }
     }
     return $values
 }
 
-# Docker Engine runs inside WSL (no Docker Desktop on this machine; see README).
-# Make sure the Ubuntu VM and dockerd are up, and the Windows CLI points at it.
-function Initialize-Docker {
-    if (-not $env:DOCKER_HOST) { $env:DOCKER_HOST = 'tcp://127.0.0.1:2375' }
-    $dockerBin = Join-Path $env:USERPROFILE '.docker\bin'
-    if ((Test-Path $dockerBin) -and ($env:Path -notlike "*$dockerBin*")) { $env:Path = "$dockerBin;$env:Path" }
-
-    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-        throw "The docker command was not found. See README > Prerequisites."
+# Puts the installed tools on PATH for this process (they are not always on the machine PATH)
+# and keeps NuGet/npm/dotnet caches inside the repository (.local/, git-ignored).
+# Nothing is downloaded or installed here.
+function Initialize-Tools {
+    $candidates = @(
+        "$env:ProgramFiles\dotnet",
+        "$env:ProgramFiles\nodejs",
+        "$env:LOCALAPPDATA\Programs\Git\cmd",
+        "$env:ProgramFiles\Git\cmd"
+    )
+    $pg = Get-ChildItem "$env:ProgramFiles\PostgreSQL" -Directory -ErrorAction SilentlyContinue |
+        Sort-Object { [int]($_.Name -replace '\D', '0') } -Descending | Select-Object -First 1
+    if ($pg) { $candidates += (Join-Path $pg.FullName 'bin') }
+    foreach ($dir in $candidates) {
+        if ((Test-Path $dir) -and ($env:Path -notlike "*$dir*")) { $env:Path = "$dir;$env:Path" }
     }
 
-    docker version --format '{{.Server.Version}}' *> $null
-    if ($LASTEXITCODE -ne 0) {
-        if (Get-Command wsl -ErrorAction SilentlyContinue) {
-            Write-Host "Starting Docker Engine in WSL..." -ForegroundColor Cyan
-            wsl -d Ubuntu -u root -- systemctl start docker | Out-Null
-            for ($i = 0; $i -lt 30; $i++) {
-                docker version --format '{{.Server.Version}}' *> $null
-                if ($LASTEXITCODE -eq 0) { break }
-                Start-Sleep -Seconds 1
-            }
+    $local = Join-Path $RepoRoot '.local'
+    $env:NUGET_PACKAGES = Join-Path $local 'nuget'
+    $env:DOTNET_CLI_HOME = Join-Path $local 'dotnet-home'
+    $env:npm_config_cache = Join-Path $local 'npm-cache'
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+    $env:DOTNET_NOLOGO = '1'
+
+    foreach ($tool in 'dotnet', 'node', 'npm') {
+        if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
+            throw "'$tool' was not found. Install it (see README > Prerequisites) and run this script again."
         }
-        docker version --format '{{.Server.Version}}' *> $null
-        if ($LASTEXITCODE -ne 0) { throw "Docker is not reachable at $env:DOCKER_HOST. Start Docker (Docker Desktop, or 'wsl -d Ubuntu -u root -- systemctl start docker')." }
     }
 }
 
-function Wait-Healthy([string]$service, [int]$timeoutSeconds = 90) {
-    $deadline = (Get-Date).AddSeconds($timeoutSeconds)
-    while ((Get-Date) -lt $deadline) {
-        $status = docker compose ps --format '{{.Health}}' $service 2>$null
-        if ($status -eq 'healthy') { return }
-        Start-Sleep -Seconds 2
-    }
-    throw "$service did not become healthy within $timeoutSeconds seconds. Check: docker compose logs $service"
+# Npgsql connection string for the app database, from .env (POSTGRES_HOST/PORT/DB/USER/PASSWORD).
+function Get-ConnectionString([hashtable]$cfg) {
+    $dbHost = if ($cfg['POSTGRES_HOST']) { $cfg['POSTGRES_HOST'] } else { 'localhost' }
+    $port = if ($cfg['POSTGRES_PORT']) { $cfg['POSTGRES_PORT'] } else { '5432' }
+    return "Host=$dbHost;Port=$port;Database=$($cfg['POSTGRES_DB']);Username=$($cfg['POSTGRES_USER']);Password=$($cfg['POSTGRES_PASSWORD'])"
 }

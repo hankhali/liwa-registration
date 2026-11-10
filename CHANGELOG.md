@@ -2,6 +2,25 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Local PostgreSQL instead of Docker (2026-11-10)
+
+### Changed
+- **No Docker.** Development and tests use the locally installed PostgreSQL 18 on `localhost:5432` (role and database `liwa`). `scripts/create-db.sql` creates them (run once as `postgres`; safe to re-run).
+- **Integration tests** no longer start Postgres containers: each test fixture creates a uniquely named database (`liwa_test_xxxxxxxx`) on the local server, the API migrates and seeds it, and it is dropped afterwards (`DROP DATABASE … WITH (FORCE)`). The server comes from `LIWA_TEST_PG` (default `liwa`/`liwa` on localhost). Testcontainers was removed.
+- `scripts/run-dev.ps1` (replaces `dev.ps1`) starts the API and the Angular dev server against the local database. `test.ps1` (new `-UnitOnly`) and `reset-db.ps1` (drop and recreate the local database, local hosts only) no longer touch Docker. `scripts/common.ps1` puts the installed .NET, Node, Git and PostgreSQL on PATH and keeps NuGet/npm caches in the git-ignored `.local/` folder.
+- Projects build without a native `.exe` launcher (`UseAppHost=false`), because endpoint Application Control blocks unsigned local executables.
+- `.env.example`, README and `docs/sso.md` describe the local setup (development SSO redirect is now `http://localhost:4200/api/auth/sso/callback`).
+
+### Removed
+- `docker-compose.yml`, both Dockerfiles, `nginx.conf`, `.dockerignore` files.
+- The Playwright screenshot script (`web/e2e/screenshots.mjs`, `npm run screenshots`) and its `@playwright/test` and `@axe-core/playwright` packages (brief §13). Old screenshots stay in `docs/screenshots/`.
+
+### Known issue
+- On the development machine, Windows Smart App Control sometimes blocks a freshly built `Liwa.Api.dll`; a later build loaded. See "Pending verification — Smart App Control" in `docs/assumptions.md`.
+
+### Tests
+- 153 unit, 70 integration (now on the local PostgreSQL), 38 frontend: all pass.
+
 ## M4: student planning screens (2026-11-09)
 
 ### Added

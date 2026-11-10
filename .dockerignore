@@ -1,9 +1,0 @@
-**/bin
-**/obj
-**/node_modules
-web
-docs
-tests
-.git
-.vs
-.env

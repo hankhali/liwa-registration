@@ -79,7 +79,7 @@ public static class ApiSetup
         services.Configure<ForwardedHeadersOptions>(o =>
         {
             o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            // The API is only reachable through the nginx container on a private network.
+            // In a server install the API listens on localhost behind IIS or nginx (docs/INSTALL.md).
             o.KnownIPNetworks.Clear();
             o.KnownProxies.Clear();
         });

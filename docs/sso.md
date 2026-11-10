@@ -20,7 +20,7 @@ Add one redirect URI per environment, for example:
 
 - Production: `https://registration.lu.ac.ae/api/auth/sso/callback` (or whatever address is chosen)
 - Test (optional): `https://registration-test.lu.ac.ae/api/auth/sso/callback`
-- Developer machine (optional): `http://localhost:8088/api/auth/sso/callback`
+- Developer machine (optional): `http://localhost:4200/api/auth/sso/callback`
 
 Then:
 
