@@ -20,6 +20,15 @@ public sealed class StudentController(IAcademicQueries queries, IRecommendationS
 
     public sealed record DraftRequest(IReadOnlyList<Guid> SectionIds);
 
+    /// <summary>Graduation projection for the student's own selection (to compare with the recommendation).</summary>
+    [HttpPost("projection")]
+    [ProducesResponseType<GraduationProjection>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Projection(DraftRequest request, CancellationToken ct)
+    {
+        if (request.SectionIds.Count > 15) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "That's too many classes for one term.");
+        return await plans.ProjectAsync(user.UserId, request.SectionIds, ct) is { } p ? Ok(p) : NotLoaded();
+    }
+
     /// <summary>The student's saved free time, delivery, credit cap and autosaved draft. Preset is null until chosen.</summary>
     [HttpGet("preferences")]
     public Task<PreferencesView> Preferences(CancellationToken ct) => preferences.GetAsync(user.UserId, ct);
@@ -201,9 +210,13 @@ public sealed class AdvisorController(IAdvisorService advisor, ICurrentUser user
 /// <summary>The signed-in user's own settings (any role): message language and the first-login walkthrough.</summary>
 [ApiController]
 [Route("api/me")]
-public sealed class MeController(IUserSettingsService settings, ICurrentUser user) : ControllerBase
+public sealed class MeController(IUserSettingsService settings, IStudentPlanService plans, ICurrentUser user) : ControllerBase
 {
     public sealed record LanguageRequest(string Language);
+
+    /// <summary>Terms for the term selector in the top bar; only the current one is open for planning.</summary>
+    [HttpGet("terms")]
+    public Task<IReadOnlyList<TermOption>> Terms(CancellationToken ct) => plans.TermsAsync(ct);
 
     [HttpGet("settings")]
     public Task<UserSettingsView> Settings(CancellationToken ct) => settings.GetAsync(user.UserId, ct);

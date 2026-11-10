@@ -22,10 +22,46 @@ export const routes: Routes = [
         loadComponent: () => import('./features/student/student-home.page').then((m) => m.StudentHomePage),
       },
       {
+        path: 'student/availability',
+        canActivate: [roleGuard('Student')],
+        title: 'nav.availability',
+        loadComponent: () => import('./features/student/availability.page').then((m) => m.AvailabilityPage),
+      },
+      {
+        path: 'student/planner',
+        canActivate: [roleGuard('Student')],
+        title: 'nav.planner',
+        loadComponent: () => import('./features/student/planner.page').then((m) => m.PlannerPage),
+      },
+      {
+        path: 'student/graduation',
+        canActivate: [roleGuard('Student')],
+        title: 'nav.graduation',
+        loadComponent: () => import('./features/student/graduation.page').then((m) => m.GraduationPage),
+      },
+      {
+        path: 'student/plan',
+        canActivate: [roleGuard('Student')],
+        title: 'nav.myPlan',
+        loadComponent: () => import('./features/student/my-plan.page').then((m) => m.MyPlanPage),
+      },
+      ...(['student', 'advisor', 'admin'] as const).map((area) => ({
+        path: `${area}/messages`,
+        canActivate: [roleGuard(area === 'student' ? 'Student' : area === 'advisor' ? 'Advisor' : 'Admin')],
+        title: 'nav.messages',
+        loadComponent: () => import('./features/messages/messages.page').then((m) => m.MessagesPage),
+      })),
+      {
         path: 'advisor',
         canActivate: [roleGuard('Advisor')],
         title: 'advisor.home.title',
         loadComponent: () => import('./features/advisor/advisor-home.page').then((m) => m.AdvisorHomePage),
+      },
+      {
+        path: 'advisor/students',
+        canActivate: [roleGuard('Advisor')],
+        title: 'nav.advisees',
+        loadComponent: () => import('./features/advisor/advisees.page').then((m) => m.AdviseesPage),
       },
       {
         path: 'advisor/plans',

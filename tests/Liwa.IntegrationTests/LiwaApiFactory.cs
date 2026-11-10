@@ -48,10 +48,27 @@ public class LiwaApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await base.DisposeAsync();
         NpgsqlConnection.ClearAllPools();
-        await using var conn = new NpgsqlConnection(MaintenanceConnectionString);
-        await conn.OpenAsync();
-        await using var cmd = new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{_databaseName}\" WITH (FORCE)", conn);
-        await cmd.ExecuteNonQueryAsync();
+        // A connection the app is still closing can make the drop fail; retry, and never fail the run over cleanup
+        // (a leftover liwa_test_* database is harmless and can be dropped by hand).
+        for (var attempt = 1; attempt <= 5; attempt++)
+        {
+            try
+            {
+                await using var conn = new NpgsqlConnection(MaintenanceConnectionString);
+                await conn.OpenAsync();
+                await using var cmd = new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{_databaseName}\" WITH (FORCE)", conn);
+                await cmd.ExecuteNonQueryAsync();
+                return;
+            }
+            catch (PostgresException) when (attempt < 5)
+            {
+                await Task.Delay(200 * attempt);
+            }
+            catch (PostgresException)
+            {
+                return;
+            }
+        }
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

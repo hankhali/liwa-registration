@@ -155,7 +155,7 @@ public enum ReasonCode
     TakeWithCorequisite = 6,      // Courses = the corequisite planned alongside
 
     // Conditions (eligible with condition)
-    WaitingForGrade = 20,         // Courses = prerequisites in progress
+    WaitingForGrade = 20,         // Courses = [the course, then the prerequisites in progress]
 
     // Why a course can't be taken this term
     PrerequisiteNotMet = 40,      // Courses = what's missing (any one of them, for OR); Value = rule text

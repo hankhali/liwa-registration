@@ -11,31 +11,68 @@
 @import '@fontsource/noto-sans-arabic/arabic-700.css';
 @import 'material-icons/iconfont/filled.css';
 
+// Theme tokens (brief §9: Material 3 theme as CSS custom properties, light and dark).
+// Each colour is light-dark(<light>, <dark>); scripts/check_contrast.py checks every text/background pair (WCAG AA).
+// Brand values come from the official Liwa University logo (charcoal + sage); see docs/assumptions.md D1.
 :root {
-  // Brand tokens taken from the official Liwa University logo (charcoal + sage).
-  // Exact values to be confirmed against the brand guide (docs/assumptions.md D1).
-  --liwa-primary: #272727; // charcoal: header, buttons, links (14.9:1 on white)
+  --liwa-primary: light-dark(#272727, #e6e5dc); // charcoal: buttons, links
   --liwa-primary-dark: #1a1a1a;
-  --liwa-sage: #b5b59e; // logo colour: ONLY on charcoal (7.2:1); 2.1:1 on white
-  --liwa-accent: #6b6a52; // deep olive for accents and focus on light backgrounds (5.5:1 on white)
-  --liwa-page: #f5f5f3;
-  --liwa-surface: #ffffff;
-  --liwa-border: #dddcd5;
-  --liwa-text: #1d1d1b;
-  --liwa-text-muted: #5a5a54; // 6.9:1 on white
-  --liwa-danger: #b3261e;
-  --liwa-success: #1e6b3a;
+  --liwa-header: #272727; // top bar stays charcoal in both themes
+  --liwa-sage: #b5b59e; // logo colour: ONLY on charcoal (7.2:1)
+  --liwa-accent: light-dark(#6b6a52, #c9c8b0); // deep olive accents and focus rings
+  --liwa-page: light-dark(#f5f5f3, #141413);
+  --liwa-surface: light-dark(#ffffff, #1f1f1d);
+  --liwa-border: light-dark(#dddcd5, #3a3a36);
+  --liwa-text: light-dark(#1d1d1b, #ecebe4);
+  --liwa-text-muted: light-dark(#5a5a54, #b4b3aa);
+  --liwa-danger: light-dark(#b3261e, #ffb4ab);
+  --liwa-success: light-dark(#1e6b3a, #8fd6a4);
+  --liwa-warning: light-dark(#8a5a00, #f2c46d);
+  // Critical path ("gold" courses that must be taken on time).
+  --liwa-gold-bg: light-dark(#fff1c2, #4a3a00);
+  --liwa-gold-fg: light-dark(#5c4300, #ffe08a);
+  // Timetable
+  --liwa-block: light-dark(#ecebe2, #2e2e2a);
+  --liwa-block-fg: light-dark(#1d1d1b, #ecebe4);
+  --liwa-clash: light-dark(#fde7e5, #4d1d19);
+  --liwa-free: light-dark(#e3f2e7, #183a24);
+  --liwa-free-hover: light-dark(#f0f7f2, #22442d);
+  // Status chips: fixed colours per plan status (brief §9).
+  --liwa-chip-draft-bg: light-dark(#ecebe6, #33332f);
+  --liwa-chip-draft-fg: light-dark(#3d3d38, #dcdbd2);
+  --liwa-chip-submitted-bg: light-dark(#e3ecfb, #1d2c47);
+  --liwa-chip-submitted-fg: light-dark(#1d4a8f, #b9cff5);
+  --liwa-chip-reviewing-bg: light-dark(#ece5f8, #2f2546);
+  --liwa-chip-reviewing-fg: light-dark(#4b2d8a, #d6c6f5);
+  --liwa-chip-approved-bg: light-dark(#e1f2e6, #183a24);
+  --liwa-chip-approved-fg: light-dark(#1e5c33, #a8e2b9);
+  --liwa-chip-rejected-bg: light-dark(#fbe5e3, #4d1d19);
+  --liwa-chip-rejected-fg: light-dark(#8c1d16, #ffc4bd);
+  --liwa-chip-proposed-bg: light-dark(#fff1c2, #4a3a00);
+  --liwa-chip-proposed-fg: light-dark(#5c4300, #ffe08a);
+  --liwa-chip-needs-bg: light-dark(#fff4e5, #4a2c00);
+  --liwa-chip-needs-fg: light-dark(#8a3c00, #ffcf99);
   --liwa-radius: 8px;
   --liwa-font: 'Open Sans', 'Noto Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 html {
-  color-scheme: light;
+  // "system" follows the device; the user menu can force light or dark (ThemeService sets data-theme).
+  color-scheme: light dark;
+
+  &[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  &[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
   @include mat.theme((
     color: (
       primary: liwa.$primary-palette,
       tertiary: liwa.$tertiary-palette,
-      theme-type: light,
+      theme-type: color-scheme,
     ),
     typography: (
       plain-family: var(--liwa-font),
@@ -47,7 +84,7 @@ html {
   // Primary actions use the exact brand charcoal rather than the generated tonal palette.
   @include mat.button-overrides((
     filled-container-color: var(--liwa-primary),
-    filled-label-text-color: #fff,
+    filled-label-text-color: light-dark(#fff, #1a1a1a),
   ));
 }
 
@@ -118,6 +155,67 @@ a {
 
 .liwa-muted {
   color: var(--liwa-text-muted);
+}
+
+// Gold "critical path" badge (brief §9): a course that must be taken on time.
+.liwa-critical {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--liwa-gold-bg);
+  color: var(--liwa-gold-fg);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// Notices
+.liwa-notice {
+  padding: 0.75rem 1rem;
+  border-radius: var(--liwa-radius);
+  border-inline-start: 4px solid var(--liwa-accent);
+  background: var(--liwa-page);
+  margin: 0.75rem 0;
+
+  &.error {
+    border-inline-start-color: var(--liwa-danger);
+  }
+
+  &.warn {
+    border-inline-start-color: var(--liwa-warning);
+  }
+
+  &.ok {
+    border-inline-start-color: var(--liwa-success);
+  }
+
+  ul {
+    margin: 0.25rem 0 0;
+    padding-inline-start: 1.25rem;
+  }
+}
+
+// Plain data tables (advisor and admin screens).
+.liwa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th,
+  td {
+    text-align: start;
+    padding: 0.5rem 0.625rem;
+    border-bottom: 1px solid var(--liwa-border);
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--liwa-text-muted);
+    font-size: 0.8125rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

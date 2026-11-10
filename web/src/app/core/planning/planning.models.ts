@@ -48,10 +48,40 @@ export interface CourseAssessment {
   reasons: Reason[];
 }
 
+export interface ProjectedTerm {
+  termCode: string;
+  courses: string[];
+  credits: number;
+  electiveCredits: number;
+}
+
 export interface TermProjection {
   graduationTerm: string | null;
   termsRemaining: number;
+  terms?: ProjectedTerm[];
 }
+
+export interface GraduationProjection {
+  withSummer: TermProjection;
+  withoutSummer: TermProjection;
+}
+
+export interface RequirementGroupInfo {
+  key: string;
+  name: string;
+  kind: 'AllOf' | 'ChooseCredits' | 'AnyCourse';
+}
+
+/** Saved free time and planner settings (null preset = never chosen: show the preset cards). */
+export interface Preferences {
+  preset: AvailabilityPreset | null;
+  availability: TimeWindow[];
+  delivery: DeliveryPreference;
+  maxCredits: number | null;
+  draftSectionIds: string[];
+}
+
+export type AvailabilityPreset = 'daytime' | 'evenings' | 'weekends' | 'custom' | 'any';
 
 export interface PlannerResult {
   termCode: string;
@@ -61,7 +91,7 @@ export interface PlannerResult {
   totalCredits: number;
   courses: CourseAssessment[];
   warnings: Reason[];
-  projection: { withSummer: TermProjection; withoutSummer: TermProjection };
+  projection: GraduationProjection;
 }
 
 export interface CourseInfo {
@@ -101,17 +131,23 @@ export interface PlanningView {
   courses: CourseInfo[];
   sections: SectionInfo[];
   saved: SavedPlan | null;
-  history: {
-    at: string;
-    actorName: string;
-    actorRole: string;
-    action: string;
-    status: PlanStatus;
-    version: number | null;
-    note: string | null;
-    added: string[];
-    removed: string[];
-  }[];
+  history: PlanEvent[];
+  groups?: RequirementGroupInfo[] | null;
+  /** Graduation projection for the saved plan (to compare with the recommendation). */
+  savedProjection?: GraduationProjection | null;
+  hold?: string | null;
+}
+
+export interface PlanEvent {
+  at: string;
+  actorName: string;
+  actorRole: string;
+  action: string;
+  status: PlanStatus;
+  version: number | null;
+  note: string | null;
+  added: string[];
+  removed: string[];
 }
 
 export interface PlanCheck {
@@ -127,46 +163,29 @@ export type DeliveryPreference = 'Any' | 'OnCampusOnly' | 'OnlineOnly';
 /** Statuses where the plan is with the advisor and can't be changed by the student. */
 export const SENT_STATUSES: PlanStatus[] = ['Submitted', 'AdvisorReviewing', 'Approved'];
 
-// ---------------------------------------------------------------- free-time presets
-
-export type PresetKey = 'any' | 'evenings' | 'mornings' | 'daytime' | 'custom';
-
-export type Period = 'morning' | 'afternoon' | 'evening';
-export const PERIODS: { key: Period; start: string; end: string }[] = [
-  { key: 'morning', start: '08:00', end: '12:00' },
-  { key: 'afternoon', start: '12:00', end: '17:00' },
-  { key: 'evening', start: '17:00', end: '20:00' },
-];
+// ---------------------------------------------------------------- free-time presets (brief §9: four cards)
 
 function everyDay(days: Day[], start: string, end: string): TimeWindow[] {
   return days.map((day) => ({ day, start, end: day === 'Friday' && end > '12:00' ? '12:00' : end }));
 }
 
-export const PRESETS: Record<Exclude<PresetKey, 'custom'>, TimeWindow[]> = {
-  any: [],
-  evenings: everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '20:00'),
-  mornings: everyDay(TEACHING_DAYS, '08:00', '12:00'),
-  daytime: everyDay(TEACHING_DAYS, '08:00', '17:00'),
-};
+/** The four first-run cards. "custom" starts empty; "any" (skip) means "show every class". */
+export const PRESET_CARDS: AvailabilityPreset[] = ['daytime', 'evenings', 'weekends', 'custom'];
 
-/** Custom grid → windows, merging neighbouring periods so a 11:00–12:15 class fits "morning + afternoon". */
-export function windowsFromGrid(grid: Record<string, boolean>): TimeWindow[] {
-  const windows: TimeWindow[] = [];
-  for (const day of TEACHING_DAYS) {
-    let current: TimeWindow | null = null;
-    for (const p of PERIODS) {
-      const allowed = !(day === 'Friday' && p.key !== 'morning');
-      if (allowed && grid[`${day}.${p.key}`]) {
-        if (current && current.end === p.start) current.end = p.end;
-        else {
-          current = { day, start: p.start, end: p.end };
-          windows.push(current);
-        }
-      } else current = null;
-    }
-  }
-  return windows;
-}
+export const PRESETS: Record<Exclude<AvailabilityPreset, 'custom'>, TimeWindow[]> = {
+  any: [],
+  // Full-time daytime: Mon–Fri 8 am–5 pm (Friday until noon).
+  daytime: everyDay(TEACHING_DAYS, '08:00', '17:00'),
+  // Evenings only: Mon–Thu 5–8 pm (the brief's working-student blocks).
+  evenings: everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '20:00'),
+  // Weekends + evenings: Mon–Thu evenings, Friday morning and Saturday daytime (Saturday classes only run
+  // when a term teaches on Saturday; see docs/assumptions.md S6).
+  weekends: [
+    ...everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '20:00'),
+    { day: 'Friday', start: '08:00', end: '12:00' },
+    { day: 'Saturday', start: '08:00', end: '17:00' },
+  ],
+};
 
 // ---------------------------------------------------------------- formatting
 
@@ -205,6 +224,22 @@ export function parseTermCode(code: string): { season: 'Spring' | 'Summer' | 'Fa
   return { year: Number(m[1]), season: m[2] === 'SP' ? 'Spring' : m[2] === 'SU' ? 'Summer' : 'Fall' };
 }
 
+/** Term code → an ordinal for comparing (Spring < Summer < Fall within a year). */
+export function termOrdinal(code: string | null): number | null {
+  const t = code ? parseTermCode(code) : null;
+  return t ? t.year * 3 + (t.season === 'Spring' ? 0 : t.season === 'Summer' ? 1 : 2) : null;
+}
+
+/** Semesters between two graduation terms ("this choice delays graduation by one semester"); summer counts only if included. */
+export function semesterDelay(recommended: string | null, selection: string | null, includeSummer: boolean): number {
+  const a = termOrdinal(recommended);
+  const b = termOrdinal(selection);
+  if (a === null || b === null || b <= a) return 0;
+  let n = 0;
+  for (let o = a + 1; o <= b; o++) if (includeSummer || o % 3 !== 1) n++;
+  return n;
+}
+
 /** Same key the server uses to match an "I understand" (Planner.WarningKey). */
 export function warningKey(r: Reason): string {
   return `${r.code}:${r.courses.join(',')}:${r.value ?? ''}`;
@@ -220,6 +255,16 @@ export function blockedGroup(reasons: Reason[]): BlockedGroup {
   if (codes.some((c) => ['StandingRequired', 'CreditsRequired'].includes(c))) return 'moreCredits';
   if (codes.includes('PermissionRequired')) return 'permission';
   return 'other';
+}
+
+/**
+ * Critical path ("gold" courses): on or next to the longest prerequisite chain left in the student's own plan,
+ * so delaying them delays graduation (brief §8: depth over the student's own remaining courses).
+ */
+export function criticalCodes(courses: CourseAssessment[]): Set<string> {
+  const max = Math.max(0, ...courses.map((c) => c.chainLength));
+  if (max < 2) return new Set();
+  return new Set(courses.filter((c) => c.chainLength >= Math.max(2, max - 1)).map((c) => c.courseCode));
 }
 
 /** Reasons a student sees on a planned course (ranking details are for advisors only). */

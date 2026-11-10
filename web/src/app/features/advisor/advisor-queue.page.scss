@@ -1,4 +1,4 @@
-.filters {
+﻿.filters {
   display: flex;
   flex-wrap: wrap;
   gap: 0;
@@ -58,7 +58,7 @@
     font-weight: 600;
     color: var(--liwa-text-muted);
     border-bottom: 1px solid var(--liwa-border);
-    background: #fafaf8;
+    background: var(--liwa-page);
   }
 
   td {
@@ -68,7 +68,7 @@
   }
 
   tr.urgent td:first-child {
-    box-shadow: inset 3px 0 0 #b3261e;
+    box-shadow: inset 3px 0 0 var(--liwa-danger);
   }
 
   a {
@@ -97,38 +97,20 @@
   letter-spacing: 0.04em;
 }
 
-.status {
-  font-size: 0.875rem;
+.markers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.marker {
+  font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
-
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-inline-end: 0.375rem;
-    border-radius: 50%;
-    background: currentColor;
-  }
-}
-
-.s-Submitted,
-.s-NeedsReview {
-  color: #8a5a00;
-}
-
-.s-AdvisorReviewing,
-.s-ChangesProposed {
-  color: #3d4f7a;
-}
-
-.s-Approved {
-  color: var(--liwa-success);
-}
-
-.s-Rejected {
-  color: var(--liwa-danger);
+  padding: 0 0.375rem;
+  border-radius: 4px;
+  background: var(--liwa-chip-needs-bg);
+  color: var(--liwa-chip-needs-fg);
 }
 
 // Phones: each row becomes a compact card.
@@ -161,7 +143,7 @@
     }
 
     tr.urgent {
-      border-inline-start: 3px solid #b3261e;
+      border-inline-start: 3px solid var(--liwa-danger);
     }
 
     tr.urgent td:first-child {

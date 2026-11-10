@@ -2,20 +2,22 @@ import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { formatDateTime, programName } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
-import { DECIDABLE, QueueItem } from '../../core/planning/advisor.models';
+import { QueueItem } from '../../core/planning/advisor.models';
+import { StatusChipComponent } from '../../shared/status-chip.component';
 
-type StatusFilter = 'waiting' | 'all' | 'Approved' | 'Rejected' | 'ChangesProposed';
+type StatusFilter = 'waiting' | 'NeedsReview' | 'all' | 'Approved' | 'Rejected' | 'ChangesProposed';
+const FILTERS: StatusFilter[] = ['waiting', 'NeedsReview', 'ChangesProposed', 'Rejected', 'Approved', 'all'];
 type Sort = 'oldest' | 'newest' | 'name';
 
 /** Review queue: status and program filters with counts, sort orders, urgency markers; cards on phones. */
 @Component({
   selector: 'app-advisor-queue',
-  imports: [MatFormFieldModule, MatSelectModule, RouterLink, TranslocoPipe],
+  imports: [MatFormFieldModule, MatSelectModule, RouterLink, TranslocoPipe, StatusChipComponent],
   template: `
     <header class="page-header">
       <h1>{{ 'advisor.queue.heading' | transloco }}</h1>
@@ -70,18 +72,27 @@ type Sort = 'oldest' | 'newest' | 'name';
                 <td>
                   <a [routerLink]="['/advisor/plans', q.planId]">{{ q.studentName }}</a>
                   <span class="sub" dir="ltr">{{ q.studentId }}</span>
-                  @if (q.urgent) {
-                    <span class="flag">{{ 'advisor.queue.urgent' | transloco }}</span>
-                  }
+                  <span class="markers">
+                    @if (q.urgent) {
+                      <span class="flag">{{ 'advisor.queue.urgent' | transloco }}</span>
+                    }
+                    @if (q.onProbation) {
+                      <span class="marker">{{ 'advisor.queue.markers.probation' | transloco }}</span>
+                    }
+                    @if (q.hold) {
+                      <span class="marker">{{ 'advisor.queue.markers.hold' | transloco }}</span>
+                    }
+                    @if (q.nearGraduation) {
+                      <span class="marker">{{ 'advisor.queue.markers.nearGraduation' | transloco }}</span>
+                    }
+                    @if (q.warningCount > 0) {
+                      <span class="marker">{{ 'advisor.queue.notes' | transloco: { n: q.warningCount } }}</span>
+                    }
+                  </span>
                 </td>
                 <td>{{ programLabel(q) }}</td>
-                <td><span class="status s-{{ q.status }}">{{ 'planStatus.' + q.status | transloco }}</span></td>
-                <td>
-                  {{ q.credits }}
-                  @if (q.warningCount > 0) {
-                    <span class="sub">{{ 'advisor.queue.notes' | transloco: { n: q.warningCount } }}</span>
-                  }
-                </td>
+                <td><app-status-chip [status]="q.status" /></td>
+                <td>{{ q.credits }}</td>
                 <td class="sub">{{ when(q.updatedAt) }}</td>
               </tr>
             }
@@ -100,8 +111,9 @@ export class AdvisorQueuePage {
   private readonly http = inject(HttpClient);
   private readonly language = inject(LanguageService);
 
-  protected readonly statusFilters: StatusFilter[] = ['waiting', 'ChangesProposed', 'Rejected', 'Approved', 'all'];
-  protected readonly status = signal<StatusFilter>('waiting');
+  protected readonly statusFilters = FILTERS;
+  /** Pre-selected by ?status= (the stat cards on the advisor home link here). */
+  protected readonly status = signal<StatusFilter>(this.initialFilter());
   protected readonly program = signal('');
   protected readonly sort = signal<Sort>('oldest');
   protected readonly queue = resource({ loader: () => firstValueFrom(this.http.get<QueueItem[]>('/api/advisor/plans')) });
@@ -137,6 +149,11 @@ export class AdvisorQueuePage {
   }
 
   private matches(q: QueueItem, f: StatusFilter): boolean {
-    return f === 'all' || (f === 'waiting' ? DECIDABLE.includes(q.status) : q.status === f);
+    return f === 'all' || (f === 'waiting' ? q.status === 'Submitted' || q.status === 'AdvisorReviewing' : q.status === f);
+  }
+
+  private initialFilter(): StatusFilter {
+    const s = inject(ActivatedRoute).snapshot.queryParamMap.get('status') as StatusFilter | null;
+    return s && FILTERS.includes(s) ? s : 'waiting';
   }
 }

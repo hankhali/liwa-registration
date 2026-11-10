@@ -17,7 +17,22 @@
     "homeLink": "Smart Registration home",
     "switchLanguage": "Switch language to Arabic",
     "accountMenu": "Account menu for {{ name }}",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "navLabel": "Main menu",
+    "more": "More",
+    "term": "Semester",
+    "termHint": "Planning is open for the current semester",
+    "termClosed": "not open for planning",
+    "badge": "{{ n }} waiting",
+    "expandMenu": "Show menu labels",
+    "collapseMenu": "Hide menu labels",
+    "theme": {
+      "system": "Theme: same as my device",
+      "light": "Theme: light",
+      "dark": "Theme: dark"
+    }
   },
   "login": {
     "title": "Sign in",
@@ -86,14 +101,27 @@
         "gpa": "GPA",
         "noGpa": "No grades yet",
         "standing": {
-          "Freshman": "First year",
-          "Sophomore": "Second year",
-          "Junior": "Third year",
-          "Senior": "Final year"
+          "Freshman": "Freshman (1st year)",
+          "Sophomore": "Sophomore (2nd year)",
+          "Junior": "Junior (3rd year)",
+          "Senior": "Senior (4th year)"
         },
-        "probation": "You're on academic probation, so you can take fewer credits this term. Your advisor is there to help you get back on track.",
+        "probation": "You're on academic probation, so you can take fewer credits this semester. Your advisor is there to help you get back on track.",
         "noRecord": "We haven't received your study record from the Registrar yet. Please check again later.",
         "error": "We couldn't load your study details right now. Please refresh the page."
+      },
+      "next": "Your plan",
+      "seePlan": "See the plan we recommend",
+      "hold": "There is a hold on your account. You can still make your plan, but you can't register until it's cleared.",
+      "nextBy": {
+        "none": "We've built a plan for you with {{ n }} credits. Have a look and send it to your advisor.",
+        "Draft": "Your plan is saved but not sent yet.",
+        "Submitted": "Your plan is with your advisor.",
+        "AdvisorReviewing": "Your advisor is looking at your plan now.",
+        "Approved": "Your plan is approved. You're ready to register.",
+        "Rejected": "Your advisor sent your plan back. See their comment.",
+        "ChangesProposed": "Your advisor suggested changes. Have a look.",
+        "NeedsReview": "New grades were posted. Your plan needs another look."
       }
     }
   },
@@ -115,7 +143,14 @@
         "none": "No students are assigned to you yet.",
         "error": "We couldn't load your students right now. Please refresh the page."
       },
-      "allPlans": "See all plans"
+      "allPlans": "See all plans",
+      "allStudents": "See all my students",
+      "stats": {
+        "awaiting": "Plans waiting for review",
+        "needsReview": "Need review after new grades",
+        "approved": "Approved this semester",
+        "proposed": "Changes suggested, waiting for the student"
+      }
     },
     "queue": {
       "title": "Plans to review",
@@ -127,7 +162,8 @@
         "ChangesProposed": "Changes suggested",
         "Rejected": "Sent back",
         "Approved": "Approved",
-        "all": "All"
+        "all": "All",
+        "NeedsReview": "Need review after new grades"
       },
       "program": "Program",
       "allPrograms": "All programs",
@@ -147,7 +183,12 @@
       "urgent": "Urgent",
       "notes": "{{ n }} notes confirmed",
       "empty": "No plans here.",
-      "error": "We couldn't load the plans. Please refresh the page."
+      "error": "We couldn't load the plans. Please refresh the page.",
+      "markers": {
+        "probation": "Probation",
+        "hold": "Hold",
+        "nearGraduation": "Graduating soon"
+      }
     },
     "review": {
       "title": "Review plan",
@@ -196,11 +237,14 @@
         "Reject": "Sent back. {{ student }} has been told.",
         "ProposeChanges": "Suggested changes sent. {{ student }} has been told."
       },
-      "notFound": "This plan isn't available."
+      "notFound": "This plan isn't available.",
+      "delay": "This plan delays graduation by {{ n }} semesters compared with the recommendation.",
+      "delayOne": "This plan delays graduation by one semester compared with the recommendation.",
+      "noDelay": "This plan keeps the same graduation date as the recommendation."
     },
     "record": {
       "title": "Student record",
-      "back": "Advisor home",
+      "back": "All my students",
       "plan": "Plan this term",
       "noPlan": "Not sent yet",
       "probation": "On academic probation: a lower credit limit applies this term.",
@@ -214,7 +258,21 @@
       "transfer": "Transfer",
       "transferGrade": "Transfer credit",
       "inProgress": "In progress",
-      "notFound": "This student isn't one of your advisees."
+      "notFound": "This student isn't one of your advisees.",
+      "hold": "Hold on the account ({{ hold }}): the student can't register until it's cleared."
+    },
+    "advisees": {
+      "heading": "My students",
+      "subtitle": "Everyone assigned to you, with where their plan is and when they could graduate.",
+      "noPlan": "No plan yet",
+      "cols": {
+        "standing": "Year",
+        "credits": "Credits",
+        "gpa": "GPA",
+        "plan": "Plan this semester",
+        "graduation": "Projected graduation",
+        "activity": "Last activity"
+      }
     }
   },
   "admin": {
@@ -292,10 +350,10 @@
     "Sunday": "Sun"
   },
   "plan": {
-    "heading": "Your plan for {{ term }}",
+    "heading": "Here is the plan we recommend for {{ term }}",
     "building": "Building your plan…",
-    "notReady": "We can't build your plan yet because your study record or this term's timetable hasn't arrived. Please check again later.",
-    "intro": "Here's the plan we recommend. Happy with it? Send it to your advisor.",
+    "notReady": "We can't build your plan yet because your study record or this semester's timetable hasn't arrived. Please check again later.",
+    "intro": "We only picked classes you can take, with no time clashes. Happy with it? Send it to your advisor.",
     "yourAdvisor": "your advisor",
     "freeTime": {
       "heading": "When are you free?",
@@ -343,7 +401,7 @@
     "credits": "{{ n }} credits",
     "onlineAnyTime": "Online, study any time",
     "total": "Total: {{ n }} credits",
-    "limits": "You can take {{ min }}–{{ max }} credits this term.",
+    "limits": "You can take {{ min }}–{{ max }} credits this semester.",
     "empty": "No classes fit your choices right now. Try different times, or tap \"Change courses\".",
     "fixFirst": "Please fix these before sending:",
     "goodToKnow": "Good to know:",
@@ -377,17 +435,19 @@
       "accepted": "Done. Your plan is approved."
     },
     "editor": {
-      "canTake": "Courses you can take this term",
+      "canTake": "Courses you can take this semester",
       "classTime": "Class time",
       "full": "Full",
-      "notAvailable": "Not available this term",
+      "notAvailable": "Not eligible this semester ({{ n }})",
       "groups": {
         "prerequisite": "Need to pass another course first ({{ n }})",
-        "notOffered": "Not offered this term ({{ n }})",
+        "notOffered": "Not offered this semester ({{ n }})",
         "moreCredits": "Need more credits first ({{ n }})",
         "permission": "Need permission from the department ({{ n }})",
         "other": "Other reasons ({{ n }})"
-      }
+      },
+      "counter": "{{ n }} credits",
+      "counterLimits": "Your limit: {{ min }}–{{ max }} credits"
     },
     "credit1": "1 credit",
     "dayJoin": " & ",
@@ -396,8 +456,22 @@
       "RejectedHint": "Make the changes below, then send it again.",
       "ChangesProposed": "{{ advisor }} suggested some changes.",
       "ChangesProposedHint": "The plan below shows the suggested changes. Accept them, or change the plan and send it again.",
-      "accept": "Accept the changes"
-    }
+      "accept": "Accept the changes",
+      "seeChanges": "See what changed",
+      "NeedsReview": "New grades were posted, so your approved plan needs another look.",
+      "NeedsReviewHint": "Some classes can't go ahead now. Change your plan and send it again, or talk to your advisor."
+    },
+    "headingSent": "Your plan for {{ term }}",
+    "seeMyPlan": "See where it is",
+    "freeTimeFirst": "Tell us when you're free so we only pick classes that fit.",
+    "freeTimeLink": "Choose your free time",
+    "draftRestored": "We kept the changes you made last time.",
+    "critical": "Take on time",
+    "criticalHint": "Other courses depend on this one. Taking it later would delay your graduation.",
+    "details": "Details",
+    "why": "Why?",
+    "autosaved": "Your changes are saved automatically.",
+    "seePath": "See your graduation path"
   },
   "planner": {
     "join": {
@@ -424,12 +498,12 @@
       "StandingRequired": "Open from your {{ value }} onward",
       "CreditsRequired": "You need {{ value }} credits first",
       "PermissionRequired": "Needs permission from the department",
-      "NotOfferedThisTerm": "Not offered this term (usually in {{ value }})",
-      "NoSectionsThisTerm": "No classes scheduled this term",
+      "NotOfferedThisTerm": "Not offered this semester (usually in {{ value }})",
+      "NoSectionsThisTerm": "No classes scheduled this semester",
       "CorequisiteDoesNotFit": "Must be taken with {{ courses }}, but they don't fit together in your free time",
       "CreditLimitReached": "Would go over your credit limit ({{ value }})",
       "ElectiveQuotaMet": "You already have enough electives planned",
-      "NoSectionFits": "No class time fits your schedule",
+      "NoSectionFits": "No class times match when you're free",
       "OutsideAvailability": "{{ courses }} is outside the times you said you're free",
       "ClashesWith": "{{ courses }} are at the same time",
       "SectionFull": "{{ courses }} is full",
@@ -437,7 +511,7 @@
       "FewerSeatsLeft": "Another class time had more seats",
       "BelowMinimumCredits": "This is below the usual minimum of {{ value }} credits",
       "NoCreditRule": "We couldn't find your credit limit. Please contact the Registrar.",
-      "OfferedButNoSections": "Some courses have no classes scheduled this term: {{ courses }}",
+      "OfferedButNoSections": "Some courses have no classes scheduled this semester: {{ courses }}",
       "InProgressPrerequisite": "Some courses depend on grades you haven't received yet: {{ courses }}",
       "GraduationNotReachable": "We couldn't work out your graduation date. Your advisor will help.",
       "NotInDegreePlan": "{{ courses }} isn't part of your degree plan",
@@ -447,7 +521,28 @@
       "UnknownSection": "One of these classes is no longer available. Please refresh the page.",
       "OverCreditLimit": "That's more than your limit of {{ value }} credits",
       "NotEligibleNow": "You can't take {{ courses }} yet",
-      "UnlocksOtherCoursesOne": "Take this soon: 1 other course depends on it"
+      "UnlocksOtherCoursesOne": "Take this soon: 1 other course depends on it",
+      "SectionFullSection": "All seats are taken",
+      "OutsideAvailabilitySection": "Outside the times you're free",
+      "ClashesWithOne": "Clashes with {{ courses }}",
+      "AccountHold": "There is a {{ value }} hold on your account: you can't register until it's cleared"
+    },
+    "actions": {
+      "BelowMinimumCredits": "Add {{ missing }} more credits to reach the {{ value }}-credit minimum, or ask your advisor to approve a lighter load.",
+      "OverCreditLimit": "Remove {{ over }} credits to get back under your limit of {{ value }} credits.",
+      "ClashesWith": "{{ first }} and {{ second }} are at the same time. Pick a different class time for one of them.",
+      "SectionFull": "{{ courses }} is full. Pick another class time.",
+      "NotEligibleNow": "Remove {{ courses }}: you can't take it yet.",
+      "DuplicateCourse": "You picked {{ courses }} twice. Remove one of them.",
+      "OutsideAvailability": "{{ courses }} is outside the times you said you're free. Pick another class time, or keep it if that's fine.",
+      "NotInDegreePlan": "Remove {{ courses }}: it isn't part of your degree plan.",
+      "AlreadyTaken": "Remove {{ courses }}: you've already taken it.",
+      "AccountHold": "There is a {{ value }} hold on your account. You can send your plan, but contact the office to clear it before registration."
+    },
+    "holds": {
+      "FINANCE": "finance",
+      "REGISTRAR": "Registrar",
+      "ADVISING": "advising"
     }
   },
   "notifications": {
@@ -487,10 +582,118 @@
     "proposed": "{{ actor }} suggested changes (version {{ version }})",
     "accepted": "{{ actor }} accepted the suggested changes",
     "added": "Added:",
-    "removed": "Removed:"
+    "removed": "Removed:",
+    "needsReview": "New grades were posted: the plan needs review",
+    "versionStep": "Version {{ from }} → {{ to }}",
+    "system": "The system",
+    "empty": "Nothing has happened yet."
   },
   "notificationsUi": {
     "label": "Notifications, {{ count }} unread",
     "empty": "No notifications yet."
+  },
+  "nav": {
+    "home": "Home",
+    "availability": "Availability",
+    "planner": "Planner",
+    "graduation": "Graduation Path",
+    "myPlan": "My Plan",
+    "messages": "Messages",
+    "queue": "Plans to review",
+    "advisees": "My students"
+  },
+  "timetable": {
+    "caption": "Your classes this week",
+    "editCaption": "Tap the hours you're free",
+    "showGrid": "Show week grid",
+    "showList": "Show as a list",
+    "clash": "Time clash",
+    "clashNote": "Two classes are at the same time. Pick a different class time for one of them.",
+    "noClasses": "No classes yet",
+    "blockedFriday": "No classes Friday afternoon",
+    "online": "Online, no fixed time:"
+  },
+  "messages": {
+    "heading": "Messages",
+    "subtitle": "Updates about your plans, newest first.",
+    "markRead": "Mark all as read",
+    "empty": "No messages yet",
+    "emptyBody": "You'll get a message here whenever a plan changes status.",
+    "new": "new",
+    "error": "We couldn't load your messages. Please refresh the page."
+  },
+  "availability": {
+    "heading": "When are you free?",
+    "intro": "Pick the times you're free, or skip this to see every class.",
+    "presetsHeading": "Choose what fits your week",
+    "presets": {
+      "daytime": {
+        "title": "Full-time daytime",
+        "body": "Monday to Friday, 8 am to 5 pm"
+      },
+      "evenings": {
+        "title": "Evenings only",
+        "body": "I work during the day. Monday to Thursday, 5 to 8 pm"
+      },
+      "weekends": {
+        "title": "Weekends + evenings",
+        "body": "Weekday evenings, Friday morning and Saturday"
+      },
+      "custom": {
+        "title": "Custom",
+        "body": "I'll pick the days and hours myself"
+      }
+    },
+    "skip": "Skip this and show me every class",
+    "gridHeading": "Your free time each week",
+    "gridHint": "Green hours are free. Tap an hour to change it, or tap a day to select the whole day. There are never classes on Friday afternoon.",
+    "save": "Save and see my plan",
+    "pickSome": "Pick at least one hour, or skip this step.",
+    "error": "We couldn't save your free time. Please try again.",
+    "loadError": "We couldn't load your free time. Please refresh the page.",
+    "toPlanner": "Go to my plan"
+  },
+  "walkthrough": {
+    "heading": "Three steps to your next semester",
+    "dismiss": "Got it, don't show again"
+  },
+  "graduation": {
+    "heading": "Graduation Path",
+    "subtitle": "Every semester until you graduate, if you keep to the plan.",
+    "summer": "Include summer classes",
+    "compare": "Which plan to show",
+    "mySelection": "My selection",
+    "recommended": "Recommended",
+    "both": "With your selection you graduate in {{ mine }}; with the recommended plan in {{ rec }}.",
+    "date": "You could graduate in {{ term }}.",
+    "delay": "Your selection delays graduation by {{ n }} semesters.",
+    "delayOne": "Your selection delays graduation by one semester.",
+    "fix": "Change my plan",
+    "legend": "Gold courses must be taken on time, or you graduate later.",
+    "columns": "Semesters until graduation",
+    "now": "this semester",
+    "electives": "{{ n }} credits of free electives (any course)",
+    "none": "We couldn't work out your path yet. Your advisor will help.",
+    "whyWait": "Why some courses wait",
+    "creditLimit": "there isn't room within your credit limit this semester"
+  },
+  "myPlan": {
+    "heading": "My Plan",
+    "subtitle": "Where your plan is, what your advisor said, and every change.",
+    "none": "You haven't saved or sent a plan yet",
+    "noneBody": "Start from the plan we recommend.",
+    "toPlanner": "Go to the planner",
+    "status": "Status",
+    "version": "version {{ n }}",
+    "steps": {
+      "saved": "Plan made",
+      "submitted": "Sent to your advisor",
+      "reviewing": "Advisor reviewing",
+      "decided": "Advisor's decision"
+    },
+    "needsReview": "New grades were posted, so this plan needs another look.",
+    "notes": "Notes from your advisor",
+    "proposed": "{{ advisor }} suggested these changes",
+    "changeInstead": "Change the plan myself instead"
   }
 }

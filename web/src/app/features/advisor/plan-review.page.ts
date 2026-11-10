@@ -25,6 +25,10 @@ import {
   timeRange,
 } from '../../core/planning/planning.models';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
+import { PlanHistoryComponent } from '../../shared/plan-history.component';
+import { StatusChipComponent } from '../../shared/status-chip.component';
+import { TimetableBlock, TimetableGridComponent } from '../../shared/timetable-grid.component';
+import { semesterDelay } from '../../core/planning/planning.models';
 
 type Mode = 'none' | 'reject' | 'propose';
 
@@ -36,7 +40,20 @@ type Mode = 'none' | 'reject' | 'propose';
  */
 @Component({
   selector: 'app-plan-review',
-  imports: [FormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule, RouterLink, TranslocoPipe, ReasonTextPipe],
+  imports: [
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    RouterLink,
+    TranslocoPipe,
+    ReasonTextPipe,
+    PlanHistoryComponent,
+    StatusChipComponent,
+    TimetableGridComponent,
+  ],
   templateUrl: './plan-review.page.html',
   styleUrls: ['../../shared/page.scss', './plan-review.page.scss'],
 })
@@ -112,6 +129,18 @@ export class PlanReviewPage {
         .flatMap((c) => c.section.meetings.filter((m) => m.day === day).map((m) => ({ code: c.code, time: timeRange(m, lang), start: m.start })))
         .sort((a, b) => a.start.localeCompare(b.start)),
     })).filter((d) => d.classes.length > 0);
+  });
+
+  /** The submitted sections on the shared timetable grid. */
+  protected readonly blocks = computed<TimetableBlock[]>(() =>
+    this.courses().flatMap((c) => c.section.meetings.map((m, i) => ({ key: `${c.code}-${i}`, code: c.code, label: c.title, day: m.day, start: m.start, end: m.end }))),
+  );
+  protected readonly onlineBlocks = computed(() => this.courses().filter((c) => c.section.meetings.length === 0).map((c) => ({ code: c.code })));
+
+  /** How many semesters this plan delays graduation compared with the recommendation (without summer). */
+  protected readonly delta = computed(() => {
+    const r = this.review.value();
+    return r ? semesterDelay(r.planning.recommendation.projection.withoutSummer.graduationTerm, r.thisPlan.withoutSummer.graduationTerm, false) : 0;
   });
 
   protected readonly candidates = computed(() => {

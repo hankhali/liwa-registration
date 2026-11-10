@@ -32,6 +32,13 @@ export interface AdviseeSummary {
   creditsRequired: number;
   gpa: number | null;
   onProbation: boolean;
+  standing?: Standing | null;
+  hold?: string | null;
+  planStatus?: import('../planning/planning.models').PlanStatus | null;
+  planId?: string | null;
+  projectedGraduation?: string | null;
+  termsRemaining?: number | null;
+  lastActivity?: string | null;
 }
 
 export interface DataOverview {

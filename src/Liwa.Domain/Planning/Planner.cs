@@ -101,7 +101,7 @@ public static partial class Planner
                     break;
                 case Sat.Conditional:
                     status[n.Code] = CourseStatus.EligibleWithCondition;
-                    r.Add(PlannerReason.Of(ReasonCode.WaitingForGrade, e.WaitingFor));
+                    r.Add(PlannerReason.Of(ReasonCode.WaitingForGrade, e.WaitingFor.Prepend(n.Code)));
                     break;
                 default:
                     status[n.Code] = CourseStatus.Eligible;
@@ -237,7 +237,7 @@ public static partial class Planner
             if (c.Need.Suggested is { } sem && sem <= studentSemester)
                 why.Add(PlannerReason.Of(ReasonCode.SuggestedForThisSemester, sem.ToString(System.Globalization.CultureInfo.InvariantCulture)));
             if (c.Partners.Count > 0) why.Add(PlannerReason.Of(ReasonCode.TakeWithCorequisite, c.Partners));
-            if (evals.TryGetValue(c.Need.Code, out var e) && e.Result == Sat.Conditional) why.Add(PlannerReason.Of(ReasonCode.WaitingForGrade, e.WaitingFor));
+            if (evals.TryGetValue(c.Need.Code, out var e) && e.Result == Sat.Conditional) why.Add(PlannerReason.Of(ReasonCode.WaitingForGrade, e.WaitingFor.Prepend(c.Need.Code)));
             return new PlannedCourse(c.Need.Code, c.Need.Credits, c.Section.Id, c.Section.SectionCode, rank.GetValueOrDefault(c.Need.Code), why,
                 alternatives.GetValueOrDefault(c.Need.Code) ?? []);
         }).OrderBy(p => p.PriorityRank == 0 ? int.MaxValue : p.PriorityRank).ThenBy(p => p.CourseCode, StringComparer.Ordinal).ToList();

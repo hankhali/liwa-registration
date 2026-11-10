@@ -1,19 +1,19 @@
 import { StudentSummary } from '../academic/academic.models';
-import { PlanCheck, PlanStatus, PlanningView, Reason, TimeWindow } from './planning.models';
+import { PlanCheck, PlanEvent, PlanStatus, PlanningView, Reason, TimeWindow } from './planning.models';
 
-export interface PlanEvent {
-  at: string;
-  actorName: string;
-  actorRole: string;
-  action: 'submitted' | 'saved' | 'reviewing' | 'approved' | 'rejected' | 'proposed' | 'accepted';
-  status: PlanStatus;
-  version: number | null;
-  note: string | null;
-  added: string[];
-  removed: string[];
+export type { PlanEvent } from './planning.models';
+
+export interface AdvisorOverview {
+  awaitingReview: number;
+  needsReview: number;
+  approvedThisTerm: number;
+  changesProposed: number;
 }
 
 export interface QueueItem {
+  hold: string | null;
+  nearGraduation: boolean;
+  termsRemaining: number | null;
   planId: string;
   studentUserId: string;
   studentName: string;
@@ -71,6 +71,8 @@ export interface StudentRecordView {
   transcript: TranscriptLine[];
   currentPlanStatus: PlanStatus | null;
   currentPlanId: string | null;
+  planHistory: PlanEvent[] | null;
+  hold: string | null;
 }
 
 export interface NotificationItem {

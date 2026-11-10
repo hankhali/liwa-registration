@@ -1,8 +1,8 @@
-:host {
+﻿:host {
   display: block;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, var(--liwa-primary) 0, var(--liwa-primary) 300px, var(--liwa-page) 300px);
+    linear-gradient(180deg, var(--liwa-header) 0, var(--liwa-header) 300px, var(--liwa-page) 300px);
 }
 
 .login-logo {
@@ -15,7 +15,7 @@
 @media (max-width: 600px) {
   :host {
     background:
-      linear-gradient(180deg, var(--liwa-primary) 0, var(--liwa-primary) 250px, var(--liwa-page) 250px);
+      linear-gradient(180deg, var(--liwa-header) 0, var(--liwa-header) 250px, var(--liwa-page) 250px);
   }
 
   .login-logo {

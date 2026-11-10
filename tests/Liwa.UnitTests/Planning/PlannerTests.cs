@@ -231,7 +231,7 @@ public sealed class PlannerEligibilityTests
         var r = s.Run();
 
         Assert.Equal(["CSC201"], r.PlannedCodes());
-        Assert.Equal(["CSC102"], r.Plan[0].Reasons.Get(ReasonCode.WaitingForGrade).Courses);
+        Assert.Equal(["CSC201", "CSC102"], r.Plan[0].Reasons.Get(ReasonCode.WaitingForGrade).Courses);
         Assert.Equal(["CSC201"], r.Warnings.Get(ReasonCode.InProgressPrerequisite).Courses);
     }
 

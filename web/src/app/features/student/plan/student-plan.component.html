@@ -2,7 +2,7 @@
   <h2 id="plan-heading" class="card-title">
     <mat-icon aria-hidden="true">event_note</mat-icon>
     @if (view.hasValue()) {
-      {{ 'plan.heading' | transloco: { term: termLabel(view.value().termCode) } }}
+      {{ (sent() ? 'plan.headingSent' : 'plan.heading') | transloco: { term: termLabel(view.value().termCode) } }}
     } @else {
       {{ 'student.home.planHeading' | transloco }}
     }
@@ -16,17 +16,16 @@
     @let v = view.value();
 
     @if (sent()) {
-      <!-- With the advisor: read-only -->
       <p class="status status-sent" role="status">
         <mat-icon aria-hidden="true">mark_email_read</mat-icon>
         <span>
           <strong>{{ 'plan.status.' + v.saved!.status | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}</strong>
-          <span class="liwa-muted">{{ 'plan.sentHint' | transloco }}</span>
+          <span class="liwa-muted">{{ 'plan.sentHint' | transloco }} <a routerLink="/student/plan">{{ 'plan.seeMyPlan' | transloco }}</a></span>
         </span>
       </p>
     } @else {
       @if (reply(); as rp) {
-        <div class="reply" [class.reply-back]="rp.status === 'Rejected'" role="status">
+        <div class="reply" [class.reply-back]="rp.status !== 'ChangesProposed'" role="status">
           <strong>{{ 'plan.reply.' + rp.status | transloco: { advisor: rp.advisor ?? ('plan.yourAdvisor' | transloco) } }}</strong>
           @if (rp.note) {
             <q>{{ rp.note }}</q>
@@ -35,6 +34,7 @@
           @if (rp.status === 'ChangesProposed') {
             <div class="actions">
               <button mat-flat-button type="button" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
+              <a mat-button routerLink="/student/plan">{{ 'plan.reply.seeChanges' | transloco }}</a>
             </div>
           }
         </div>
@@ -42,83 +42,15 @@
         <p class="intro">{{ 'plan.intro' | transloco }}</p>
       }
 
-      <!-- When are you free? -->
-      <fieldset class="free-time">
-        <legend>{{ 'plan.freeTime.heading' | transloco }}</legend>
-        <p class="liwa-muted hint">{{ 'plan.freeTime.hint' | transloco }}</p>
-        <div class="presets" role="radiogroup" [attr.aria-label]="'plan.freeTime.heading' | transloco">
-          @for (p of presets; track p) {
-            <button
-              type="button"
-              class="preset"
-              role="radio"
-              [class.selected]="preset() === p"
-              [attr.aria-checked]="preset() === p"
-              (click)="choosePreset(p)"
-            >
-              <mat-icon aria-hidden="true">{{ presetIcons[p] }}</mat-icon>
-              <span class="preset-title">{{ 'plan.freeTime.presets.' + p + '.title' | transloco }}</span>
-              <span class="preset-body">{{ 'plan.freeTime.presets.' + p + '.body' | transloco }}</span>
-            </button>
-          }
-        </div>
-
-        @if (preset() === 'custom') {
-          <div class="grid-wrap">
-            <table class="free-grid">
-              <caption class="visually-hidden">{{ 'plan.freeTime.gridCaption' | transloco }}</caption>
-              <thead>
-                <tr>
-                  <th scope="col"><span class="visually-hidden">{{ 'plan.freeTime.day' | transloco }}</span></th>
-                  @for (p of periods; track p.key) {
-                    <th scope="col">{{ 'plan.freeTime.periods.' + p.key | transloco }}<br /><span class="liwa-muted small">{{ range(p.start, p.end) }}</span></th>
-                  }
-                </tr>
-              </thead>
-              <tbody>
-                @for (d of days; track d) {
-                  <tr>
-                    <th scope="row">{{ 'days.' + d | transloco }}</th>
-                    @for (p of periods; track p.key) {
-                      <td>
-                        @if (cellAllowed(d, p.key)) {
-                          <mat-checkbox
-                            [checked]="!!grid()[d + '.' + p.key]"
-                            (change)="toggleCell(d, p.key)"
-                            [aria-label]="('days.' + d | transloco) + ', ' + ('plan.freeTime.periods.' + p.key | transloco)"
-                          />
-                        } @else {
-                          <span class="liwa-muted small">—</span>
-                        }
-                      </td>
-                    }
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-
-        <div class="prefs">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>{{ 'plan.prefs.delivery' | transloco }}</mat-label>
-            <mat-select [value]="delivery()" (valueChange)="delivery.set($event)">
-              <mat-option value="Any">{{ 'plan.prefs.deliveryAny' | transloco }}</mat-option>
-              <mat-option value="OnCampusOnly">{{ 'plan.prefs.deliveryCampus' | transloco }}</mat-option>
-              <mat-option value="OnlineOnly">{{ 'plan.prefs.deliveryOnline' | transloco }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>{{ 'plan.prefs.maxCredits' | transloco }}</mat-label>
-            <mat-select [value]="maxCredits()" (valueChange)="maxCredits.set($event)">
-              <mat-option [value]="null">{{ 'plan.prefs.noLimit' | transloco }}</mat-option>
-              @for (n of [9, 12, 15, 18]; track n) {
-                <mat-option [value]="n">{{ 'plan.prefs.upTo' | transloco: { n: n } }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </fieldset>
+      @if (needsFreeTime()) {
+        <p class="liwa-notice">
+          <mat-icon aria-hidden="true" class="inline-icon">schedule</mat-icon>
+          {{ 'plan.freeTimeFirst' | transloco }} <a routerLink="/student/availability">{{ 'plan.freeTimeLink' | transloco }}</a>
+        </p>
+      }
+      @if (restoredDraft()) {
+        <p class="liwa-notice ok" role="status">{{ 'plan.draftRestored' | transloco }}</p>
+      }
     }
 
     <!-- The plan -->
@@ -129,8 +61,11 @@
         @for (r of rows(); track r.code) {
           <li class="course">
             <div class="course-head">
-              <span class="code" dir="ltr">{{ r.code }}</span>
+              <bdi class="code" dir="ltr">{{ r.code }}</bdi>
               <strong class="title">{{ r.title }}</strong>
+              @if (r.critical) {
+                <span class="liwa-critical" [title]="'plan.criticalHint' | transloco"><mat-icon aria-hidden="true" class="inline-icon">star</mat-icon>{{ 'plan.critical' | transloco }}</span>
+              }
               <span class="credits">{{ (r.credits === 1 ? 'plan.credit1' : 'plan.credits') | transloco: { n: r.credits } }}</span>
             </div>
             @if (r.section; as s) {
@@ -139,12 +74,7 @@
                   <mat-icon aria-hidden="true">laptop</mat-icon> {{ 'plan.onlineAnyTime' | transloco }}
                 } @else {
                   <mat-icon aria-hidden="true">schedule</mat-icon>
-                  @for (p of patterns(s); track $index) {
-                    <span>
-                      @for (d of p.days; track d; let last = $last) {{{ 'daysShort.' + d | transloco }}{{ last ? '' : ('plan.dayJoin' | transloco) }}}
-                      · {{ range(p.start, p.end) }}
-                    </span>
-                  }
+                  <span>{{ sectionLabel(s) }}</span>
                 }
                 @if (s.instructor) {
                   <span class="liwa-muted">· {{ s.instructor }}</span>
@@ -158,86 +88,83 @@
                 }
               </ul>
             }
+            <button mat-button type="button" class="details-link" (click)="toggle('details', r.code)" [attr.aria-expanded]="!!openDetails()[r.code]">
+              {{ 'plan.details' | transloco }}
+            </button>
+            @if (openDetails()[r.code]) {
+              <div class="details">
+                @if (r.rank !== null) {
+                  <p>{{ 'advisor.review.ranking' | transloco: { rank: r.rank, unlocks: r.unlocks, chain: r.chain } }}</p>
+                }
+                @if (r.alternatives.length > 0) {
+                  <p>{{ 'advisor.review.otherTimes' | transloco }}</p>
+                  <ul>
+                    @for (a of r.alternatives; track a.sectionCode) {
+                      <li>
+                        {{ 'advisor.review.section' | transloco: { s: a.sectionCode } }}:
+                        @for (reason of a.reasons; track $index; let last = $last) {
+                          {{ reason | reasonText }}{{ last ? '' : '; ' }}
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            }
           </li>
         }
       </ul>
 
       <p class="total">
         <strong>{{ 'plan.total' | transloco: { n: totalCredits() } }}</strong>
-        @if (check.value()?.limits; as l) {
-          <span class="liwa-muted">{{ 'plan.limits' | transloco: { min: l.minCredits, max: check.value()!.maxCredits } }}</span>
+        @if (limits(); as l) {
+          @if (l.min !== null) {
+            <span class="liwa-muted">{{ 'plan.limits' | transloco: { min: l.min, max: l.max } }}</span>
+          }
         }
       </p>
+
+      <h3 class="week-title">{{ 'plan.week' | transloco }}</h3>
+      <app-timetable-grid [blocks]="blocks()" [online]="online()" [days]="gridDays()" [free]="availability()" [caption]="'plan.week' | transloco" />
     }
 
-    <!-- Live checks -->
+    <!-- Checks: what to fix before sending, as sentences the student can act on -->
     @if (!sent() && errors().length > 0) {
-      <div class="notice notice-error" role="alert">
+      <div class="liwa-notice error" role="alert">
         <strong>{{ 'plan.fixFirst' | transloco }}</strong>
         <ul>
           @for (e of errors(); track $index) {
-            <li>{{ e | reasonText }}</li>
+            <li>{{ e | reasonText: 'action' : { total: totalCredits() } }}</li>
           }
         </ul>
       </div>
     }
     @if (!sent() && warnings().length > 0 && !confirming()) {
-      <div class="notice notice-warn">
+      <div class="liwa-notice warn">
         <strong>{{ 'plan.goodToKnow' | transloco }}</strong>
         <ul>
           @for (w of warnings(); track $index) {
-            <li>{{ w | reasonText }}</li>
+            <li>{{ w | reasonText: 'action' : { total: totalCredits() } }}</li>
           }
         </ul>
       </div>
     }
 
-    <!-- Graduation -->
     @if (graduation(); as g) {
       @if (g.regular && termName(g.regular); as t) {
         <p class="graduation">
           <mat-icon aria-hidden="true">school</mat-icon>
           <span>
             {{ 'plan.graduate' | transloco: { term: ('planner.season.' + t.season | transloco) + ' ' + t.year } }}
-            @if (g.summer && g.summer !== g.regular && termName(g.summer); as ts) {
-              <span class="liwa-muted">{{ 'plan.graduateSummer' | transloco: { term: ('planner.season.' + ts.season | transloco) + ' ' + ts.year } }}</span>
-            }
+            <a routerLink="/student/graduation">{{ 'plan.seePath' | transloco }}</a>
           </span>
         </p>
       }
     }
 
-    <!-- Your week -->
-    @if (rows().length > 0) {
-      <h3 class="week-title">{{ 'plan.week' | transloco }}</h3>
-      <div class="week">
-        @for (d of week().days; track d.day) {
-          <div class="day" [class.empty]="d.classes.length === 0">
-            <h4>{{ 'days.' + d.day | transloco }}</h4>
-            @if (d.classes.length === 0) {
-              <p class="liwa-muted small">{{ 'plan.noClasses' | transloco }}</p>
-            } @else {
-              <ul>
-                @for (c of d.classes; track $index) {
-                  <li><span class="code" dir="ltr">{{ c.code }}</span> <span class="time">{{ c.time }}</span></li>
-                }
-              </ul>
-            }
-          </div>
-        }
-      </div>
-      @if (week().online.length > 0) {
-        <p class="liwa-muted small">
-          {{ 'plan.onlineList' | transloco }}
-          @for (o of week().online; track o.code; let last = $last) {<span dir="ltr">{{ o.code }}</span>{{ last ? '' : ', ' }}}
-        </p>
-      }
-    }
-
     @if (!sent()) {
-      <!-- Send -->
       @if (confirming()) {
-        <div class="confirm" role="group" aria-labelledby="confirm-heading">
+        <div class="confirm" role="dialog" aria-modal="false" aria-labelledby="confirm-heading">
           <h3 id="confirm-heading">{{ 'plan.confirm.heading' | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}</h3>
           @if (warnings().length > 0) {
             <p>{{ 'plan.confirm.intro' | transloco }}</p>
@@ -253,9 +180,7 @@
             </ul>
           }
           <div class="actions">
-            <button mat-flat-button type="button" [disabled]="!allConfirmed() || busy()" (click)="save(true)">
-              {{ 'plan.confirm.send' | transloco }}
-            </button>
+            <button mat-flat-button type="button" [disabled]="!allConfirmed() || busy()" (click)="save(true)">{{ 'plan.confirm.send' | transloco }}</button>
             <button mat-button type="button" (click)="confirming.set(false)">{{ 'plan.confirm.cancel' | transloco }}</button>
           </div>
         </div>
@@ -274,6 +199,7 @@
           @if (edited()) {
             <button mat-button type="button" (click)="save(false)" [disabled]="!canSend() || busy()">{{ 'plan.saveLater' | transloco }}</button>
             <button mat-button type="button" (click)="useRecommendation()">{{ 'plan.useRecommendation' | transloco }}</button>
+            <span class="liwa-muted small autosaved">{{ 'plan.autosaved' | transloco }}</span>
           }
         </div>
       }
@@ -285,90 +211,91 @@
       </p>
     }
 
-    @if (history().length > 0) {
-      <details class="history">
-        <summary>{{ 'history.heading' | transloco }}</summary>
-        <ol>
-          @for (e of history(); track $index) {
-            <li>
-              <span class="liwa-muted small">{{ when(e.at) }}</span>
-              <span>{{ 'history.' + e.action | transloco: { actor: e.actorName, version: e.version ?? '' } }}</span>
-              @if (e.note) {
-                <q>{{ e.note }}</q>
-              }
-              @if (e.added.length > 0) {
-                <span class="small">{{ 'history.added' | transloco }} <span dir="ltr">{{ e.added.join(', ') }}</span></span>
-              }
-              @if (e.removed.length > 0) {
-                <span class="small">{{ 'history.removed' | transloco }} <span dir="ltr">{{ e.removed.join(', ') }}</span></span>
-              }
-            </li>
-          }
-        </ol>
-      </details>
-    }
-
-    <!-- Change courses -->
+    <!-- Change courses: two panels -->
     @if (editing() && !sent()) {
       <div class="editor">
-        <h3>{{ 'plan.editor.canTake' | transloco }}</h3>
-        <ul class="candidates">
-          @for (c of candidates(); track c.courseCode) {
-            <li>
-              <mat-checkbox [checked]="!!selection()[c.courseCode]" (change)="toggleCourse(c.courseCode, $event.checked)">
-                <span class="code" dir="ltr">{{ c.courseCode }}</span> {{ title(c.courseCode) }}
-                <span class="liwa-muted">· {{ (c.credits === 1 ? 'plan.credit1' : 'plan.credits') | transloco: { n: c.credits } }}</span>
-              </mat-checkbox>
-              @if (c.status === 'EligibleWithCondition') {
-                <p class="liwa-muted small cond">{{ c.reasons[0] | reasonText }}</p>
-              }
-              @if (selection()[c.courseCode]) {
-                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="section-pick">
-                  <mat-label>{{ 'plan.editor.classTime' | transloco }}</mat-label>
-                  <mat-select [value]="selection()[c.courseCode]" (valueChange)="chooseSection(c.courseCode, $event)">
-                    @for (s of sectionsFor(c.courseCode); track s.id) {
-                      <mat-option [value]="s.id" [disabled]="s.seatsLeft <= 0">
-                        @if (s.meetings.length === 0) {
-                          {{ 'plan.onlineAnyTime' | transloco }}
-                        } @else {
-                          @for (p of patterns(s); track $index) {
-                            @for (d of p.days; track d; let last = $last) {{{ 'daysShort.' + d | transloco }}{{ last ? '' : ('plan.dayJoin' | transloco) }}} {{ range(p.start, p.end) }}
-                          }
-                        }
-                        @if (s.seatsLeft <= 0) { · {{ 'plan.editor.full' | transloco }} }
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              }
-            </li>
-          }
-        </ul>
-
-        @if (blocked().length > 0) {
-          <details class="blocked">
-            <summary>
-              <mat-icon aria-hidden="true">expand_more</mat-icon>
-              {{ 'plan.editor.notAvailable' | transloco }}
-            </summary>
-            @for (g of blocked(); track g.group) {
-              <details class="blocked-group">
-                <summary>{{ 'plan.editor.groups.' + g.group | transloco: { n: g.courses.length } }}</summary>
-                <ul>
-                  @for (c of g.courses; track c.courseCode) {
-                    <li>
-                      <span class="code" dir="ltr">{{ c.courseCode }}</span> {{ title(c.courseCode) }}
-                      @if (c.reasons[0]) {
-                        <span class="liwa-muted">— {{ c.reasons[0] | reasonText }}</span>
+        <div class="editor-left">
+          <h3>{{ 'plan.editor.canTake' | transloco }}</h3>
+          @for (g of candidateGroups(); track g.key) {
+            <section class="group" [attr.aria-labelledby]="'grp-' + g.key">
+              <h4 [id]="'grp-' + g.key">{{ g.name }}</h4>
+              <ul class="candidates">
+                @for (c of g.courses; track c.courseCode) {
+                  <li>
+                    <div class="cand-head">
+                      <mat-checkbox [checked]="!!selection()[c.courseCode]" (change)="toggleCourse(c.courseCode, $event.checked)">
+                        <bdi class="code" dir="ltr">{{ c.courseCode }}</bdi> {{ title(c.courseCode) }}
+                        <span class="liwa-muted">· {{ (c.credits === 1 ? 'plan.credit1' : 'plan.credits') | transloco: { n: c.credits } }}</span>
+                      </mat-checkbox>
+                      @if (isCritical(c.courseCode)) {
+                        <span class="liwa-critical"><mat-icon aria-hidden="true" class="inline-icon">star</mat-icon>{{ 'plan.critical' | transloco }}</span>
                       }
-                    </li>
-                  }
-                </ul>
-              </details>
+                      <button mat-button type="button" class="why-button" (click)="toggle('why', c.courseCode)" [attr.aria-expanded]="!!openWhy()[c.courseCode]">
+                        {{ 'plan.why' | transloco }}
+                      </button>
+                    </div>
+                    @if (openWhy()[c.courseCode]) {
+                      <ul class="why">
+                        @for (reason of c.reasons; track $index) {
+                          <li>{{ reason | reasonText }}</li>
+                        } @empty {
+                          <li>{{ 'planner.reasons.RequiredForDegree' | transloco }}</li>
+                        }
+                      </ul>
+                    }
+                    @if (selection()[c.courseCode]) {
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="section-pick">
+                        <mat-label>{{ 'plan.editor.classTime' | transloco }}</mat-label>
+                        <mat-select [value]="selection()[c.courseCode]" (valueChange)="chooseSection(c.courseCode, $event)">
+                          @for (s of sectionsFor(c.courseCode); track s.id) {
+                            <mat-option [value]="s.id" [disabled]="s.seatsLeft <= 0">
+                              {{ sectionLabel(s) }}@if (s.seatsLeft <= 0) { · {{ 'plan.editor.full' | transloco }}}
+                            </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+        </div>
+        <div class="editor-right">
+          <div class="counter" [class.over]="limits() && totalCredits() > limits()!.max" aria-live="polite">
+            <strong>{{ 'plan.editor.counter' | transloco: { n: totalCredits() } }}</strong>
+            @if (limits(); as l) {
+              <span>{{ 'plan.editor.counterLimits' | transloco: { min: l.min ?? 0, max: l.max } }}</span>
             }
+          </div>
+          <app-timetable-grid [blocks]="blocks()" [online]="online()" [days]="gridDays()" [free]="availability()" />
+        </div>
+      </div>
+    }
+
+    <!-- Not eligible this semester: its own panel, grouped by reason with counts -->
+    @if (!sent() && blocked().length > 0) {
+      <details class="blocked">
+        <summary>
+          <mat-icon aria-hidden="true">expand_more</mat-icon>
+          {{ 'plan.editor.notAvailable' | transloco: { n: blockedCount() } }}
+        </summary>
+        @for (g of blocked(); track g.group) {
+          <details class="blocked-group">
+            <summary>{{ 'plan.editor.groups.' + g.group | transloco: { n: g.courses.length } }}</summary>
+            <ul>
+              @for (c of g.courses; track c.courseCode) {
+                <li>
+                  <bdi class="code" dir="ltr">{{ c.courseCode }}</bdi> {{ title(c.courseCode) }}
+                  @if (c.reasons[0]) {
+                    <span class="liwa-muted">— {{ c.reasons[0] | reasonText }}</span>
+                  }
+                </li>
+              }
+            </ul>
           </details>
         }
-      </div>
+      </details>
     }
   }
 </section>

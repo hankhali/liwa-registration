@@ -20,7 +20,16 @@ public sealed record PlanningView(
     IReadOnlyList<CourseInfo> Courses,
     IReadOnlyList<SectionInfo> Sections,
     SavedPlan? Saved,
-    IReadOnlyList<PlanEvent> History);
+    IReadOnlyList<PlanEvent> History,
+    IReadOnlyList<RequirementGroupInfo>? Groups = null,
+    GraduationProjection? SavedProjection = null,
+    string? Hold = null);
+
+/// <summary>A requirement group of the student's degree plan (for grouping courses on screen).</summary>
+public sealed record RequirementGroupInfo(string Key, string Name, RequirementKind Kind);
+
+/// <summary>A term the app can show in the term selector. Only the current term is open for planning.</summary>
+public sealed record TermOption(string Code, string Name, bool IsCurrent);
 
 public sealed record SavePlanRequest(
     IReadOnlyList<Guid> SectionIds,
@@ -50,4 +59,10 @@ public interface IStudentPlanService
 
     /// <summary>The student accepts the advisor's proposed changes: the plan becomes approved.</summary>
     Task<SaveOutcome> AcceptProposalAsync(Guid studentUserId, CancellationToken ct);
+
+    /// <summary>Graduation projection for a set of sections (the student's own selection), same rules as the recommendation.</summary>
+    Task<GraduationProjection?> ProjectAsync(Guid studentUserId, IReadOnlyCollection<Guid> sectionIds, CancellationToken ct);
+
+    /// <summary>Terms for the term selector (newest first).</summary>
+    Task<IReadOnlyList<TermOption>> TermsAsync(CancellationToken ct);
 }

@@ -2,15 +2,37 @@
 <a class="skip-link" href="#main" (click)="$event.preventDefault(); main.focus()">{{ 'shell.skipToContent' | transloco }}</a>
 
 <header class="topbar liwa-on-dark">
-  <a class="brand" [routerLink]="auth.homeUrl()">
+  <button mat-icon-button class="menu-button" type="button" (click)="drawerOpen.set(true)" [attr.aria-label]="'shell.openMenu' | transloco" [attr.aria-expanded]="drawerOpen()">
+    <mat-icon aria-hidden="true">menu</mat-icon>
+  </button>
+  <a class="brand" [routerLink]="auth.homeUrl()" [attr.aria-label]="'shell.homeLink' | transloco">
     <img class="brand-logo" src="assets/brand/logo-mark.png" alt="" width="34" height="42" />
     <span class="brand-text">
       <span class="brand-university">{{ 'app.university' | transloco }}</span>
       <span class="brand-product">{{ 'app.product' | transloco }}</span>
     </span>
   </a>
+  @if (pageTitle(); as t) {
+    <span class="page-title" aria-hidden="true">{{ t | transloco }}</span>
+  }
 
   <div class="topbar-actions">
+    @if (currentTerm(); as ct) {
+      <mat-select
+        class="term-select"
+        [value]="ct.code"
+        [aria-label]="'shell.term' | transloco"
+        panelClass="term-panel"
+        [title]="'shell.termHint' | transloco"
+      >
+        @for (t of terms(); track t.code) {
+          <mat-option [value]="t.code" [disabled]="!t.isCurrent">
+            {{ t.name }}@if (!t.isCurrent) { · {{ 'shell.termClosed' | transloco }}}
+          </mat-option>
+        }
+      </mat-select>
+    }
+
     <button
       mat-button
       class="lang-toggle"
@@ -36,6 +58,12 @@
           <strong>{{ user.displayName }}</strong>
           <span class="liwa-muted">{{ 'roles.' + user.role | transloco }}</span>
         </div>
+        @for (t of themes; track t) {
+          <button mat-menu-item type="button" role="menuitemradio" [attr.aria-checked]="theme.choice() === t" (click)="theme.choice.set(t)">
+            <mat-icon aria-hidden="true">{{ theme.choice() === t ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{ 'shell.theme.' + t | transloco }}</span>
+          </button>
+        }
         <button mat-menu-item type="button" (click)="signOut()">
           <mat-icon aria-hidden="true">logout</mat-icon>
           <span>{{ 'shell.signOut' | transloco }}</span>
@@ -45,6 +73,67 @@
   </div>
 </header>
 
-<main id="main" #main tabindex="-1" class="content">
-  <router-outlet />
-</main>
+<div class="frame">
+  <nav class="rail" [class.collapsed]="collapsed()" [attr.aria-label]="'shell.navLabel' | transloco">
+    <ul>
+      @for (item of nav(); track item.key) {
+        <li>
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            [title]="collapsed() ? ('nav.' + item.key | transloco) : ''"
+          >
+            <mat-icon aria-hidden="true" [matBadge]="item.badge ? badges()[item.badge] || null : null" matBadgeSize="small" matBadgeColor="warn">{{ item.icon }}</mat-icon>
+            <span class="label">{{ 'nav.' + item.key | transloco }}</span>
+            @if (item.badge && badges()[item.badge]) {
+              <span class="visually-hidden">{{ 'shell.badge' | transloco: { n: badges()[item.badge] } }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+    <button mat-button class="collapse" type="button" (click)="toggleRail()" [attr.aria-expanded]="!collapsed()">
+      <mat-icon aria-hidden="true" class="flip-rtl">{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      <span class="label">{{ (collapsed() ? 'shell.expandMenu' : 'shell.collapseMenu') | transloco }}</span>
+    </button>
+  </nav>
+
+  <main id="main" #main tabindex="-1" class="content">
+    <router-outlet />
+  </main>
+</div>
+
+<!-- Phones: bottom bar with the main items, everything else in the drawer. -->
+<nav class="bottom-bar" [attr.aria-label]="'shell.navLabel' | transloco">
+  @for (item of bottomNav(); track item.key) {
+    <a [routerLink]="item.link" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: !!item.exact }">
+      <mat-icon aria-hidden="true" [matBadge]="item.badge ? badges()[item.badge] || null : null" matBadgeSize="small" matBadgeColor="warn">{{ item.icon }}</mat-icon>
+      <span>{{ 'nav.' + item.key | transloco }}</span>
+    </a>
+  }
+  <button type="button" (click)="drawerOpen.set(true)">
+    <mat-icon aria-hidden="true">more_horiz</mat-icon>
+    <span>{{ 'shell.more' | transloco }}</span>
+  </button>
+</nav>
+
+@if (drawerOpen()) {
+  <div class="backdrop" (click)="drawerOpen.set(false)" aria-hidden="true"></div>
+  <nav class="drawer" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (keydown.escape)="drawerOpen.set(false)" [attr.aria-label]="'shell.navLabel' | transloco">
+    <button mat-icon-button type="button" class="drawer-close" (click)="drawerOpen.set(false)" [attr.aria-label]="'shell.closeMenu' | transloco">
+      <mat-icon aria-hidden="true">close</mat-icon>
+    </button>
+    <ul>
+      @for (item of nav(); track item.key) {
+        <li>
+          <a [routerLink]="item.link" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: !!item.exact }">
+            <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+            <span>{{ 'nav.' + item.key | transloco }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+}

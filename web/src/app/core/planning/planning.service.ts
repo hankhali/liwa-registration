@@ -1,7 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { DeliveryPreference, PlanCheck, PlanningView, SavedPlan, TimeWindow } from './planning.models';
+import {
+  AvailabilityPreset,
+  DeliveryPreference,
+  GraduationProjection,
+  PlanCheck,
+  PlanningView,
+  Preferences,
+  SavedPlan,
+  TimeWindow,
+} from './planning.models';
 
 export interface SaveResponse {
   outcome: 'Saved' | 'Invalid' | 'WarningsNotConfirmed' | 'AlreadyWithAdvisor' | 'NotFound';
@@ -23,6 +32,23 @@ export class PlanningService {
 
   accept(): Promise<unknown> {
     return firstValueFrom(this.http.post('/api/students/me/plan/accept', null));
+  }
+
+  preferences(): Promise<Preferences> {
+    return firstValueFrom(this.http.get<Preferences>('/api/students/me/preferences'));
+  }
+
+  savePreferences(preset: AvailabilityPreset, availability: TimeWindow[], delivery: DeliveryPreference, maxCredits: number | null): Promise<unknown> {
+    return firstValueFrom(this.http.put('/api/students/me/preferences', { preset, availability, delivery, maxCredits }));
+  }
+
+  /** Autosave of the planner's unsaved selection. */
+  saveDraft(sectionIds: string[]): Promise<unknown> {
+    return firstValueFrom(this.http.put('/api/students/me/draft', { sectionIds }));
+  }
+
+  projection(sectionIds: string[]): Promise<GraduationProjection> {
+    return firstValueFrom(this.http.post<GraduationProjection>('/api/students/me/projection', { sectionIds }));
   }
 
   /** Errors come back as 400/409 with the same body shape; callers read `outcome`. */

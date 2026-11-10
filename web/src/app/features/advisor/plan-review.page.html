@@ -1,4 +1,4 @@
-<a class="back" routerLink="/advisor/plans">← {{ 'advisor.review.back' | transloco }}</a>
+﻿<a class="back" routerLink="/advisor/plans">← {{ 'advisor.review.back' | transloco }}</a>
 
 @if (review.hasValue()) {
   @let r = review.value();
@@ -10,7 +10,7 @@
         {{ 'student.home.studies.standing.' + r.student.standing | transloco }}
       </p>
     </div>
-    <span class="status s-{{ r.status }}">{{ 'planStatus.' + r.status | transloco }} · {{ 'advisor.review.version' | transloco: { n: r.version } }}</span>
+    <span class="head-status"><app-status-chip [status]="r.status" /> <span class="muted small">{{ 'advisor.review.version' | transloco: { n: r.version } }}</span></span>
   </header>
 
   @if (done(); as d) {
@@ -72,46 +72,17 @@
       </section>
 
       <!-- Week -->
-      @if (week().length > 0) {
+      @if (blocks().length > 0 || onlineBlocks().length > 0) {
         <section aria-labelledby="week-h">
           <h2 id="week-h">{{ 'plan.week' | transloco }}</h2>
-          <table class="week">
-            <tbody>
-              @for (d of week(); track d.day) {
-                <tr>
-                  <th scope="row">{{ dayName(d.day) }}</th>
-                  <td>
-                    @for (c of d.classes; track $index; let last = $last) {
-                      <span class="slot"><span dir="ltr">{{ c.code }}</span> {{ c.time }}</span>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <app-timetable-grid [blocks]="blocks()" [online]="onlineBlocks()" [free]="r.planning.saved?.availability ?? []" [caption]="'plan.week' | transloco" />
         </section>
       }
 
       <!-- History -->
       <section aria-labelledby="history-h">
         <h2 id="history-h">{{ 'history.heading' | transloco }}</h2>
-        <ol class="history">
-          @for (e of r.history; track $index) {
-            <li>
-              <span class="when muted small">{{ when(e.at) }}</span>
-              <span>{{ 'history.' + e.action | transloco: eventParams(e) }}</span>
-              @if (e.note) {
-                <q>{{ e.note }}</q>
-              }
-              @if (e.added.length > 0) {
-                <span class="small added">{{ 'history.added' | transloco }} <span dir="ltr">{{ e.added.join(', ') }}</span></span>
-              }
-              @if (e.removed.length > 0) {
-                <span class="small removed">{{ 'history.removed' | transloco }} <span dir="ltr">{{ e.removed.join(', ') }}</span></span>
-              }
-            </li>
-          }
-        </ol>
+        <app-plan-history [events]="r.history" />
       </section>
     </div>
 
@@ -188,11 +159,7 @@
         @if (!r.planning.saved?.availability?.length) {
           <p class="small">{{ 'advisor.review.anyTime' | transloco }}</p>
         } @else {
-          <ul class="small plain">
-            @for (w of r.planning.saved!.availability!; track $index) {
-              <li>{{ dayName(w.day) }} {{ range(w.start, w.end) }}</li>
-            }
-          </ul>
+          <div class="mini-grid"><app-timetable-grid [free]="r.planning.saved!.availability!" [startHour]="8" [endHour]="20" [caption]="'advisor.review.freeTime' | transloco" /></div>
         }
         <a class="small" [routerLink]="['/advisor/students', r.studentUserId]">{{ 'advisor.review.fullRecord' | transloco }}</a>
       </section>
@@ -217,6 +184,11 @@
             </tr>
           </tbody>
         </table>
+        @if (delta() > 0) {
+          <p class="small err delta" role="status">{{ (delta() === 1 ? 'advisor.review.delayOne' : 'advisor.review.delay') | transloco: { n: delta() } }}</p>
+        } @else {
+          <p class="small ok-line">{{ 'advisor.review.noDelay' | transloco }}</p>
+        }
       </section>
     </aside>
   </div>

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
@@ -11,8 +11,12 @@ export class TranslatedTitleStrategy extends TitleStrategy {
   private readonly transloco = inject(TranslocoService);
   private sub?: Subscription;
 
+  /** The current page's title key (shown in the top bar). */
+  readonly pageKey = signal<string | null>(null);
+
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const key = this.buildTitle(snapshot);
+    this.pageKey.set(key ?? null);
     this.sub?.unsubscribe();
     this.sub = this.transloco
       .selectTranslate(['app.name', key ?? 'app.name'])

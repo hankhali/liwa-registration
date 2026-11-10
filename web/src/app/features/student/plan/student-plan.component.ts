@@ -1,20 +1,16 @@
-import { Component, computed, effect, inject, resource, signal, untracked } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, DestroyRef, computed, effect, inject, resource, signal, untracked } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../../core/i18n/language.service';
 import {
   BlockedGroup,
   CourseAssessment,
-  Day,
-  DeliveryPreference,
-  PERIODS,
-  PRESETS,
-  PresetKey,
+  Preferences,
   Reason,
   SENT_STATUSES,
   STUDENT_PLAN_REASONS,
@@ -22,16 +18,15 @@ import {
   TEACHING_DAYS,
   blockedGroup,
   courseTitle,
-  formatTime,
+  criticalCodes,
   meetingPatterns,
   parseTermCode,
   timeRange,
   warningKey,
-  windowsFromGrid,
 } from '../../../core/planning/planning.models';
 import { PlanningService } from '../../../core/planning/planning.service';
-import { formatDateTime } from '../../../core/academic/academic.models';
 import { ReasonTextPipe } from '../../../core/planning/reason-text.pipe';
+import { TimetableBlock, TimetableGridComponent } from '../../../shared/timetable-grid.component';
 
 interface PlannedRow {
   code: string;
@@ -39,16 +34,24 @@ interface PlannedRow {
   credits: number;
   section: SectionInfo | undefined;
   reasons: Reason[];
+  critical: boolean;
+  rank: number | null;
+  chain: number;
+  unlocks: number;
+  alternatives: { sectionCode: string; reasons: Reason[] }[];
 }
 
+const AUTOSAVE_MS = 1200;
+
 /**
- * The student's plan (brief §9): shows the recommended plan straight away, lets the student say when
- * they're free with big preset cards, change courses with live checks, and send the plan to their
- * advisor after confirming each remaining warning.
+ * The planner (brief §9). First visit: the recommended plan is already built, with the timetable and one primary
+ * button, "Send to my advisor". "Change courses" opens the two-panel view (courses you can take, grouped by
+ * requirement, on the left; the timetable with clashes and a credit counter on the right). Unsaved changes are
+ * autosaved as a draft. Free time comes from the Availability page.
  */
 @Component({
   selector: 'app-student-plan',
-  imports: [FormsModule, MatButtonModule, MatCheckboxModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, TranslocoPipe, ReasonTextPipe],
+  imports: [MatButtonModule, MatCheckboxModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, RouterLink, TranslocoPipe, ReasonTextPipe, TimetableGridComponent],
   templateUrl: './student-plan.component.html',
   styleUrls: ['../../../shared/page.scss', './student-plan.component.scss'],
 })
@@ -57,42 +60,29 @@ export class StudentPlanComponent {
   protected readonly language = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
 
-  protected readonly presets: PresetKey[] = ['any', 'evenings', 'mornings', 'daytime', 'custom'];
-  protected readonly presetIcons: Record<PresetKey, string> = {
-    any: 'all_inclusive',
-    evenings: 'nights_stay',
-    mornings: 'wb_sunny',
-    daytime: 'light_mode',
-    custom: 'tune',
-  };
-  protected readonly days = TEACHING_DAYS;
-  protected readonly periods = PERIODS;
   protected readonly blockedOrder: BlockedGroup[] = ['prerequisite', 'notOffered', 'moreCredits', 'permission', 'other'];
 
-  // ---- preferences
-  protected readonly preset = signal<PresetKey>('any');
-  protected readonly grid = signal<Record<string, boolean>>({});
-  protected readonly delivery = signal<DeliveryPreference>('Any');
-  protected readonly maxCredits = signal<number | null>(null);
-  protected readonly availability = computed(() => {
-    const p = this.preset();
-    return p === 'custom' ? windowsFromGrid(this.grid()) : PRESETS[p];
-  });
-
-  // ---- data
+  // ---- data: saved preferences first, then the plan built with them
+  protected readonly prefs = resource({ loader: () => this.planning.preferences() });
   protected readonly view = resource({
-    params: () => ({ availability: this.availability(), delivery: this.delivery(), maxCredits: this.maxCredits() }),
+    params: () => (this.prefs.hasValue() || this.prefs.error() ? this.prefsOrDefault() : undefined),
     loader: ({ params }) => this.planning.view(params.availability, params.delivery, params.maxCredits),
   });
 
   /** courseCode → sectionId currently in the plan. */
   protected readonly selection = signal<Record<string, string>>({});
   protected readonly edited = signal(false);
+  protected readonly restoredDraft = signal(false);
   protected readonly editing = signal(false);
   protected readonly confirming = signal(false);
   protected readonly acknowledged = signal<Record<string, boolean>>({});
+  protected readonly openDetails = signal<Record<string, boolean>>({});
+  protected readonly openWhy = signal<Record<string, boolean>>({});
   protected readonly busy = signal(false);
   protected readonly message = signal<'sent' | 'saved' | 'accepted' | 'error' | null>(null);
+
+  protected readonly availability = computed(() => this.prefsOrDefault().availability);
+  protected readonly needsFreeTime = computed(() => this.prefs.hasValue() && this.prefs.value().preset === null);
 
   protected readonly check = resource({
     params: () => (this.view.hasValue() ? { ids: Object.values(this.selection()), availability: this.availability() } : undefined),
@@ -104,55 +94,59 @@ export class StudentPlanComponent {
     return saved !== null && SENT_STATUSES.includes(saved.status);
   });
 
-  /** The advisor's reply, when the plan came back (sent back or changes proposed). */
+  /** The advisor's reply, when the plan came back (sent back, changes proposed, or needs review). */
   protected readonly reply = computed(() => {
     const v = this.view.value();
     const status = v?.saved?.status;
-    if (!v || (status !== 'Rejected' && status !== 'ChangesProposed')) return null;
+    if (!v || (status !== 'Rejected' && status !== 'ChangesProposed' && status !== 'NeedsReview')) return null;
     const last = [...v.history].reverse().find((e) => e.actorRole === 'Advisor' && (e.action === 'rejected' || e.action === 'proposed'));
-    return { status, note: last?.note ?? null, advisor: last?.actorName ?? v.advisorName };
+    return { status, note: status === 'NeedsReview' ? null : (last?.note ?? null), advisor: last?.actorName ?? v.advisorName };
   });
-
-  protected readonly history = computed(() => [...(this.view.value()?.history ?? [])].reverse());
-
-  protected async accept(): Promise<void> {
-    this.busy.set(true);
-    try {
-      await this.planning.accept();
-      this.message.set('accepted');
-      this.view.reload();
-    } catch {
-      this.message.set('error');
-    } finally {
-      this.busy.set(false);
-    }
-  }
-
-  protected when(iso: string): string {
-    return formatDateTime(iso, this.language.lang());
-  }
 
   private readonly sectionById = computed(() => new Map((this.view.hasValue() ? this.view.value().sections : []).map((s) => [s.id, s])));
   private readonly courseByCode = computed(() => new Map((this.view.hasValue() ? this.view.value().courses : []).map((c) => [c.code, c])));
+  private readonly critical = computed(() => criticalCodes(this.view.value()?.recommendation.courses ?? []));
 
   constructor() {
-    // When a new recommendation arrives, start from the saved plan (if any) or the recommendation.
+    // When a new recommendation arrives, start from the saved plan, then an autosaved draft, then the recommendation.
     effect(() => {
       if (!this.view.hasValue()) return;
       const v = this.view.value();
       untracked(() => {
         const saved = v.saved;
-        const useSaved = saved && (SENT_STATUSES.includes(saved.status) || !this.edited());
-        const ids = useSaved ? saved.sectionIds : v.recommendation.plan.map((p) => p.sectionId);
+        const draft = this.prefs.value()?.draftSectionIds ?? [];
+        const sentNow = !!saved && SENT_STATUSES.includes(saved.status);
+        let ids: string[];
+        if (sentNow) ids = saved!.sectionIds;
+        else if (this.edited()) ids = Object.values(this.selection());
+        else if (draft.length > 0 && draft.every((id) => v.sections.some((s) => s.id === id))) {
+          ids = draft;
+          this.restoredDraft.set(true);
+        } else ids = saved ? saved.sectionIds : v.recommendation.plan.map((p) => p.sectionId);
         const next: Record<string, string> = {};
         for (const id of ids) {
           const s = v.sections.find((x) => x.id === id);
           if (s) next[s.courseCode] = s.id;
         }
         this.selection.set(next);
-        this.edited.set(false);
+        this.edited.set(this.restoredDraft() && !sentNow);
       });
     });
+
+    // Autosave: unsaved changes are kept as a draft (brief §9) — not a plan version, not sent to anyone.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    effect(() => {
+      const ids = Object.values(this.selection());
+      if (!this.edited() || this.sent()) return;
+      clearTimeout(timer);
+      timer = setTimeout(() => void this.planning.saveDraft(ids).catch(() => undefined), AUTOSAVE_MS);
+    });
+    inject(DestroyRef).onDestroy(() => clearTimeout(timer));
+  }
+
+  private prefsOrDefault(): Pick<Preferences, 'availability' | 'delivery' | 'maxCredits'> {
+    const p = this.prefs.value();
+    return { availability: p?.availability ?? [], delivery: p?.delivery ?? 'Any', maxCredits: p?.maxCredits ?? null };
   }
 
   // ---------------------------------------------------------------- derived view data
@@ -172,39 +166,41 @@ export class StudentPlanComponent {
           credits: course?.credits ?? 0,
           section: this.sectionById().get(sectionId),
           reasons: (recommended?.reasons ?? assessed?.reasons ?? []).filter((r) => STUDENT_PLAN_REASONS.includes(r.code)),
+          critical: this.critical().has(code),
+          rank: assessed?.priorityRank ?? null,
+          chain: assessed?.chainLength ?? 0,
+          unlocks: assessed?.unlocks ?? 0,
+          alternatives: recommended?.alternatives.map((a) => ({ sectionCode: a.sectionCode, reasons: a.reasons })) ?? [],
         };
       })
-      .sort((a, b) => this.rank(a.code) - this.rank(b.code) || a.code.localeCompare(b.code));
+      .sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999) || a.code.localeCompare(b.code));
   });
 
   protected readonly totalCredits = computed(() => this.rows().reduce((sum, r) => sum + r.credits, 0));
 
-  /** "Your week": classes per teaching day, in time order; online classes listed separately. */
-  protected readonly week = computed(() => {
-    const lang = this.language.lang();
-    const byDay = new Map<Day, { code: string; title: string; time: string; start: string }[]>();
-    const online: { code: string; title: string }[] = [];
-    for (const r of this.rows()) {
-      if (!r.section || r.section.meetings.length === 0) {
-        online.push({ code: r.code, title: r.title });
-        continue;
-      }
-      for (const m of r.section.meetings) {
-        const list = byDay.get(m.day) ?? [];
-        list.push({ code: r.code, title: r.title, time: timeRange(m, lang), start: m.start });
-        byDay.set(m.day, list);
-      }
-    }
-    const days = TEACHING_DAYS.concat(['Saturday'] as Day[])
-      .filter((d) => d !== 'Saturday' || byDay.has(d))
-      .map((day) => ({ day, classes: (byDay.get(day) ?? []).sort((a, b) => a.start.localeCompare(b.start)) }));
-    return { days, online };
-  });
+  /** Classes on the timetable grid; online classes (no meetings) are listed under it. */
+  protected readonly blocks = computed<TimetableBlock[]>(() =>
+    this.rows().flatMap((r) => (r.section?.meetings ?? []).map((m, i) => ({ key: `${r.code}-${i}`, code: r.code, label: r.title, day: m.day, start: m.start, end: m.end }))),
+  );
+  protected readonly online = computed(() => this.rows().filter((r) => r.section && r.section.meetings.length === 0).map((r) => ({ code: r.code, label: r.title })));
+  protected readonly gridDays = computed(() => (this.blocks().some((b) => b.day === 'Saturday') ? [...TEACHING_DAYS, 'Saturday' as const] : TEACHING_DAYS));
 
-  /** Courses the student could add (eligible now or with a condition), best first. */
-  protected readonly candidates = computed<CourseAssessment[]>(() => {
+  /** Courses the student could add (eligible now or with a condition), grouped by requirement group. */
+  protected readonly candidateGroups = computed(() => {
     if (!this.view.hasValue()) return [];
-    return this.view.value().recommendation.courses.filter((c) => c.status !== 'NotEligible' && this.sectionsFor(c.courseCode).length > 0);
+    const v = this.view.value();
+    const candidates = v.recommendation.courses.filter((c) => c.status !== 'NotEligible' && this.sectionsFor(c.courseCode).length > 0);
+    const groups = v.groups ?? [];
+    const order = (k: string) => {
+      const i = groups.findIndex((g) => g.key === k);
+      return i < 0 ? 999 : i;
+    };
+    const keys = [...new Set(candidates.map((c) => c.groupKey))].sort((a, b) => order(a) - order(b));
+    return keys.map((k) => ({
+      key: k,
+      name: groups.find((g) => g.key === k)?.name ?? k,
+      courses: candidates.filter((c) => c.groupKey === k).sort((a, b) => a.priorityRank - b.priorityRank),
+    }));
   });
 
   protected readonly blocked = computed(() => {
@@ -216,11 +212,13 @@ export class StudentPlanComponent {
     }
     return this.blockedOrder.filter((g) => groups.has(g)).map((g) => ({ group: g, courses: groups.get(g)! }));
   });
+  protected readonly blockedCount = computed(() => this.blocked().reduce((n, g) => n + g.courses.length, 0));
 
   protected readonly warnings = computed(() => (this.check.hasValue() ? this.check.value().warnings : []));
   protected readonly errors = computed(() => (this.check.hasValue() ? this.check.value().errors : []));
   protected readonly allConfirmed = computed(() => this.warnings().every((w) => this.acknowledged()[warningKey(w)]));
   protected readonly canSend = computed(() => this.rows().length > 0 && this.check.hasValue() && this.errors().length === 0 && !this.check.isLoading());
+  protected readonly limits = computed(() => (this.check.hasValue() ? { min: this.check.value().limits?.minCredits ?? null, max: this.check.value().maxCredits } : null));
 
   protected readonly graduation = computed(() => {
     if (!this.view.hasValue()) return null;
@@ -230,17 +228,17 @@ export class StudentPlanComponent {
 
   // ---------------------------------------------------------------- actions
 
-  protected choosePreset(key: PresetKey): void {
-    this.preset.set(key);
-    this.message.set(null);
-  }
-
-  protected toggleCell(day: Day, period: string): void {
-    this.grid.update((g) => ({ ...g, [`${day}.${period}`]: !g[`${day}.${period}`] }));
-  }
-
-  protected cellAllowed(day: Day, period: string): boolean {
-    return !(day === 'Friday' && period !== 'morning');
+  protected async accept(): Promise<void> {
+    this.busy.set(true);
+    try {
+      await this.planning.accept();
+      this.message.set('accepted');
+      this.view.reload();
+    } catch {
+      this.message.set('error');
+    } finally {
+      this.busy.set(false);
+    }
   }
 
   protected toggleCourse(code: string, checked: boolean): void {
@@ -249,7 +247,7 @@ export class StudentPlanComponent {
       if (!checked) delete next[code];
       else {
         const recommended = this.view.value()?.recommendation.plan.find((p) => p.courseCode === code)?.sectionId;
-        const options = this.sectionsFor(code);
+        const options = this.sectionsFor(code).filter((s) => s.seatsLeft > 0);
         next[code] = recommended ?? [...options].sort((a, b) => b.seatsLeft - a.seatsLeft)[0]?.id;
       }
       return next;
@@ -264,8 +262,11 @@ export class StudentPlanComponent {
     this.confirming.set(false);
   }
 
-  protected useRecommendation(): void {
+  protected async useRecommendation(): Promise<void> {
     this.edited.set(false);
+    this.restoredDraft.set(false);
+    await this.planning.saveDraft([]).catch(() => undefined);
+    this.prefs.reload();
     this.view.reload();
   }
 
@@ -278,6 +279,11 @@ export class StudentPlanComponent {
     this.acknowledged.update((a) => ({ ...a, [warningKey(r)]: value }));
   }
 
+  protected toggle(map: 'details' | 'why', code: string): void {
+    const s = map === 'details' ? this.openDetails : this.openWhy;
+    s.update((m) => ({ ...m, [code]: !m[code] }));
+  }
+
   protected async save(submit: boolean): Promise<void> {
     this.busy.set(true);
     this.message.set(null);
@@ -288,7 +294,9 @@ export class StudentPlanComponent {
         this.message.set(submit ? 'sent' : 'saved');
         this.confirming.set(false);
         this.editing.set(false);
-        this.edited.set(!submit);
+        this.edited.set(false);
+        this.restoredDraft.set(false);
+        await this.planning.saveDraft([]).catch(() => undefined);
         this.view.reload();
       } else {
         this.message.set('error');
@@ -311,13 +319,24 @@ export class StudentPlanComponent {
     return courseTitle(this.courseByCode().get(code), this.language.lang());
   }
 
+  protected isCritical(code: string): boolean {
+    return this.critical().has(code);
+  }
+
   protected patterns(s: SectionInfo | undefined) {
     return s ? meetingPatterns(s.meetings) : [];
   }
 
-  protected range(start: string, end: string): string {
+  protected sectionLabel(s: SectionInfo): string {
     const lang = this.language.lang();
-    return `${formatTime(start, lang)}–${formatTime(end, lang)}`;
+    if (s.meetings.length === 0) return this.transloco.translate('plan.onlineAnyTime');
+    return meetingPatterns(s.meetings)
+      .map((p) => `${p.days.map((d) => this.transloco.translate('daysShort.' + d)).join(this.transloco.translate('plan.dayJoin'))} ${timeRange({ day: p.days[0], start: p.start, end: p.end }, lang)}`)
+      .join(', ');
+  }
+
+  protected range(start: string, end: string): string {
+    return timeRange({ day: 'Monday', start, end }, this.language.lang());
   }
 
   protected termName(code: string | null): { season: string; year: number } | null {
@@ -332,9 +351,5 @@ export class StudentPlanComponent {
 
   protected key(r: Reason): string {
     return warningKey(r);
-  }
-
-  private rank(code: string): number {
-    return this.view.value()?.recommendation.courses.find((c) => c.courseCode === code)?.priorityRank ?? 999;
   }
 }

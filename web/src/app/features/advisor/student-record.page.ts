@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, input, resource } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -7,13 +7,15 @@ import { formatGpa, programName } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
 import { StudentRecordView, TranscriptLine } from '../../core/planning/advisor.models';
 import { courseTitle, parseTermCode } from '../../core/planning/planning.models';
+import { PlanHistoryComponent } from '../../shared/plan-history.component';
+import { StatusChipComponent } from '../../shared/status-chip.component';
 
 /** Read-only student record with transcript, for the student's advisor. */
 @Component({
   selector: 'app-student-record',
-  imports: [RouterLink, TranslocoPipe],
+  imports: [RouterLink, TranslocoPipe, PlanHistoryComponent, StatusChipComponent],
   template: `
-    <a class="back" routerLink="/advisor">← {{ 'advisor.record.back' | transloco }}</a>
+    <a class="back" routerLink="/advisor/students">← {{ 'advisor.record.back' | transloco }}</a>
     @if (record.hasValue()) {
       @let r = record.value();
       <header class="head">
@@ -29,7 +31,7 @@ import { courseTitle, parseTermCode } from '../../core/planning/planning.models'
           <dt>{{ 'advisor.record.plan' | transloco }}</dt>
           <dd>
             @if (r.currentPlanId && r.currentPlanStatus !== 'Draft') {
-              <a [routerLink]="['/advisor/plans', r.currentPlanId]">{{ 'planStatus.' + r.currentPlanStatus | transloco }}</a>
+              <a [routerLink]="['/advisor/plans', r.currentPlanId]"><app-status-chip [status]="r.currentPlanStatus!" /></a>
             } @else {
               {{ 'advisor.record.noPlan' | transloco }}
             }
@@ -38,6 +40,13 @@ import { courseTitle, parseTermCode } from '../../core/planning/planning.models'
       </dl>
       @if (r.summary.onProbation) {
         <p class="probation">{{ 'advisor.record.probation' | transloco }}</p>
+      }
+      @if (r.hold) {
+        <p class="probation">{{ 'advisor.record.hold' | transloco: { hold: r.hold } }}</p>
+      }
+      @if (r.planHistory?.length) {
+        <h2>{{ 'history.heading' | transloco }}</h2>
+        <app-plan-history [events]="r.planHistory!" />
       }
 
       <h2>{{ 'advisor.record.transcript' | transloco }}</h2>
@@ -78,11 +87,11 @@ import { courseTitle, parseTermCode } from '../../core/planning/planning.models'
       dt { color: var(--liwa-text-muted); font-size: 0.8125rem; }
       dd { margin: 0; font-weight: 600; }
     }
-    .probation { padding: 0.625rem 0.875rem; border-inline-start: 4px solid #b8892b; background: #fdf6e7; color: #6b4a00; }
+    .probation { padding: 0.625rem 0.875rem; border-inline-start: 4px solid var(--liwa-warning); background: var(--liwa-chip-needs-bg); color: var(--liwa-chip-needs-fg); }
     h2 { margin: 1.5rem 0 0.75rem; font-size: 1.0625rem; }
     .transcript {
       width: 100%; border-collapse: collapse; background: var(--liwa-surface); border: 1px solid var(--liwa-border); font-size: 0.9375rem;
-      th { padding: 0.5rem 0.75rem; text-align: start; font-size: 0.8125rem; color: var(--liwa-text-muted); background: #fafaf8; border-bottom: 1px solid var(--liwa-border); }
+      th { padding: 0.5rem 0.75rem; text-align: start; font-size: 0.8125rem; color: var(--liwa-text-muted); background: var(--liwa-page); border-bottom: 1px solid var(--liwa-border); }
       td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--liwa-border); }
       tr.fail td { color: var(--liwa-danger); }
     }

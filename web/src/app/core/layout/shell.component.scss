@@ -20,16 +20,25 @@
   }
 }
 
+// ---------------------------------------------------------------- top bar
+
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
   min-height: 64px;
-  padding: 0 1rem;
-  background: var(--liwa-primary);
+  padding: 0 0.75rem;
+  background: var(--liwa-header);
   color: #fff;
-  border-bottom: 3px solid var(--liwa-sage);
+  border-bottom: 3px solid var(--liwa-sage); // the brand rule under the header
+}
+
+.menu-button {
+  display: none;
+  --mat-icon-button-icon-color: #fff;
 }
 
 .brand {
@@ -43,8 +52,7 @@
 
 .brand-logo {
   flex: none;
-  // Shield mark is 194x238; keep its aspect ratio.
-  height: 42px;
+  height: 42px; // shield mark is 194x238
   width: auto;
 }
 
@@ -66,15 +74,34 @@
   font-size: 1rem;
   font-weight: 700;
   white-space: nowrap;
+}
+
+.page-title {
+  margin-inline-start: 1rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .topbar-actions {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  margin-inline-start: auto;
   flex: none;
+}
+
+.term-select {
+  width: 11rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--liwa-radius);
+  --mat-select-enabled-trigger-text-color: #fff;
+  --mat-select-enabled-arrow-color: #fff;
 }
 
 .lang-toggle,
@@ -105,15 +132,206 @@
   font-size: 0.875rem;
 }
 
+// ---------------------------------------------------------------- rail + content
+
+.frame {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.rail {
+  flex: none;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  background: var(--liwa-surface);
+  border-inline-end: 1px solid var(--liwa-border);
+  position: sticky;
+  top: 67px;
+  height: calc(100vh - 67px);
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+    padding: 0 0.75rem;
+    border-radius: var(--liwa-radius);
+    color: var(--liwa-text);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      background: var(--liwa-page);
+    }
+
+    &.active {
+      background: var(--liwa-block);
+      font-weight: 700;
+      box-shadow: inset 4px 0 0 var(--liwa-accent);
+    }
+  }
+
+  &.collapsed {
+    width: 4.25rem;
+
+    .label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    a {
+      justify-content: center;
+      padding: 0;
+    }
+  }
+}
+
+:host-context([dir='rtl']) .rail a.active {
+  box-shadow: inset -4px 0 0 var(--liwa-accent);
+}
+
+:host-context([dir='rtl']) .flip-rtl {
+  transform: scaleX(-1);
+}
+
+.collapse {
+  align-self: stretch;
+  justify-content: flex-start;
+}
+
 .content {
   flex: 1;
+  min-width: 0;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.5rem 1.5rem 3rem;
 
   &:focus {
     outline: none;
+  }
+}
+
+// ---------------------------------------------------------------- phones
+
+.bottom-bar,
+.drawer,
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .rail,
+  .page-title,
+  .term-select {
+    display: none;
+  }
+
+  .menu-button {
+    display: inline-flex;
+  }
+
+  .content {
+    padding: 1rem 1rem 5.5rem; // room for the bottom bar
+  }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+    background: var(--liwa-surface);
+    border-top: 1px solid var(--liwa-border);
+    padding-bottom: env(safe-area-inset-bottom);
+
+    a,
+    button {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.125rem;
+      min-height: 56px;
+      font-size: 0.6875rem;
+      color: var(--liwa-text-muted);
+      text-decoration: none;
+      background: none;
+      border: 0;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .active {
+      color: var(--liwa-primary);
+      font-weight: 700;
+    }
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .drawer {
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    z-index: 50;
+    width: min(18rem, 85vw);
+    background: var(--liwa-surface);
+    padding: 0.5rem;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-height: 48px;
+      padding: 0 0.75rem;
+      border-radius: var(--liwa-radius);
+      color: var(--liwa-text);
+      text-decoration: none;
+
+      &.active {
+        background: var(--liwa-block);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .drawer-close {
+    display: flex;
+    margin-inline-start: auto;
   }
 }
 
@@ -122,7 +340,6 @@
     display: none;
   }
 
-  // Keep the name for screen readers; only the avatar is shown.
   .user-name {
     position: absolute;
     width: 1px;
@@ -132,15 +349,12 @@
     white-space: nowrap;
   }
 
-  .user-button mat-icon {
+  .user-button mat-icon,
+  .lang-toggle mat-icon {
     display: none;
   }
 
   .avatar {
     margin: 0;
-  }
-
-  .lang-toggle mat-icon {
-    display: none;
   }
 }

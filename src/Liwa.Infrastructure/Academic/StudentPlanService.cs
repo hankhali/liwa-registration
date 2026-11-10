@@ -24,7 +24,8 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
         Term Term,
         IReadOnlyList<Course> Courses,
         IReadOnlyList<Section> Sections,
-        string? AdvisorName);
+        string? AdvisorName,
+        IReadOnlyList<RequirementGroupInfo> Groups);
 
     public async Task<PlannerResult?> RecommendAsync(Guid studentUserId, Availability? availability, PlannerPreferences preferences, CancellationToken ct)
     {
@@ -55,7 +56,22 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
                 .OrderBy(s => codeById[s.CourseId], StringComparer.Ordinal).ThenBy(s => s.SectionCode, StringComparer.Ordinal)
                 .Select(s => new SectionInfo(s.Id, codeById[s.CourseId], s.SectionCode, s.Delivery, s.Instructor, s.Room, s.Meetings.ToList(), s.SeatsLeft)).ToList(),
             saved,
-            saved is null ? [] : await HistoryAsync(saved.Id, ct));
+            saved is null ? [] : await HistoryAsync(saved.Id, ct),
+            ctx.Groups,
+            saved is null ? null : Planner.ProjectPlan(ctx.Input, saved.SectionIds.ToList()),
+            ctx.Record.Hold);
+    }
+
+    public async Task<GraduationProjection?> ProjectAsync(Guid studentUserId, IReadOnlyCollection<Guid> sectionIds, CancellationToken ct)
+    {
+        var ctx = await BuildAsync(studentUserId, null, PlannerPreferences.None, ct);
+        return ctx is null ? null : Planner.ProjectPlan(ctx.Input, sectionIds);
+    }
+
+    public async Task<IReadOnlyList<TermOption>> TermsAsync(CancellationToken ct)
+    {
+        var terms = await db.Terms.AsNoTracking().ToListAsync(ct);
+        return terms.OrderByDescending(t => TermCodes.SortKey(t.Code)).Select(t => new TermOption(t.Code, t.Name, t.IsCurrent)).ToList();
     }
 
     public async Task<PlanCheckResult?> CheckAsync(Guid studentUserId, IReadOnlyCollection<Guid> sectionIds, Availability? availability, CancellationToken ct)
@@ -159,6 +175,7 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
             sections.Select(s => new PlannerSection(s.Id, codeById[s.CourseId], s.SectionCode, s.Delivery, s.Meetings.ToList(), s.SeatsLeft)).ToList(),
             policy, availability, preferences);
 
-        return new Context(input, record, term, courses, sections, advisorName);
+        var groups = plan.Groups.OrderBy(g => g.SortOrder).Select(g => new RequirementGroupInfo(g.Key, g.Name, g.Kind)).ToList();
+        return new Context(input, record, term, courses, sections, advisorName, groups);
     }
 }
