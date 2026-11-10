@@ -2,6 +2,46 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## v0.1.0 — first release (2026-11-10)
+
+The first complete version of Smart Registration: students get a valid, graduation-optimised plan and send it to their
+advisor; advisors review it on one page; registrar staff load and edit the data; an optional AI assistant explains
+plans without deciding anything. English and Arabic throughout.
+
+**Release notes**
+- **Students:** recommended plan first; free time with four presets or an hour grid; Change courses with live checks;
+  autosaved drafts; Graduation Path with and without summer and a delay banner; My Plan with status, advisor notes,
+  proposed changes and history; messages; first-login walkthrough.
+- **Advisors:** counts and a Needs-attention list; queue with filters and urgency markers; one-page review with the
+  student's free time, timetable, reasons, checks and graduation comparison; approve / send back / suggest changes;
+  plans move to Needs review when a failing grade is posted.
+- **Registrar staff:** catalog editing through the importer; imports with a dry run and line-by-line errors; exports
+  that round-trip; data change history; staff accounts and advisor reassignment; credit rules with a "who would change"
+  test; university sign-in and AI settings with connection tests.
+- **Planner:** deterministic and pure, tested on the three seeded programs (a fresh student graduates in 8
+  semesters), identical output from CSV and from the database.
+- **Install:** plain server install (no Docker) with PostgreSQL, the .NET 10 runtime and IIS or nginx
+  ([docs/INSTALL.md](docs/INSTALL.md)); `scripts/verify_install.py` checks a clean install end to end.
+
+### Added in this milestone (M8: documentation and release)
+- **Data provider layer** (brief §6): `IStudentRecordProvider`, `ICourseCatalogProvider`, `ITermScheduleProvider`;
+  `DatabaseSisProvider` in use, `PeopleSoftSisProvider` documented stub; `Sis:Provider` chooses. The planner reads
+  only through these interfaces.
+- `dotnet Liwa.Api.dll create-admin <username> "<Name>"` (password from `LIWA_ADMIN_PASSWORD`) for the first
+  administrator on a server without demo data.
+- Scripts: `verify_install.py` (clean-install check, drops nothing), `demo_plan_states.py` (a demo plan in every
+  status), `check_contrast.py` (theme tokens against WCAG AA, light and dark).
+- Docs: README for a cold reader, [INSTALL.md](docs/INSTALL.md), [peoplesoft-integration.md](docs/peoplesoft-integration.md),
+  [security.md](docs/security.md), [demo-script.md](docs/demo-script.md), [explainer.md](docs/explainer.md),
+  [ui.md](docs/ui.md), the Registrar question checklist in [assumptions.md](docs/assumptions.md), SAML alternative and
+  in-app settings in [sso.md](docs/sso.md), [BRAND.md](web/public/assets/brand/BRAND.md),
+  [design/reference/portal-patterns.md](design/reference/portal-patterns.md).
+
+### Checks at release
+- Tests: **218 unit, 95 integration, 63 frontend — all pass**.
+- `check_contrast.py`: all theme pairs pass WCAG AA in light and dark.
+- Clean install (database dropped and recreated, Release build from `dist/`): `verify_install.py` — all checks pass.
+
 ## M7: AI explainer and Arabic completion (2026-11-10)
 
 ### Added

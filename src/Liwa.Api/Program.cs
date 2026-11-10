@@ -17,8 +17,14 @@ var app = builder.Build();
 app.UseLiwaApi();
 
 await app.Services.InitializeDatabaseAsync();
+
+// One-off: create the first administrator on a fresh server (docs/INSTALL.md), then exit.
+if (args.Length > 0 && args[0] == "create-admin")
+    return await Liwa.Infrastructure.Seeding.AdminBootstrap.RunAsync(app.Services, args, Console.Out);
+
 await app.Services.EnsureAiProviderAllowedAsync();
 await app.RunAsync();
+return 0;
 
 /// <summary>Exposed for WebApplicationFactory in integration tests.</summary>
 public partial class Program;

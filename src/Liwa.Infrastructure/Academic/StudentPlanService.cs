@@ -13,7 +13,14 @@ namespace Liwa.Infrastructure.Academic;
 /// Student planning: builds the planner input from the database (all I/O and "today" live here; the
 /// planner stays pure), checks hand-picked plans, and saves versioned plans.
 /// </summary>
-internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider clock, Application.Academic.IAcademicQueries queries, Notifier notifier)
+internal sealed partial class StudentPlanService(
+    LiwaDbContext db,
+    TimeProvider clock,
+    Application.Academic.IAcademicQueries queries,
+    Notifier notifier,
+    Application.Sis.IStudentRecordProvider students,
+    Application.Sis.ICourseCatalogProvider catalog,
+    Application.Sis.ITermScheduleProvider schedule)
     : IStudentPlanService, IRecommendationService, IAdvisorService
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
@@ -145,20 +152,18 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
 
     private async Task<Context?> BuildAsync(Guid studentUserId, Availability? availability, PlannerPreferences preferences, CancellationToken ct)
     {
-        var record = await db.StudentRecords.AsNoTracking()
-            .Include(s => s.Transcript).Include(s => s.TransferCredits)
-            .SingleOrDefaultAsync(s => s.UserId == studentUserId, ct);
+        // Student, catalog and timetable data come through the SIS providers (brief §6); the planner never knows the backend.
+        var record = await students.GetByUserAsync(studentUserId, ct);
         if (record is null) return null;
 
-        var term = await db.Terms.AsNoTracking().FirstOrDefaultAsync(t => t.IsCurrent, ct);
-        var program = await db.Programs.AsNoTracking().SingleAsync(p => p.Id == record.ProgramId, ct);
-        var plan = await db.DegreePlans.AsNoTracking().Include(d => d.Groups).ThenInclude(g => g.Courses)
-            .SingleOrDefaultAsync(d => d.ProgramId == record.ProgramId && d.CatalogYear == record.CatalogYear, ct);
-        if (term is null || plan is null) return null;
+        var term = await schedule.CurrentTermAsync(ct);
+        var program = await catalog.ProgramAsync(record.ProgramId, ct);
+        var plan = await catalog.DegreePlanAsync(record.ProgramId, record.CatalogYear, ct);
+        if (term is null || plan is null || program is null) return null;
 
-        var courses = await db.Courses.AsNoTracking().ToListAsync(ct);
+        var courses = await catalog.CoursesAsync(ct);
         var codeById = courses.ToDictionary(c => c.Id, c => c.Code);
-        var sections = await db.Sections.AsNoTracking().Where(s => s.TermId == term.Id).ToListAsync(ct);
+        var sections = await schedule.SectionsAsync(term.Id, ct);
         var policy = await db.CreditPolicies.AsNoTracking().Include(p => p.Rules).FirstOrDefaultAsync(ct)
                      ?? new CreditPolicy(Guid.Empty, "No credit policy configured");
         var advisorName = record.AdvisorUserId is { } a

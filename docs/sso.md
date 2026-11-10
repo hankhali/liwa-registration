@@ -43,7 +43,12 @@ Send these through a secure channel, never in plain email:
 | **Application (client) ID** | App registration → Overview |
 | **Client secret value** | The value copied in step 2 |
 
-We set them as environment variables on the server (`SSO_TENANT_ID`, `SSO_CLIENT_ID`, `SSO_CLIENT_SECRET`, and `SSO_ENABLED=true`). The secret is never stored in source code.
+There are two ways to put them in, and neither stores the secret in source code:
+
+- **In the app** (recommended): an administrator opens **Settings → University sign-in**, enters the three values, saves, and clicks **Test connection** (it reads the tenant's public sign-in metadata; no user data is sent). The secret is encrypted at rest and only ever shown as its last four characters. Saved values apply when the service next starts, so nobody is signed out mid-session.
+- **As server configuration**: `Sso__Enabled=true`, `Sso__TenantId`, `Sso__ClientId`, `Sso__ClientSecret` (environment variables or `appsettings.Production.json`; see [INSTALL.md](INSTALL.md)). Values saved in the app take precedence at start-up.
+
+**Required claims:** `oid` (object ID, used for the permanent link) and `email` or `upn` / `preferred_username` (used once, for the first match). The app reads nothing else.
 
 ## 3. Who gets in
 
@@ -87,7 +92,11 @@ Browser            Smart Registration                 Microsoft Entra ID (Liwa t
 
 ## 6. Username and password sign-in
 
-Username/password accounts stay available next to the Microsoft button (`SSO_LOCAL_SIGNIN_ENABLED=true`), for demo accounts and as emergency admin access if Entra is unavailable. To allow **only** university sign-in, set `SSO_LOCAL_SIGNIN_ENABLED=false`.
+Username/password accounts stay available next to the Microsoft button, for demo accounts and as emergency admin access if Entra is unavailable. **A settings change can never lock people out:** in Settings, username/password sign-in can only be switched off when university sign-in is on, its connection test has passed, and the administrator ticks "I understand". As server configuration the switch is `Sso__LocalSignInEnabled=false`.
+
+## SAML alternative
+
+If the university prefers SAML 2.0 to OpenID Connect, the same Entra app registration can be created as an *Enterprise application (non-gallery) → SAML*, with the Entity ID `https://<address>/api/auth/saml` and the Reply URL `https://<address>/api/auth/saml/acs`, releasing `user.objectid` and `user.mail` as claims. The application keeps the same matching rules (email on first sign-in, then the permanent object-ID link); only the protocol handler changes (an ASP.NET Core SAML2 handler in place of the OpenID Connect one, feeding the same external sign-in code in `src/Liwa.Application/Auth/ExternalSignIn.cs`). OpenID Connect is recommended because it needs no certificate exchange and is what is already built and tested.
 
 ## 7. Checklist
 

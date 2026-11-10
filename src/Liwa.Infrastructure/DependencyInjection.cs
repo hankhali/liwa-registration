@@ -53,6 +53,15 @@ public static class DependencyInjection
         services.AddScoped<IAdvisorService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<IPlanRevalidationService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<Notifier>();
+        // SIS providers (brief §6): "Sis:Provider" chooses the backend; nothing else knows which one is in use.
+        var sis = config.GetValue("Sis:Provider", Application.Sis.SisProviderKind.Database);
+        if (sis == Application.Sis.SisProviderKind.PeopleSoft) services.AddScoped<Sis.PeopleSoftSisProvider>();
+        else services.AddScoped<Sis.DatabaseSisProvider>();
+        Type sisType = sis == Application.Sis.SisProviderKind.PeopleSoft ? typeof(Sis.PeopleSoftSisProvider) : typeof(Sis.DatabaseSisProvider);
+        services.AddScoped(typeof(Application.Sis.IStudentRecordProvider), sp => sp.GetRequiredService(sisType));
+        services.AddScoped(typeof(Application.Sis.ICourseCatalogProvider), sp => sp.GetRequiredService(sisType));
+        services.AddScoped(typeof(Application.Sis.ITermScheduleProvider), sp => sp.GetRequiredService(sisType));
+
         services.AddSingleton<Security.SecretProtector>();
         services.AddMemoryCache();
         services.AddHttpClient("llm", c => c.Timeout = Timeout.InfiniteTimeSpan); // per-call timeout from the AI settings

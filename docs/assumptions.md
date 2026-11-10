@@ -4,6 +4,34 @@ Each item is something we assumed or decided without confirmation. The **Confirm
 
 Status key: **Open** = needs confirmation · **Decided** = project decision, change on request · **Confirmed** = agreed with the university.
 
+## Questions for the Registrar (checklist)
+
+Each question shows what the app does today. Write the university's answer in the last column; most answers are a
+setting (Admin → Settings / Catalog) rather than a code change.
+
+| ✓ | Question | Current default | Answer |
+|---|---|---|---|
+| [ ] | Do any terms teach on **Saturday**? | No; a term can switch it on (teaching days per term) | |
+| [ ] | Is Friday afternoon ever a teaching slot? | Never after 12:00 (Jumu'ah), unless a term allows it | |
+| [ ] | What are the real **credit limits**? | Fall/Spring 12–18; GPA ≥ 3.50 → 21; probation 9–12; Summer up to 9 (6 on probation) | |
+| [ ] | Are students close to graduating held to the minimum? | No: a student with fewer credits left than the minimum isn't forced up | |
+| [ ] | Do **courses in progress** count as prerequisites (with a warning) when planning the next term? | Yes, globally; each term can override | |
+| [ ] | Can the projection assume **department permission** (capstone, internship) will be granted later? | Yes, with a note to the student (S11) | |
+| [ ] | **Repeated courses:** latest grade or highest grade? | Latest grade counts | |
+| [ ] | Passing grade and minimum grades for prerequisites? | D or above passes; a rule can ask for a minimum (e.g. C) | |
+| [ ] | Grade scale and GPA rounding? | A 4.0 … F 0, P and W don't count; GPA rounded to 2 decimals (E1, E2) | |
+| [ ] | **Standing** thresholds? | Freshman < 30, Sophomore 30–59, Junior 60–89, Senior ≥ 90 credits | |
+| [ ] | Is **probation** taken from PeopleSoft, or worked out from the GPA? | From the registrar's status (students file `status`) | |
+| [ ] | Do **holds** stop a student sending a plan, or only registering? | Only registering; the plan carries a warning (R1) | |
+| [ ] | When should an approved plan go back to the advisor after **grades are posted**? | Only when a prerequisite or corequisite fails (R2) | |
+| [ ] | How do grades reach the system: per grade, or a file per term? | Both are supported (R3) | |
+| [ ] | Is a **full section** a hard stop, and at what point is it "nearly full"? | Full sections are never recommended; warning at 90% | |
+| [ ] | Should the **waitlist** be used? | Not yet (the flag exists, unused) | |
+| [ ] | Which **email format** do accounts use for sign-in matching? | The `email` column of the students file must match Entra ID | |
+| [ ] | Term code mapping from PeopleSoft `STRM`? | `YYYYSP/SU/FA` (E6); mapping table needed | |
+| [ ] | Official Arabic titles of the university, colleges, programs and courses? | Machine drafts in [translations/REVIEW.md](../translations/REVIEW.md) | |
+| [ ] | How long should plans, history and AI usage counts be kept? | Plans for the student's studies; AI counts 30 days on screen | |
+
 ## Platform and tooling
 
 | # | Assumption / decision | Why | Confirm with | Status |
