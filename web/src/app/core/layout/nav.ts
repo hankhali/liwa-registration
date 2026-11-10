@@ -26,9 +26,15 @@ export const NAV: Record<Role, NavItem[]> = {
     { key: 'queue', icon: 'inbox', link: '/advisor/plans', badge: 'queue' },
     { key: 'advisees', icon: 'groups', link: '/advisor/students' },
     { key: 'messages', icon: 'mail', link: '/advisor/messages' },
+    { key: 'versions', icon: 'history', link: '/advisor/versions' },
   ],
   Admin: [
     { key: 'home', icon: 'home', link: '/admin', exact: true },
+    { key: 'catalog', icon: 'menu_book', link: '/admin/catalog' },
+    { key: 'imports', icon: 'upload_file', link: '/admin/imports' },
+    { key: 'users', icon: 'manage_accounts', link: '/admin/users' },
+    { key: 'settings', icon: 'settings', link: '/admin/settings' },
+    { key: 'aiUsage', icon: 'insights', link: '/admin/ai-usage' },
     { key: 'messages', icon: 'mail', link: '/admin/messages' },
   ],
 };

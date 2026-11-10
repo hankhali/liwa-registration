@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { DataOverview, formatDateTime } from '../../core/academic/academic.models';
@@ -16,7 +17,7 @@ interface SystemStatus {
 /** Administrator landing page. The only role that sees system information. */
 @Component({
   selector: 'app-admin-home',
-  imports: [MatIconModule, TranslocoPipe],
+  imports: [MatIconModule, RouterLink, TranslocoPipe],
   template: `
     <header class="page-header">
       <h1>{{ 'admin.home.heading' | transloco }}</h1>
@@ -121,11 +122,10 @@ interface SystemStatus {
           {{ 'admin.home.manage' | transloco }}
         </h2>
         <ul class="areas">
-          @for (area of areas; track area) {
-            <li>{{ 'admin.home.areas.' + area | transloco }}</li>
+          @for (area of areas; track area.key) {
+            <li><a [routerLink]="area.link">{{ 'admin.home.areas.' + area.key | transloco }}</a></li>
           }
         </ul>
-        <p class="liwa-muted">{{ 'admin.home.manageComingSoon' | transloco }}</p>
       </section>
     </div>
   `,
@@ -135,7 +135,15 @@ export class AdminHomePage {
   private readonly http = inject(HttpClient);
   protected readonly status = resource({ loader: () => firstValueFrom(this.http.get<SystemStatus>('/api/admin/system')) });
   protected readonly overview = resource({ loader: () => firstValueFrom(this.http.get<DataOverview>('/api/admin/overview')) });
-  protected readonly areas = ['terms', 'catalog', 'degreePlans', 'creditPolicy', 'imports'];
+  protected readonly areas = [
+    { key: 'catalog', link: '/admin/catalog' },
+    { key: 'degreePlans', link: '/admin/catalog' },
+    { key: 'imports', link: '/admin/imports' },
+    { key: 'users', link: '/admin/users' },
+    { key: 'creditPolicy', link: '/admin/settings' },
+    { key: 'settings', link: '/admin/settings' },
+    { key: 'aiUsage', link: '/admin/ai-usage' },
+  ];
   private readonly language = inject(LanguageService);
 
   protected when(iso: string): string {

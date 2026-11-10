@@ -88,6 +88,42 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/admin-home.page').then((m) => m.AdminHomePage),
       },
       {
+        path: 'admin/catalog',
+        canActivate: [roleGuard('Admin')],
+        title: 'nav.catalog',
+        loadComponent: () => import('./features/admin/catalog.page').then((m) => m.CatalogPage),
+      },
+      {
+        path: 'admin/imports',
+        canActivate: [roleGuard('Admin')],
+        title: 'nav.imports',
+        loadComponent: () => import('./features/admin/imports.page').then((m) => m.ImportsPage),
+      },
+      {
+        path: 'admin/users',
+        canActivate: [roleGuard('Admin')],
+        title: 'nav.users',
+        loadComponent: () => import('./features/admin/users.page').then((m) => m.UsersPage),
+      },
+      {
+        path: 'admin/settings',
+        canActivate: [roleGuard('Admin')],
+        title: 'nav.settings',
+        loadComponent: () => import('./features/admin/settings.page').then((m) => m.SettingsPage),
+      },
+      {
+        path: 'admin/ai-usage',
+        canActivate: [roleGuard('Admin')],
+        title: 'nav.aiUsage',
+        loadComponent: () => import('./features/admin/ai-usage.page').then((m) => m.AiUsagePage),
+      },
+      {
+        path: 'advisor/versions',
+        canActivate: [roleGuard('Advisor')],
+        title: 'admin.versions.heading',
+        loadComponent: () => import('./features/advisor/versions.page').then((m) => m.VersionsPage),
+      },
+      {
         path: 'forbidden',
         title: 'errors.forbidden.title',
         loadComponent: () => import('./features/errors/forbidden.page').then((m) => m.ForbiddenPage),

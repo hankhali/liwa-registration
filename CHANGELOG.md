@@ -2,6 +2,19 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## M6: administration (2026-11-10)
+
+### Added
+- **Catalog** (`/admin/catalog`): courses, degree plans, programs, semesters and class times as searchable tables. **Every edit, even one field, goes through the importer** (brief §4): Preview shows exactly what a file would do, Save creates a catalog version. Degree plans are edited as a whole plan and can be removed only when no student follows them (409 otherwise). The **prerequisite editor** checks the rule live: can it be read, unknown courses, a course needing itself, cycles.
+- **Imports & exports** (`/admin/imports`): choose a file → Check (dry run: added / changed / unchanged / removed, every problem by line and column) → Apply. **Any error rejects the whole file with HTTP 422.** Imports are idempotent and never delete students. **Exports** (one file or a zip of all seven, numbered in import order) import again with nothing changed (tested for every kind).
+- **Catalog versions:** every saved upload, edit and removal gets a number, source, time, who and row counts, listed on the Imports page and for advisors (`/advisor/versions`, `GET /api/catalog/versions`).
+- **Users** (`/admin/users`): advisor and administrator accounts, new passwords (10+ characters), switching accounts on and off (never your own, never the last administrator), and **moving students to another advisor** with notifications to the students and both advisors.
+- **Settings** (`/admin/settings`): university sign-in (Entra ID) and the AI provider, each with **Test connection**; secrets are encrypted at rest (AES-256-GCM, `Secrets:Key`) and only ever shown as their last four characters. Username/password sign-in can only be switched off with SSO on, a passing test and an explicit confirmation; saved sign-in settings apply at the next start. **Credit rules** with a test that lists every student whose limits would change, and a check that refuses rules that could never apply.
+- **AI usage** page (`/admin/ai-usage`), filled by the explainer in M7.
+- Admin menu items in the rail: Catalog, Imports & exports, Users, Settings, AI usage.
+- API: `GET /api/admin/catalog/{kind}`, `POST /api/admin/catalog/{kind}/rows`, `POST /api/admin/catalog/prerequisites/check`, `DELETE /api/admin/catalog/degree-plans/{program}/{year}`, `GET /api/admin/exports[/{kind}]`, `GET|PUT /api/admin/credit-policy`, `POST /api/admin/credit-policy/preview`, `GET|POST /api/admin/users`, `PUT /api/admin/users/{id}/password|active`, `POST /api/admin/users/reassign`, `GET|PUT /api/admin/settings/sso|ai`, `POST /api/admin/settings/sso/test`, `GET /api/catalog/versions`. Migration `CatalogVersionsAndSettings`.
+- Tests: 8 admin integration tests (export round trip, 422 rejection, edits through the importer and versions, prerequisite check, degree-plan removal guard, credit-rule test, staff and reassignment, settings and secrets) and 3 frontend tests. Totals: 190 unit, 86 integration, 62 frontend.
+
 ## Audit of M1–M5 against the brief (2026-11-10)
 
 Gaps found by checking M1–M5 against brief §4 (decisions), §5 (data), §8 (required tests) and §9 (usability), now fixed.
