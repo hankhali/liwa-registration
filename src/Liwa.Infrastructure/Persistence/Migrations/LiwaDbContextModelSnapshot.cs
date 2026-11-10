@@ -781,6 +781,45 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                     b.ToTable("plan_version_sections", (string)null);
                 });
 
+            modelBuilder.Entity("Liwa.Domain.Planning.StudentPreferences", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Availability")
+                        .HasColumnType("text")
+                        .HasColumnName("availability");
+
+                    b.Property<string>("Delivery")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("delivery");
+
+                    b.Property<string>("DraftSectionIds")
+                        .HasColumnType("text")
+                        .HasColumnName("draft_section_ids");
+
+                    b.Property<int?>("MaxCredits")
+                        .HasColumnType("integer")
+                        .HasColumnName("max_credits");
+
+                    b.Property<string>("Preset")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("preset");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("UserId")
+                        .HasName("pk_student_preferences");
+
+                    b.ToTable("student_preferences", (string)null);
+                });
+
             modelBuilder.Entity("Liwa.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1084,6 +1123,16 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_plan_version_sections_sections_section_id");
+                });
+
+            modelBuilder.Entity("Liwa.Domain.Planning.StudentPreferences", b =>
+                {
+                    b.HasOne("Liwa.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_student_preferences_users_user_id");
                 });
 
             modelBuilder.Entity("Liwa.Domain.Academic.CreditPolicy", b =>

@@ -45,6 +45,9 @@ public static class DependencyInjection
         services.AddScoped<IAdvisorService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<IPlanRevalidationService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<Notifier>();
+        services.AddScoped<StudentPreferencesService>();
+        services.AddScoped<IStudentPreferencesService>(sp => sp.GetRequiredService<StudentPreferencesService>());
+        services.AddScoped<IUserSettingsService>(sp => sp.GetRequiredService<StudentPreferencesService>());
         services.AddScoped<INotificationService, NotificationService>();
 
         services.AddHealthChecks().AddDbContextCheck<LiwaDbContext>("database", tags: ["ready"]);

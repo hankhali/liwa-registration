@@ -16,7 +16,7 @@ All notable changes are listed here, newest first, grouped by milestone.
 - The Playwright screenshot script (`web/e2e/screenshots.mjs`, `npm run screenshots`) and its `@playwright/test` and `@axe-core/playwright` packages (brief §13). Old screenshots stay in `docs/screenshots/`.
 
 ### Known issue
-- On the development machine, Windows Smart App Control sometimes blocks a freshly built `Liwa.Api.dll`; a later build loaded. See "Pending verification — Smart App Control" in `docs/assumptions.md`.
+- On the development machine, Windows Smart App Control blocked some builds of `Liwa.Api.dll`. It has since been turned off; the API, the integration tests and `reset-db.ps1` were then verified against the local PostgreSQL.
 
 ### Tests
 - 153 unit, 70 integration (now on the local PostgreSQL), 38 frontend: all pass.

@@ -13,9 +13,32 @@ namespace Liwa.Api.Controllers;
 [ApiController]
 [Route("api/students/me")]
 [Authorize(Policy = Policies.Student)]
-public sealed class StudentController(IAcademicQueries queries, IRecommendationService recommendations, IStudentPlanService plans, ICurrentUser user) : ControllerBase
+public sealed class StudentController(IAcademicQueries queries, IRecommendationService recommendations, IStudentPlanService plans,
+    IStudentPreferencesService preferences, ICurrentUser user) : ControllerBase
 {
     public sealed record CheckRequest(IReadOnlyList<Guid> SectionIds, IReadOnlyList<TimeWindow>? Availability);
+
+    public sealed record DraftRequest(IReadOnlyList<Guid> SectionIds);
+
+    /// <summary>The student's saved free time, delivery, credit cap and autosaved draft. Preset is null until chosen.</summary>
+    [HttpGet("preferences")]
+    public Task<PreferencesView> Preferences(CancellationToken ct) => preferences.GetAsync(user.UserId, ct);
+
+    [HttpPut("preferences")]
+    public async Task<IActionResult> SavePreferences(PreferencesRequest request, CancellationToken ct)
+    {
+        var (ok, problem) = await preferences.SaveAsync(user.UserId, request, ct);
+        return ok ? NoContent() : Problem(statusCode: StatusCodes.Status400BadRequest, title: problem);
+    }
+
+    /// <summary>Autosave of the planner's unsaved selection. Not a plan version and not sent to anyone.</summary>
+    [HttpPut("draft")]
+    public async Task<IActionResult> SaveDraft(DraftRequest request, CancellationToken ct)
+    {
+        if (request.SectionIds.Count > 15) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "That's too many classes for one term.");
+        await preferences.SaveDraftAsync(user.UserId, request.SectionIds, ct);
+        return NoContent();
+    }
 
     /// <summary>The planning screen: recommendation plus course titles, class times and the saved plan.</summary>
     [HttpPost("planning")]
@@ -172,6 +195,31 @@ public sealed class AdvisorController(IAdvisorService advisor, ICurrentUser user
             DecisionOutcome.PlanHasErrors => BadRequest(result),
             _ => Conflict(result),
         };
+    }
+}
+
+/// <summary>The signed-in user's own settings (any role): message language and the first-login walkthrough.</summary>
+[ApiController]
+[Route("api/me")]
+public sealed class MeController(IUserSettingsService settings, ICurrentUser user) : ControllerBase
+{
+    public sealed record LanguageRequest(string Language);
+
+    [HttpGet("settings")]
+    public Task<UserSettingsView> Settings(CancellationToken ct) => settings.GetAsync(user.UserId, ct);
+
+    /// <summary>The language for emails and other generated messages ("en" or "ar"); the app sets it when the user switches.</summary>
+    [HttpPut("language")]
+    public async Task<IActionResult> Language(LanguageRequest request, CancellationToken ct) =>
+        await settings.SetLanguageAsync(user.UserId, request.Language, ct)
+            ? NoContent()
+            : Problem(statusCode: StatusCodes.Status400BadRequest, title: "Language must be \"en\" or \"ar\".");
+
+    [HttpPost("walkthrough/dismiss")]
+    public async Task<IActionResult> DismissWalkthrough(CancellationToken ct)
+    {
+        await settings.DismissWalkthroughAsync(user.UserId, ct);
+        return NoContent();
     }
 }
 

@@ -276,3 +276,15 @@ internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notif
         b.HasOne<User>().WithMany().HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+internal sealed class StudentPreferencesConfiguration : IEntityTypeConfiguration<StudentPreferences>
+{
+    public void Configure(EntityTypeBuilder<StudentPreferences> b)
+    {
+        b.ToTable("student_preferences");
+        b.HasKey(p => p.UserId);
+        b.Property(p => p.Preset).HasMaxLength(20);
+        b.Property(p => p.Delivery).HasConversion<string>().HasMaxLength(20);
+        b.HasOne<User>().WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

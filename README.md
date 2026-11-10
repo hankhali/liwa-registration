@@ -24,7 +24,7 @@ Nothing is downloaded by the scripts. Install these yourself (or ask IT), then r
 
 The scripts put these on PATH for their own process (`scripts/common.ps1`) and keep NuGet, npm and dotnet caches in the git-ignored `.local/` folder inside the repository.
 
-**Smart App Control.** On this development machine, Windows Smart App Control sometimes blocks loading a freshly built, unsigned `Liwa.Api.dll` ("An Application Control policy has blocked this file"). It judges each build separately; when it happens, the API and the integration tests can't run until a rebuild is accepted, or until it is turned off or IT adds an exception for the repository folder. Unit tests and the Angular app are not affected. What still needs checking is listed in [docs/assumptions.md](docs/assumptions.md#pending-verification--smart-app-control). The projects build without a native `.exe` launcher (`UseAppHost=false`); run the API with `dotnet Liwa.Api.dll` or `dotnet run`.
+**Windows Smart App Control** blocks freshly built, unsigned DLLs ("An Application Control policy has blocked this file"). If you see that error, turn it off or ask IT for an exception for the repository folder. The projects build without a native `.exe` launcher (`UseAppHost=false`); run the API with `dotnet Liwa.Api.dll` or `dotnet run`.
 
 ## Database (first time)
 

@@ -97,13 +97,3 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | R4 | Every status change notifies **both** people: the other person gets the news, the person who acted gets a short confirmation. | Brief §4 ("in-app for both sides on every status change"). | — | Decided |
 | R5 | **Email stubs** are written to the application log, in the recipient's preferred language, with the user id but never the email address. A real mail sender replaces the stub later. | No mail server yet; keep PII out of logs. | University IT | Open |
 | R6 | "Close to graduating" (urgency marker) means **two semesters or fewer** left in the recommendation's projection with summer. | Brief §10 ("within two terms of graduation"). | Academic advisors | Open |
-
-## Pending verification — Smart App Control
-
-Windows **Smart App Control** on the development machine sometimes blocks loading a freshly built, unsigned `Liwa.Api.dll` (Code Integrity events 3077/3118, 2026-11-10). It judges each build separately: two builds were blocked, the next one loaded. When a build is blocked, nothing that loads `Liwa.Api.dll` can run: the API and every integration test. Rebuilding after a code change produced a build that loaded. Items that could not be run against the real API stay **Pending** here until they have been.
-
-| # | Needs | What to verify | Status |
-|---|---|---|---|
-| V1 | Integration tests | `LiwaApiFactory` on the local PostgreSQL: each fixture creates `liwa_test_xxxxxxxx`, migrates, seeds and drops it. | Verified 2026-11-10: 70/70 pass |
-| V2 | API running | API on 5080 against `localhost:5432`, web app on 4200; demo sign-in works through the proxy. | Verified 2026-11-10 (`student.new` signs in through 4200) |
-| V3 | API running | `scripts/reset-db.ps1` drops and recreates `liwa`; the next API start migrates and seeds it. | Pending (not run, to keep the running demo) |
