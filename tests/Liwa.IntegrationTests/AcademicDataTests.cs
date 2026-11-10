@@ -158,7 +158,9 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
         using var content = new MultipartFormDataContent();
         content.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(csv)), "file", $"{kind}.csv");
         var response = await client.PostAsync($"/api/admin/imports/{kind}?dryRun={dryRun.ToString().ToLowerInvariant()}", content);
-        return (response.StatusCode, response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ReportBody>(Json) : null);
+        // Files with errors come back as 422 with the full report (brief §11).
+        var hasReport = response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.UnprocessableEntity;
+        return (response.StatusCode, hasReport ? await response.Content.ReadFromJsonAsync<ReportBody>(Json) : null);
     }
 
     private async Task<int> CountAsync(Func<LiwaDbContext, Task<int>> query)
@@ -203,8 +205,9 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
     {
         const string csv = "course_code,title,credits,prerequisites\nTST301,Good Course,3,\nnot-a-code,Bad Course,9,\nTST302,Bad Prereq,3,XYZ999 AND\n";
 
-        var (_, report) = await ImportAsync("courses", csv, dryRun: false);
+        var (status, report) = await ImportAsync("courses", csv, dryRun: false);
 
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, status);
         Assert.False(report!.Saved);
         Assert.Contains(report.Issues, i => i.Line == 3 && i.Column == "course_code");
         Assert.Contains(report.Issues, i => i.Line == 3 && i.Column == "credits");

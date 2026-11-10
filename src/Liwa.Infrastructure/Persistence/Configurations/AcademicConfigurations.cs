@@ -288,3 +288,29 @@ internal sealed class StudentPreferencesConfiguration : IEntityTypeConfiguration
         b.HasOne<User>().WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+internal sealed class CatalogVersionConfiguration : IEntityTypeConfiguration<CatalogVersion>
+{
+    public void Configure(EntityTypeBuilder<CatalogVersion> b)
+    {
+        b.ToTable("catalog_versions");
+        b.HasKey(v => v.Id);
+        b.Property(v => v.Id).ValueGeneratedNever();
+        b.HasIndex(v => v.Number).IsUnique();
+        b.Property(v => v.Source).HasConversion<string>().HasMaxLength(20);
+        b.Property(v => v.Kind).HasMaxLength(30).IsRequired();
+        b.Property(v => v.FileName).HasMaxLength(260);
+        b.HasOne<User>().WithMany().HasForeignKey(v => v.ActorUserId).OnDelete(DeleteBehavior.SetNull);
+    }
+}
+
+internal sealed class AppSettingConfiguration : IEntityTypeConfiguration<AppSetting>
+{
+    public void Configure(EntityTypeBuilder<AppSetting> b)
+    {
+        b.ToTable("app_settings");
+        b.HasKey(s => s.Key);
+        b.Property(s => s.Key).HasMaxLength(100);
+        b.Property(s => s.Value).HasMaxLength(4000);
+    }
+}

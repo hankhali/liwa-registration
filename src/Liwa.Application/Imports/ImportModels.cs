@@ -44,8 +44,14 @@ public sealed class ImportReport(ImportKind kind, bool dryRun)
 
     public int Unchanged { get; set; }
 
+    /// <summary>Rows taken away by a replacement (courses dropped from a degree plan, attempts dropped from a transcript).</summary>
+    public int Removed { get; set; }
+
     /// <summary>True when the changes were written to the database.</summary>
     public bool Saved { get; set; }
+
+    /// <summary>The catalog version this save created (null for dry runs and rejected files).</summary>
+    public int? CatalogVersion { get; set; }
 
     public IReadOnlyList<ImportIssue> Issues => _issues;
 
@@ -62,6 +68,25 @@ public sealed class ImportReport(ImportKind kind, bool dryRun)
 
 public interface IImportService
 {
-    /// <summary>Validates and (unless <paramref name="dryRun"/>) saves one CSV file.</summary>
-    Task<ImportReport> ImportAsync(ImportKind kind, Stream csv, bool dryRun, Guid? actorUserId, CancellationToken ct);
+    /// <summary>Validates and (unless <paramref name="dryRun"/>) saves one CSV file; a saved file creates a catalog version.</summary>
+    Task<ImportReport> ImportAsync(ImportKind kind, Stream csv, bool dryRun, Guid? actorUserId, CancellationToken ct,
+        Liwa.Domain.Activity.ImportSource source = Liwa.Domain.Activity.ImportSource.Upload, string? fileName = null);
+}
+
+/// <summary>A saved change, as listed on the Imports page and for advisors.</summary>
+public sealed record CatalogVersionView(int Number, string Source, string Kind, string? FileName, DateTimeOffset At, string? ActorName,
+    int RowsRead, int Created, int Updated, int Unchanged, int Removed);
+
+/// <summary>The import kinds in their URL form.</summary>
+public static class ImportKinds
+{
+    public static string Slug(ImportKind kind) => kind switch
+    {
+        ImportKind.DegreePlans => "degree-plans",
+        _ => kind.ToString().ToLowerInvariant(),
+    };
+
+    public static bool TryParse(string slug, out ImportKind kind) =>
+        Enum.TryParse(slug.Replace("-", string.Empty, StringComparison.Ordinal), ignoreCase: true, out kind)
+        && !int.TryParse(slug, out _) && Enum.IsDefined(kind);
 }

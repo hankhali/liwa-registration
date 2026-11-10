@@ -573,7 +573,10 @@
       "rejected": "You sent {{ student }}'s plan back.",
       "proposed": "You suggested changes to {{ student }}'s plan.",
       "accepted": "You accepted your advisor's changes. Your plan for {{ term }} is approved."
-    }
+    },
+    "advisorChanged": "Your academic advisor is now {{ advisor }}.",
+    "adviseesAssigned": "{{ n }} students moved to you from {{ advisor }}.",
+    "adviseesMoved": "{{ n }} of your students moved to {{ advisor }}."
   },
   "planStatus": {
     "Draft": "Draft",

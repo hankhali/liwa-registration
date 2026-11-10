@@ -80,7 +80,7 @@ public sealed class DemoSeeder(
         {
             await using var stream = typeof(DemoSeeder).Assembly.GetManifestResourceStream($"Liwa.Infrastructure.Seeding.Demo.{file}")
                 ?? throw new InvalidOperationException($"Demo data file {file} is missing from the build.");
-            var report = await imports.ImportAsync(kind, stream, dryRun: false, actorUserId: null, ct);
+            var report = await imports.ImportAsync(kind, stream, dryRun: false, actorUserId: null, ct, Domain.Activity.ImportSource.Seed, file);
             if (report.HasErrors)
                 throw new InvalidOperationException($"Demo data {file} failed to import: " +
                     string.Join(" | ", report.Issues.Where(i => i.Severity == IssueSeverity.Error).Take(5).Select(i => $"line {i.Line}: {i.Message}")));

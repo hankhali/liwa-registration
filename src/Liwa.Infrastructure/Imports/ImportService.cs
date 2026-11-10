@@ -30,7 +30,8 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             [ImportKind.Transcripts] = (["student_id", "course_code"], ["term_code", "credits", "grade", "status", "source"]),
         };
 
-    public async Task<ImportReport> ImportAsync(ImportKind kind, Stream csv, bool dryRun, Guid? actorUserId, CancellationToken ct)
+    public async Task<ImportReport> ImportAsync(ImportKind kind, Stream csv, bool dryRun, Guid? actorUserId, CancellationToken ct,
+        ImportSource source = ImportSource.Upload, string? fileName = null)
     {
         var report = new ImportReport(kind, dryRun);
         CsvTable table;
@@ -65,8 +66,17 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             return report;
         }
 
+        // Every saved change is a catalog version (brief §11), unless nothing actually changed.
+        var number = (await db.CatalogVersions.MaxAsync(v => (int?)v.Number, ct) ?? 0) + 1;
+        if (report.Created + report.Updated + report.Removed > 0)
+        {
+            db.CatalogVersions.Add(new CatalogVersion(Guid.NewGuid(), number, source, ImportKinds.Slug(kind), fileName, clock.GetUtcNow(), actorUserId,
+                report.RowsRead, report.Created, report.Updated, report.Unchanged, report.Removed));
+            report.CatalogVersion = number;
+        }
+
         db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), clock.GetUtcNow(), actorUserId, $"import.{kind.ToString().ToLowerInvariant()}", "Import", null, null,
-            JsonSerializer.Serialize(new { report.RowsRead, report.Created, report.Updated, report.Unchanged, report.WarningCount })));
+            JsonSerializer.Serialize(new { source = source.ToString(), report.CatalogVersion, report.RowsRead, report.Created, report.Updated, report.Unchanged, report.Removed, report.WarningCount })));
         await db.SaveChangesAsync(ct);
         db.ChangeTracker.Clear();
         report.Saved = true;

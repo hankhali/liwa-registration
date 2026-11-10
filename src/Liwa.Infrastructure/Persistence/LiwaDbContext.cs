@@ -32,6 +32,10 @@ public sealed class LiwaDbContext(DbContextOptions<LiwaDbContext> options) : DbC
 
     public DbSet<StudentPreferences> StudentPreferences => Set<StudentPreferences>();
 
+    public DbSet<CatalogVersion> CatalogVersions => Set<CatalogVersion>();
+
+    public DbSet<AppSetting> Settings => Set<AppSetting>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LiwaDbContext).Assembly);

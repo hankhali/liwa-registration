@@ -1,6 +1,7 @@
 using Liwa.Api.Infrastructure;
 using Liwa.Application.Abstractions;
 using Liwa.Application.Academic;
+using Liwa.Application.Admin;
 using Liwa.Application.Imports;
 using Liwa.Application.Planning;
 using Liwa.Domain.Planning;
@@ -296,16 +297,151 @@ public sealed class AdminDataController(IAcademicQueries queries, IImportService
     [ProducesResponseType<ImportReport>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Import(string kind, IFormFile? file, [FromQuery] bool dryRun = true, CancellationToken ct = default)
     {
-        if (!Enum.TryParse<ImportKind>(kind.Replace("-", string.Empty, StringComparison.Ordinal), ignoreCase: true, out var importKind)
-            || int.TryParse(kind, out _))
-            return Problem(statusCode: StatusCodes.Status404NotFound, title: $"'{kind}' isn't a kind of import. Use one of: terms, courses, programs, degree-plans, sections, students, transcripts.");
+        if (!ImportKinds.TryParse(kind, out var importKind)) return UnknownKind(kind);
         if (file is null || file.Length == 0)
             return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Choose a CSV file to upload.");
 
         await using var stream = file.OpenReadStream();
-        var report = await imports.ImportAsync(importKind, stream, dryRun, user.UserId, ct);
-        // New grades in a transcript file can invalidate approved plans (brief §10).
-        if (report.Saved && importKind == ImportKind.Transcripts) await revalidation.RecheckCurrentTermAsync(user.UserId, null, ct);
+        var report = await imports.ImportAsync(importKind, stream, dryRun, user.UserId, ct, Domain.Activity.ImportSource.Upload, file.FileName);
+        return await ImportResult(importKind, report, ct);
+    }
+
+    /// <summary>
+    /// Errors are listed by line and column with HTTP 422, and the whole file is rejected (brief §11). New grades in a
+    /// saved transcripts file re-check approved plans (brief §10).
+    /// </summary>
+    private async Task<IActionResult> ImportResult(ImportKind kind, ImportReport report, CancellationToken ct)
+    {
+        if (report.HasErrors) return UnprocessableEntity(report);
+        if (report.Saved && kind == ImportKind.Transcripts) await revalidation.RecheckCurrentTermAsync(user.UserId, null, ct);
         return Ok(report);
     }
+
+    private ObjectResult UnknownKind(string kind) =>
+        Problem(statusCode: StatusCodes.Status404NotFound, title: $"'{kind}' isn't a kind of data. Use one of: terms, courses, programs, degree-plans, sections, students, transcripts.");
+
+    /// <summary>A catalog table in the import-file format (the same columns an export file has).</summary>
+    [HttpGet("catalog/{kind}")]
+    public async Task<IActionResult> CatalogRows(string kind, [FromServices] IAdminCatalogService catalog, CancellationToken ct) =>
+        ImportKinds.TryParse(kind, out var k) ? Ok(await catalog.RowsAsync(k, ct)) : UnknownKind(kind);
+
+    /// <summary>Edits rows through the importer: same checks, preview (dryRun=true) and catalog version as a file.</summary>
+    [HttpPost("catalog/{kind}/rows")]
+    public async Task<IActionResult> EditRows(string kind, RowEditRequest request, [FromServices] IAdminCatalogService catalog, CancellationToken ct)
+    {
+        if (!ImportKinds.TryParse(kind, out var k)) return UnknownKind(kind);
+        if (request.Rows.Count is 0 or > 500) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Send between 1 and 500 rows.");
+        return await ImportResult(k, await catalog.EditAsync(k, request, user.UserId, ct), ct);
+    }
+
+    /// <summary>Live check of a prerequisite rule while it's typed: can it be read, unknown courses, cycles.</summary>
+    [HttpPost("catalog/prerequisites/check")]
+    public Task<PrerequisiteCheckResult> CheckPrerequisite(PrerequisiteCheckRequest request, [FromServices] IAdminCatalogService catalog, CancellationToken ct) =>
+        catalog.CheckPrerequisiteAsync(request, ct);
+
+    /// <summary>Removes a degree plan; 409 while students are still assigned to it.</summary>
+    [HttpDelete("catalog/degree-plans/{programCode}/{catalogYear:int}")]
+    public async Task<IActionResult> RemoveDegreePlan(string programCode, int catalogYear, [FromServices] IAdminCatalogService catalog, CancellationToken ct)
+    {
+        var r = await catalog.RemoveDegreePlanAsync(programCode, catalogYear, user.UserId, ct);
+        return r.Outcome switch
+        {
+            RemovalOutcome.Removed => Ok(r),
+            RemovalOutcome.StillAssigned => Problem(statusCode: StatusCodes.Status409Conflict,
+                title: $"{r.StudentsAssigned} students still follow this degree plan. Move them to another plan first."),
+            _ => NotFound(),
+        };
+    }
+
+    /// <summary>One file in the import format (round-trips: importing it again changes nothing).</summary>
+    [HttpGet("exports/{kind}")]
+    public async Task<IActionResult> Export(string kind, [FromServices] IAdminCatalogService catalog, CancellationToken ct) =>
+        ImportKinds.TryParse(kind, out var k)
+            ? File(System.Text.Encoding.UTF8.GetBytes(await catalog.ExportCsvAsync(k, ct)), "text/csv; charset=utf-8", $"{ImportKinds.Slug(k)}.csv")
+            : UnknownKind(kind);
+
+    /// <summary>All seven files in a zip, numbered in import order.</summary>
+    [HttpGet("exports")]
+    public async Task<IActionResult> ExportAll([FromServices] IAdminCatalogService catalog, CancellationToken ct) =>
+        File(await catalog.ExportZipAsync(ct), "application/zip", "liwa-data.zip");
+
+    [HttpGet("credit-policy")]
+    public async Task<IActionResult> CreditPolicy([FromServices] ICreditPolicyAdmin policy, CancellationToken ct) =>
+        await policy.GetAsync(ct) is { } p ? Ok(p) : NotFound();
+
+    /// <summary>The credit-rule test: lists every student whose limits would change (nothing is saved).</summary>
+    [HttpPost("credit-policy/preview")]
+    public Task<CreditPolicyPreview> PreviewCreditPolicy(CreditPolicyDto proposed, [FromServices] ICreditPolicyAdmin policy, CancellationToken ct) =>
+        policy.PreviewAsync(proposed, ct);
+
+    [HttpPut("credit-policy")]
+    public async Task<IActionResult> SaveCreditPolicy(CreditPolicyDto proposed, [FromServices] ICreditPolicyAdmin policy, CancellationToken ct)
+    {
+        var r = await policy.SaveAsync(proposed, user.UserId, ct);
+        return r.Problems.Count > 0 ? UnprocessableEntity(r) : Ok(r);
+    }
+
+    [HttpGet("users")]
+    public Task<IReadOnlyList<StaffUser>> Users([FromServices] IStaffAdmin staff, CancellationToken ct) => staff.ListAsync(ct);
+
+    [HttpPost("users")]
+    public async Task<IActionResult> CreateUser(CreateStaffRequest request, [FromServices] IStaffAdmin staff, CancellationToken ct) =>
+        UserResult(await staff.CreateAsync(request, user.UserId, ct));
+
+    [HttpPut("users/{id:guid}/password")]
+    public async Task<IActionResult> SetPassword(Guid id, PasswordRequest request, [FromServices] IStaffAdmin staff, CancellationToken ct) =>
+        UserResult(await staff.SetPasswordAsync(id, request.Password, user.UserId, ct));
+
+    [HttpPut("users/{id:guid}/active")]
+    public async Task<IActionResult> SetActive(Guid id, ActiveRequest request, [FromServices] IStaffAdmin staff, CancellationToken ct) =>
+        UserResult(await staff.SetActiveAsync(id, request.Active, user.UserId, ct));
+
+    /// <summary>Moves students from one advisor to another and tells everyone involved.</summary>
+    [HttpPost("users/reassign")]
+    public async Task<IActionResult> Reassign(ReassignRequest request, [FromServices] IStaffAdmin staff, CancellationToken ct)
+    {
+        var (outcome, problem, result) = await staff.ReassignAsync(request, user.UserId, ct);
+        return outcome == UserAdminOutcome.Done ? Ok(result) : UserResult(new UserAdminResult(outcome, problem));
+    }
+
+    private IActionResult UserResult(UserAdminResult r) => r.Outcome switch
+    {
+        UserAdminOutcome.Done => r.User is null ? NoContent() : Ok(r.User),
+        UserAdminOutcome.NotFound => Problem(statusCode: StatusCodes.Status404NotFound, title: r.Problem ?? "There is no such staff account."),
+        UserAdminOutcome.Conflict => Problem(statusCode: StatusCodes.Status409Conflict, title: r.Problem),
+        _ => Problem(statusCode: StatusCodes.Status400BadRequest, title: r.Problem),
+    };
+
+    [HttpGet("settings/sso")]
+    public Task<SsoSettingsView> SsoSettings([FromServices] ISettingsService settings, CancellationToken ct) => settings.GetSsoAsync(ct);
+
+    [HttpPut("settings/sso")]
+    public async Task<IActionResult> SaveSsoSettings(SsoSettingsRequest request, [FromServices] ISettingsService settings, CancellationToken ct)
+    {
+        var (ok, problem) = await settings.SaveSsoAsync(request, user.UserId, ct);
+        return ok ? Ok(await settings.GetSsoAsync(ct)) : Problem(statusCode: StatusCodes.Status400BadRequest, title: problem);
+    }
+
+    [HttpPost("settings/sso/test")]
+    public Task<ConnectionTestResult> TestSso([FromServices] ISettingsService settings, CancellationToken ct) => settings.TestSsoAsync(ct);
+
+    [HttpGet("settings/ai")]
+    public Task<AiSettingsView> AiSettings([FromServices] ISettingsService settings, CancellationToken ct) => settings.GetAiAsync(ct);
+
+    [HttpPut("settings/ai")]
+    public async Task<IActionResult> SaveAiSettings(AiSettingsRequest request, [FromServices] ISettingsService settings, CancellationToken ct)
+    {
+        var (ok, problem) = await settings.SaveAiAsync(request, user.UserId, ct);
+        return ok ? Ok(await settings.GetAiAsync(ct)) : Problem(statusCode: StatusCodes.Status400BadRequest, title: problem);
+    }
+}
+
+/// <summary>Catalog version history: every saved import, edit and removal (admins and advisors).</summary>
+[ApiController]
+[Route("api/catalog")]
+[Authorize(Policy = Policies.Staff)]
+public sealed class CatalogVersionsController(IAdminCatalogService catalog) : ControllerBase
+{
+    [HttpGet("versions")]
+    public Task<IReadOnlyList<CatalogVersionView>> Versions([FromQuery] int take = 100, CancellationToken ct = default) => catalog.VersionsAsync(take, ct);
 }

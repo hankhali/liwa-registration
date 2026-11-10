@@ -45,6 +45,12 @@ public static class DependencyInjection
         services.AddScoped<IAdvisorService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<IPlanRevalidationService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<Notifier>();
+        services.AddSingleton<Security.SecretProtector>();
+        services.AddHttpClient("connection-test");
+        services.AddScoped<Application.Admin.IAdminCatalogService, Admin.AdminCatalogService>();
+        services.AddScoped<Application.Admin.ICreditPolicyAdmin, Admin.CreditPolicyAdmin>();
+        services.AddScoped<Application.Admin.IStaffAdmin, Admin.StaffAdmin>();
+        services.AddScoped<Application.Admin.ISettingsService, Admin.SettingsService>();
         services.AddScoped<StudentPreferencesService>();
         services.AddScoped<IStudentPreferencesService>(sp => sp.GetRequiredService<StudentPreferencesService>());
         services.AddScoped<IUserSettingsService>(sp => sp.GetRequiredService<StudentPreferencesService>());

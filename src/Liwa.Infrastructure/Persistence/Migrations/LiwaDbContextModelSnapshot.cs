@@ -581,6 +581,36 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                     b.ToTable("transfer_credits", (string)null);
                 });
 
+            modelBuilder.Entity("Liwa.Domain.Activity.AppSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("key");
+
+                    b.Property<bool>("IsSecret")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_secret");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by_user_id");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("value");
+
+                    b.HasKey("Key")
+                        .HasName("pk_app_settings");
+
+                    b.ToTable("app_settings", (string)null);
+                });
+
             modelBuilder.Entity("Liwa.Domain.Activity.AuditEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -630,6 +660,74 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_audit_log_entity_type_entity_id");
 
                     b.ToTable("audit_log", (string)null);
+                });
+
+            modelBuilder.Entity("Liwa.Domain.Activity.CatalogVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("ActorUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("actor_user_id");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("at");
+
+                    b.Property<int>("Created")
+                        .HasColumnType("integer")
+                        .HasColumnName("created");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)")
+                        .HasColumnName("file_name");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("kind");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer")
+                        .HasColumnName("number");
+
+                    b.Property<int>("Removed")
+                        .HasColumnType("integer")
+                        .HasColumnName("removed");
+
+                    b.Property<int>("RowsRead")
+                        .HasColumnType("integer")
+                        .HasColumnName("rows_read");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("source");
+
+                    b.Property<int>("Unchanged")
+                        .HasColumnType("integer")
+                        .HasColumnName("unchanged");
+
+                    b.Property<int>("Updated")
+                        .HasColumnType("integer")
+                        .HasColumnName("updated");
+
+                    b.HasKey("Id")
+                        .HasName("pk_catalog_versions");
+
+                    b.HasIndex("ActorUserId")
+                        .HasDatabaseName("ix_catalog_versions_actor_user_id");
+
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_catalog_versions_number");
+
+                    b.ToTable("catalog_versions", (string)null);
                 });
 
             modelBuilder.Entity("Liwa.Domain.Activity.Notification", b =>
@@ -1066,6 +1164,15 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_transfer_credits_student_records_student_record_id");
+                });
+
+            modelBuilder.Entity("Liwa.Domain.Activity.CatalogVersion", b =>
+                {
+                    b.HasOne("Liwa.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_catalog_versions_users_actor_user_id");
                 });
 
             modelBuilder.Entity("Liwa.Domain.Activity.Notification", b =>

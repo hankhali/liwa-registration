@@ -98,6 +98,12 @@ public sealed partial class ImportService
             }
 
             var isNew = existingPlan is null;
+            if (existingPlan is not null)
+            {
+                var keep = groups.Values.SelectMany(g => g.Courses.Select(c => Key(g.Key, c.CourseId))).ToHashSet();
+                report.Removed += existingPlan.Groups.SelectMany(g => g.Courses.Select(c => Key(g.Key, c.CourseId))).Count(k => !keep.Contains(k));
+            }
+
             var target = existingPlan ?? new DegreePlan(Guid.NewGuid(), program.Id, catalogYear);
             if (isNew) db.DegreePlans.Add(target);
             target.ClearGroups();
@@ -360,6 +366,8 @@ public sealed partial class ImportService
             if (before == after) { report.Unchanged++; continue; }
 
             var hadHistory = record.Transcript.Count + record.TransferCredits.Count > 0;
+            var newKeys = attempts.Select(a => Key(a.CourseId, a.TermCode)).ToHashSet();
+            report.Removed += record.Transcript.Count(t => !newKeys.Contains(Key(t.CourseId, t.TermCode)));
             record.ReplaceHistory(attempts, transfers);
             if (hadHistory) report.Updated++;
             else report.Created++;

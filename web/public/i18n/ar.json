@@ -573,7 +573,10 @@
       "rejected": "أعدت خطة {{ student }}.",
       "proposed": "اقترحت تعديلات على خطة {{ student }}.",
       "accepted": "قبلت تعديلات مرشدك. خطتك لفصل {{ term }} معتمدة."
-    }
+    },
+    "advisorChanged": "مرشدك الأكاديمي الآن هو {{ advisor }}.",
+    "adviseesAssigned": "انتقل إليك {{ n }} من طلاب {{ advisor }}.",
+    "adviseesMoved": "انتقل {{ n }} من طلابك إلى {{ advisor }}."
   },
   "planStatus": {
     "Draft": "مسودة",
