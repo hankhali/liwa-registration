@@ -36,6 +36,8 @@ public sealed class LiwaDbContext(DbContextOptions<LiwaDbContext> options) : DbC
 
     public DbSet<AppSetting> Settings => Set<AppSetting>();
 
+    public DbSet<AiRequestLog> AiRequests => Set<AiRequestLog>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LiwaDbContext).Assembly);

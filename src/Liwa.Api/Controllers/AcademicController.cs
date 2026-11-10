@@ -87,6 +87,18 @@ public sealed class StudentController(IAcademicQueries queries, IRecommendationS
         };
     }
 
+    /// <summary>
+    /// The AI explainer: "Explain my plan", "Why not this course?" and questions about the plan (what-if questions re-run
+    /// the planner). Available = false when no provider is configured; the app then shows "Not available".
+    /// </summary>
+    [HttpPost("explain")]
+    public async Task<IActionResult> Explain(Liwa.Application.Explainer.ExplainRequest request, [FromServices] Liwa.Application.Explainer.IExplainerService explainer, CancellationToken ct)
+    {
+        if (request.Question?.Length > 500) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Please keep the question shorter.");
+        if (request.Kind == Liwa.Application.Explainer.ExplainKind.DraftNote) return Forbid();
+        return Ok(await explainer.ExplainForStudentAsync(user.UserId, request, ct));
+    }
+
     /// <summary>Accepts the advisor's proposed changes; the plan becomes approved.</summary>
     [HttpPost("plan/accept")]
     public async Task<IActionResult> Accept(CancellationToken ct) => await plans.AcceptProposalAsync(user.UserId, ct) switch
@@ -186,6 +198,17 @@ public sealed class AdvisorController(IAdvisorService advisor, ICurrentUser user
         };
     }
 
+    /// <summary>
+    /// The explainer on the review page, run on the submitted plan; Kind = DraftNote drafts a note the advisor edits
+    /// before sending (never sent automatically).
+    /// </summary>
+    [HttpPost("plans/{planId:guid}/explain")]
+    public async Task<IActionResult> Explain(Guid planId, Liwa.Application.Explainer.ExplainRequest request, [FromServices] Liwa.Application.Explainer.IExplainerService explainer, CancellationToken ct)
+    {
+        if (request.Question?.Length > 500) return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Please keep the question shorter.");
+        return await explainer.ExplainForAdvisorAsync(user.UserId, planId, request, ct) is { } r ? Ok(r) : NotFound();
+    }
+
     /// <summary>Live check of the sections an advisor wants to propose.</summary>
     [HttpPost("plans/{planId:guid}/check")]
     public async Task<IActionResult> CheckProposal(Guid planId, ProposalCheckRequest request, CancellationToken ct) =>
@@ -221,6 +244,11 @@ public sealed class MeController(IUserSettingsService settings, IStudentPlanServ
 
     [HttpGet("settings")]
     public Task<UserSettingsView> Settings(CancellationToken ct) => settings.GetAsync(user.UserId, ct);
+
+    /// <summary>Whether the AI explainer is available (the app shows "Not available" otherwise).</summary>
+    [HttpGet("explainer")]
+    public async Task<object> Explainer([FromServices] Liwa.Application.Explainer.IExplainerService explainer, CancellationToken ct) =>
+        new { available = await explainer.AvailableAsync(ct) };
 
     /// <summary>The language for emails and other generated messages ("en" or "ar"); the app sets it when the user switches.</summary>
     [HttpPut("language")]
@@ -424,6 +452,19 @@ public sealed class AdminDataController(IAcademicQueries queries, IImportService
 
     [HttpPost("settings/sso/test")]
     public Task<ConnectionTestResult> TestSso([FromServices] ISettingsService settings, CancellationToken ct) => settings.TestSsoAsync(ct);
+
+    /// <summary>Calls the AI provider with a tiny prompt (no student data) to check the key, model and URL.</summary>
+    [HttpPost("settings/ai/test")]
+    public async Task<ConnectionTestResult> TestAi([FromServices] Liwa.Application.Explainer.IExplainerService explainer, CancellationToken ct)
+    {
+        var (ok, message) = await explainer.TestAsync(ct);
+        return new ConnectionTestResult(ok, message);
+    }
+
+    /// <summary>AI usage: requests per day, tokens, estimated cost, recent fallbacks and discarded replies (no content is stored).</summary>
+    [HttpGet("ai-usage")]
+    public Task<Liwa.Application.Explainer.AiUsageView> AiUsage([FromServices] Liwa.Application.Explainer.IExplainerService explainer, CancellationToken ct) =>
+        explainer.UsageAsync(ct);
 
     [HttpGet("settings/ai")]
     public Task<AiSettingsView> AiSettings([FromServices] ISettingsService settings, CancellationToken ct) => settings.GetAiAsync(ct);

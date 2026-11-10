@@ -1,3 +1,4 @@
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
 import { PlanCheck, PlanningView, Preferences } from '../../../core/planning/planning.models';
@@ -49,11 +50,14 @@ const fake: Partial<PlanningService> = {
 async function renderPlanner(lang: 'en' | 'ar' = 'en'): Promise<HTMLElement> {
   setupI18n(lang, [{ provide: PlanningService, useValue: fake }]);
   const f = TestBed.createComponent(StudentPlanComponent);
-  for (let i = 0; i < 6; i++) {
+  const http = TestBed.inject(HttpTestingController);
+  // No whenStable(): it would wait for the explainer's HTTP call. Flush it instead while the view settles.
+  for (let i = 0; i < 12; i++) {
     f.detectChanges();
-    await f.whenStable();
     await new Promise((r) => setTimeout(r, 0));
+    for (const r of http.match('/api/me/explainer')) r.flush({ available: false });
   }
+  f.detectChanges();
   return f.nativeElement as HTMLElement;
 }
 
@@ -80,6 +84,11 @@ describe('planner view (brief §9)', () => {
     expect(blocked.querySelector('summary')!.textContent).toContain('Not eligible this semester (2)');
     expect(blocked.textContent).toContain('Need to pass another course first (1)');
     expect(blocked.textContent).toContain('Not offered this semester (1)');
+  });
+
+  it('shows "Not available" when no AI assistant is configured', async () => {
+    const el = await renderPlanner();
+    expect(el.querySelector('app-explainer-panel')!.textContent).toContain('Not available');
   });
 
   it('renders in Arabic with Arabic titles and isolated course codes', async () => {

@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 97 · UI strings: 543
+- Programs: 3 · Courses: 97 · UI strings: 753
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -121,12 +121,59 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 
 | OK | Key | English | Arabic (draft) |
 |---|---|---|---|
+| [ ] | `admin.aiUsage.cache` | Answered from cache | أُجيب من الذاكرة المؤقتة |
+| [ ] | `admin.aiUsage.cost` | Estimated cost | التكلفة التقديرية |
+| [ ] | `admin.aiUsage.date` | Date | التاريخ |
+| [ ] | `admin.aiUsage.discards` | Replies discarded | ردود مستبعدة |
+| [ ] | `admin.aiUsage.error` | We couldn't load AI usage. | تعذّر تحميل بيانات الاستخدام. |
+| [ ] | `admin.aiUsage.fallbacks` | Fallbacks | الردود البديلة |
+| [ ] | `admin.aiUsage.heading` | AI usage | استخدام الذكاء الاصطناعي |
+| [ ] | `admin.aiUsage.in` | Tokens in | رموز الإدخال |
+| [ ] | `admin.aiUsage.kinds.Discard` | Discarded | مستبعد |
+| [ ] | `admin.aiUsage.kinds.Fallback` | Fallback | رد بديل |
+| [ ] | `admin.aiUsage.kinds.RateLimited` | Hourly limit | الحد الساعي |
+| [ ] | `admin.aiUsage.none` | No questions yet. | لا توجد أسئلة بعد. |
+| [ ] | `admin.aiUsage.off` | The assistant is off. | المساعد متوقف. |
+| [ ] | `admin.aiUsage.on` | The assistant is on ({{ provider }}, {{ model }}). | المساعد مفعّل ({{ provider }}، {{ model }}). |
+| [ ] | `admin.aiUsage.out` | Tokens out | رموز الإخراج |
+| [ ] | `admin.aiUsage.recent` | Recent fallbacks and discards | أحدث الردود البديلة والمستبعدة |
+| [ ] | `admin.aiUsage.requests` | Questions | الأسئلة |
+| [ ] | `admin.aiUsage.subtitle` | Questions answered per day, tokens used, estimated cost, and replies that were replaced by the safe fallback. | الأسئلة المجاب عنها يوميًا، والرموز المستخدمة، والتكلفة التقديرية، والردود التي استُبدلت بالرد الآمن. |
+| [ ] | `admin.aiUsage.tokens` | Tokens | الرموز |
+| [ ] | `admin.catalog.actions` | Actions | الإجراءات |
+| [ ] | `admin.catalog.add` | Add | إضافة |
+| [ ] | `admin.catalog.addRow` | Add a row | إضافة صف |
+| [ ] | `admin.catalog.count` | {{ n }} rows | {{ n }} صفًا |
+| [ ] | `admin.catalog.edit` | Edit | تعديل |
+| [ ] | `admin.catalog.editPlan` | Edit degree plan | تعديل الخطة الدراسية |
+| [ ] | `admin.catalog.editRow` | Edit row | تعديل صف |
+| [ ] | `admin.catalog.heading` | Catalog | الدليل الأكاديمي |
+| [ ] | `admin.catalog.loadError` | We couldn't load this table. Please refresh the page. | تعذّر تحميل هذا الجدول. يُرجى تحديث الصفحة. |
+| [ ] | `admin.catalog.next` | Next | التالي |
+| [ ] | `admin.catalog.none` | no prerequisites | لا توجد متطلبات سابقة |
+| [ ] | `admin.catalog.planHint` | A degree plan is saved as a whole: every row below replaces the plan for this program and catalog year. | تُحفظ الخطة الدراسية كاملة: تحلّ الصفوف أدناه محل خطة هذا البرنامج وهذه السنة الأكاديمية. |
+| [ ] | `admin.catalog.prereqOk` | Rule is fine: {{ rule }} | القاعدة سليمة: {{ rule }} |
+| [ ] | `admin.catalog.prev` | Previous | السابق |
+| [ ] | `admin.catalog.preview` | Preview | معاينة |
+| [ ] | `admin.catalog.removeBody` | This can't be undone. It is refused while any student still follows this plan. | لا يمكن التراجع عن ذلك. يُرفض الحذف ما دام أي طالب يتبع هذه الخطة. |
+| [ ] | `admin.catalog.removeFailed` | The plan couldn't be removed. | تعذّر حذف الخطة. |
+| [ ] | `admin.catalog.removePlan` | Remove plan | حذف الخطة |
+| [ ] | `admin.catalog.removeRow` | Remove this row | حذف هذا الصف |
+| [ ] | `admin.catalog.removeTitle` | Remove the {{ program }} {{ year }} degree plan? | حذف الخطة الدراسية {{ program }} {{ year }}؟ |
+| [ ] | `admin.catalog.removed` | The {{ program }} {{ year }} degree plan was removed. | حُذفت الخطة الدراسية {{ program }} {{ year }}. |
+| [ ] | `admin.catalog.row` | Row {{ n }} | الصف {{ n }} |
+| [ ] | `admin.catalog.save` | Save | حفظ |
+| [ ] | `admin.catalog.search` | Search | بحث |
+| [ ] | `admin.catalog.subtitle` | Courses, degree plans, programs, semesters and class times. Every change is checked like an uploaded file. | المقررات والخطط الدراسية والبرامج والفصول الدراسية وأوقات المحاضرات. يُفحص كل تغيير كما يُفحص الملف المرفوع. |
 | [ ] | `admin.home.allGood` | Everything is working normally. | كل شيء يعمل بشكل طبيعي. |
+| [ ] | `admin.home.areas.aiUsage` | How much the AI assistant is used | مدى استخدام المساعد الذكي |
 | [ ] | `admin.home.areas.catalog` | Courses and class times | المواد ومواعيد المحاضرات |
 | [ ] | `admin.home.areas.creditPolicy` | How many credits students can take | عدد الساعات المعتمدة المسموح بها للطالب |
 | [ ] | `admin.home.areas.degreePlans` | Study plans for each major | الخطة الدراسية لكل تخصص |
 | [ ] | `admin.home.areas.imports` | Upload and download data (spreadsheets) | رفع البيانات وتنزيلها (جداول البيانات) |
+| [ ] | `admin.home.areas.settings` | University sign-in and the AI assistant | تسجيل الدخول الجامعي والمساعد الذكي |
 | [ ] | `admin.home.areas.terms` | Semesters and teaching days | الفصول الدراسية وأيام التدريس |
+| [ ] | `admin.home.areas.users` | Staff accounts and advisor assignments | حسابات الموظفين وتوزيع المرشدين |
 | [ ] | `admin.home.data.advisors` | Advisors | المرشدون |
 | [ ] | `admin.home.data.courses` | Courses | المواد |
 | [ ] | `admin.home.data.currentTerm` | Current term | الفصل الحالي |
@@ -156,6 +203,141 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `admin.home.title` | Administration | الإدارة |
 | [ ] | `admin.home.unhealthy` | Not reachable | غير متاحة |
 | [ ] | `admin.home.version` | Version | الإصدار |
+| [ ] | `admin.imports.apply` | Apply | طبّق |
+| [ ] | `admin.imports.check` | Check | افحص |
+| [ ] | `admin.imports.chooseFile` | Choose a CSV file… | اختر ملف CSV… |
+| [ ] | `admin.imports.exports` | Download data | تنزيل البيانات |
+| [ ] | `admin.imports.exportsHint` | Files are in the same format as uploads: downloading and uploading again changes nothing. | الملفات بتنسيق الرفع نفسه: تنزيلها ثم رفعها مرة أخرى لا يغيّر شيئًا. |
+| [ ] | `admin.imports.failed` | The upload didn't work. Please try again. | لم ينجح الرفع. يُرجى المحاولة مرة أخرى. |
+| [ ] | `admin.imports.heading` | Imports & exports | الاستيراد والتصدير |
+| [ ] | `admin.imports.kind` | What's in the file | محتوى الملف |
+| [ ] | `admin.imports.order` | Load files in this order: semesters, courses, programs, degree plans, class times, students, transcripts. Students missing from a file are never deleted. Format: docs/import-contract.md. | حمّل الملفات بهذا الترتيب: الفصول الدراسية، المقررات، البرامج، الخطط الدراسية، أوقات المحاضرات، الطلاب، السجلات الأكاديمية. لا يُحذف أي طالب غير موجود في الملف. التنسيق: docs/import-contract.md. |
+| [ ] | `admin.imports.step1` | Choose what the file contains and pick the file. | اختر محتوى الملف واختر الملف. |
+| [ ] | `admin.imports.step2` | Check it: you'll see what would be added, changed, unchanged or removed, and every problem by line. | افحصه: سترى ما سيُضاف أو يتغيّر أو يبقى كما هو أو يُحذف، وكل مشكلة حسب السطر. |
+| [ ] | `admin.imports.step3` | Apply it. If there is any error, nothing is saved. | طبّقه. إذا وُجد أي خطأ فلن يُحفظ شيء. |
+| [ ] | `admin.imports.subtitle` | Load data from spreadsheet files (CSV), check them first, and download everything back. | حمّل البيانات من ملفات جداول (CSV)، وافحصها أولًا، ونزّل كل شيء مرة أخرى. |
+| [ ] | `admin.imports.upload` | Upload a file | رفع ملف |
+| [ ] | `admin.imports.zip` | Everything (zip) | كل شيء (ملف مضغوط) |
+| [ ] | `admin.kinds.courses` | Courses | المقررات |
+| [ ] | `admin.kinds.degree-plans` | Degree plans | الخطط الدراسية |
+| [ ] | `admin.kinds.programs` | Programs | البرامج |
+| [ ] | `admin.kinds.sections` | Class times | أوقات المحاضرات |
+| [ ] | `admin.kinds.students` | Students | الطلاب |
+| [ ] | `admin.kinds.terms` | Semesters | الفصول الدراسية |
+| [ ] | `admin.kinds.transcripts` | Transcripts | السجلات الأكاديمية |
+| [ ] | `admin.report.Error` | Error: | خطأ: |
+| [ ] | `admin.report.Warning` | Note: | ملاحظة: |
+| [ ] | `admin.report.column` | Column | العمود |
+| [ ] | `admin.report.created` | Added | أُضيف |
+| [ ] | `admin.report.issues` | Problems in the file | المشكلات في الملف |
+| [ ] | `admin.report.line` | Line | السطر |
+| [ ] | `admin.report.preview` | Preview only: this is what would happen. Nothing is saved yet. | معاينة فقط: هذا ما سيحدث. لم يُحفظ شيء بعد. |
+| [ ] | `admin.report.problem` | What's wrong | ما الخطأ |
+| [ ] | `admin.report.rejected` | Nothing was saved: {{ n }} problems to fix (the whole file is rejected). | لم يُحفظ شيء: هناك {{ n }} مشكلات يجب إصلاحها (يُرفض الملف كاملًا). |
+| [ ] | `admin.report.removed` | Removed | حُذف |
+| [ ] | `admin.report.rows` | Rows read | الصفوف المقروءة |
+| [ ] | `admin.report.saved` | Saved as catalog version {{ v }}. | حُفظ بوصفه النسخة {{ v }} من الدليل. |
+| [ ] | `admin.report.savedNoChange` | Checked: nothing needed to change. | تم الفحص: لا يلزم أي تغيير. |
+| [ ] | `admin.report.unchanged` | Unchanged | دون تغيير |
+| [ ] | `admin.report.updated` | Changed | تغيّر |
+| [ ] | `admin.settings.ai.baseUrl` | Base URL (optional) | العنوان الأساسي (اختياري) |
+| [ ] | `admin.settings.ai.enabled` | Switch on the AI assistant | تفعيل المساعد الذكي |
+| [ ] | `admin.settings.ai.heading` | AI assistant | المساعد الذكي |
+| [ ] | `admin.settings.ai.hint` | Explains plans in plain words. It never decides anything: the planner does. Without a key, students see "Not available" and nothing else changes. | يشرح الخطط بكلمات بسيطة. لا يقرر شيئًا أبدًا: المخطِّط هو من يقرر. دون مفتاح يرى الطلاب "غير متاح" ولا يتغير شيء آخر. |
+| [ ] | `admin.settings.ai.key` | API key | مفتاح الواجهة |
+| [ ] | `admin.settings.ai.limit` | Questions per person per hour | عدد الأسئلة لكل شخص في الساعة |
+| [ ] | `admin.settings.ai.mock` | Mock (demos on a development machine only) | تجريبي (للعروض على جهاز تطوير فقط) |
+| [ ] | `admin.settings.ai.model` | Model | النموذج |
+| [ ] | `admin.settings.ai.openai` | OpenAI-compatible endpoint | واجهة متوافقة مع OpenAI |
+| [ ] | `admin.settings.ai.provider` | Provider | مزوّد الخدمة |
+| [ ] | `admin.settings.ai.timeout` | Timeout (seconds) | المهلة (ثوانٍ) |
+| [ ] | `admin.settings.credit.add` | Add a rule | إضافة قاعدة |
+| [ ] | `admin.settings.credit.any` | Any | أي |
+| [ ] | `admin.settings.credit.changes` | {{ n }} of {{ total }} students would get different limits for {{ term }}: | ستتغير حدود {{ n }} من {{ total }} طالبًا لفصل {{ term }}: |
+| [ ] | `admin.settings.credit.down` | Move down | تحريك للأسفل |
+| [ ] | `admin.settings.credit.exempt` | Students close to graduating aren't held to the minimum | لا يُلزم الطلاب القريبون من التخرج بالحد الأدنى |
+| [ ] | `admin.settings.credit.heading` | Credit rules | قواعد الساعات المعتمدة |
+| [ ] | `admin.settings.credit.highest` | The highest grade counts | تُحتسب أعلى درجة |
+| [ ] | `admin.settings.credit.hint` | The first rule that matches a student applies. Test the rules to see every student whose limits would change before you save. | تُطبَّق أول قاعدة تنطبق على الطالب. اختبر القواعد لترى كل طالب ستتغير حدوده قبل الحفظ. |
+| [ ] | `admin.settings.credit.inProgress` | Courses in progress count as prerequisites (with a warning) | تُحتسب المقررات الجارية متطلبًا سابقًا (مع تنبيه) |
+| [ ] | `admin.settings.credit.latest` | The latest grade counts | تُحتسب آخر درجة |
+| [ ] | `admin.settings.credit.max` | Max credits | أعلى ساعات |
+| [ ] | `admin.settings.credit.maxGpa` | GPA below | المعدل أقل من |
+| [ ] | `admin.settings.credit.min` | Min credits | أدنى ساعات |
+| [ ] | `admin.settings.credit.minGpa` | GPA from | المعدل من |
+| [ ] | `admin.settings.credit.name` | Rule | القاعدة |
+| [ ] | `admin.settings.credit.no` | No | لا |
+| [ ] | `admin.settings.credit.noChanges` | No student's limits change for {{ term }} ({{ n }} students checked). | لن تتغير حدود أي طالب لفصل {{ term }} (فُحص {{ n }} طالبًا). |
+| [ ] | `admin.settings.credit.probation` | Probation | الإنذار |
+| [ ] | `admin.settings.credit.repeat` | Repeated courses | المقررات المعادة |
+| [ ] | `admin.settings.credit.saved` | Credit rules saved. | حُفظت قواعد الساعات المعتمدة. |
+| [ ] | `admin.settings.credit.season` | Semester | الفصل |
+| [ ] | `admin.settings.credit.standing` | Year | السنة |
+| [ ] | `admin.settings.credit.test` | Test the rules | اختبار القواعد |
+| [ ] | `admin.settings.credit.up` | Move up | تحريك للأعلى |
+| [ ] | `admin.settings.credit.yes` | Yes | نعم |
+| [ ] | `admin.settings.failed` | That didn't work. Please check and try again. | لم ينجح ذلك. يُرجى التحقق والمحاولة مرة أخرى. |
+| [ ] | `admin.settings.heading` | Settings | الإعدادات |
+| [ ] | `admin.settings.notStored` | Not saved yet | غير محفوظ بعد |
+| [ ] | `admin.settings.off` | off | متوقف |
+| [ ] | `admin.settings.on` | on | مفعّل |
+| [ ] | `admin.settings.save` | Save | حفظ |
+| [ ] | `admin.settings.saved` | Saved. | تم الحفظ. |
+| [ ] | `admin.settings.sso.client` | Client (application) ID | معرّف التطبيق |
+| [ ] | `admin.settings.sso.confirm` | I understand | أفهم ذلك |
+| [ ] | `admin.settings.sso.enabled` | Offer "Sign in with your Liwa account" | إتاحة "تسجيل الدخول بحسابك في ليوا" |
+| [ ] | `admin.settings.sso.heading` | University sign-in (Microsoft Entra ID) | تسجيل الدخول الجامعي (Microsoft Entra ID) |
+| [ ] | `admin.settings.sso.lastOk` | Last successful test: {{ when }}. | آخر اختبار ناجح: {{ when }}. |
+| [ ] | `admin.settings.sso.local` | Keep username and password sign-in | الإبقاء على تسجيل الدخول باسم المستخدم وكلمة المرور |
+| [ ] | `admin.settings.sso.now` | Right now: university sign-in is {{ sso }}, username and password sign-in is {{ local }}. | الآن: تسجيل الدخول الجامعي {{ sso }}، وتسجيل الدخول باسم المستخدم وكلمة المرور {{ local }}. |
+| [ ] | `admin.settings.sso.restart` | Sign-in changes apply when the service restarts, so nobody is signed out in the middle of their work. | تُطبَّق تغييرات تسجيل الدخول عند إعادة تشغيل الخدمة، حتى لا يُخرَج أحد أثناء عمله. |
+| [ ] | `admin.settings.sso.secret` | Client secret | سر التطبيق |
+| [ ] | `admin.settings.sso.ssoOnlyWarning` | Everyone, including administrators, will have to sign in with their university account. Only do this after testing. | سيتعين على الجميع، بمن فيهم المسؤولون، تسجيل الدخول بحسابهم الجامعي. لا تفعل ذلك إلا بعد الاختبار. |
+| [ ] | `admin.settings.sso.tenant` | Tenant ID | معرّف المستأجر |
+| [ ] | `admin.settings.stored` | Saved: {{ last }} | محفوظ: {{ last }} |
+| [ ] | `admin.settings.subtitle` | University sign-in, the AI assistant and credit rules. | تسجيل الدخول الجامعي والمساعد الذكي وقواعد الساعات المعتمدة. |
+| [ ] | `admin.settings.test` | Test connection | اختبار الاتصال |
+| [ ] | `admin.users.activated` | {{ name }}'s account is on. | حساب {{ name }} مفعّل. |
+| [ ] | `admin.users.active` | Account on | الحساب مفعّل |
+| [ ] | `admin.users.advisees` | Students | الطلاب |
+| [ ] | `admin.users.create` | Create account | إنشاء الحساب |
+| [ ] | `admin.users.created` | Account created for {{ name }}. | أُنشئ حساب {{ name }}. |
+| [ ] | `admin.users.deactivated` | {{ name }}'s account is switched off. | أُوقف حساب {{ name }}. |
+| [ ] | `admin.users.email` | University email | البريد الجامعي |
+| [ ] | `admin.users.failed` | That didn't work. Please check and try again. | لم ينجح ذلك. يُرجى التحقق والمحاولة مرة أخرى. |
+| [ ] | `admin.users.from` | From advisor | من المرشد |
+| [ ] | `admin.users.heading` | Users | المستخدمون |
+| [ ] | `admin.users.lastSignIn` | Last sign-in | آخر تسجيل دخول |
+| [ ] | `admin.users.move` | Move students | نقل الطلاب |
+| [ ] | `admin.users.moved` | {{ n }} students moved. Everyone involved has been told. | نُقل {{ n }} طلاب. أُبلغ جميع المعنيين. |
+| [ ] | `admin.users.name` | Name | الاسم |
+| [ ] | `admin.users.never` | Never | أبدًا |
+| [ ] | `admin.users.new` | Add a staff account | إضافة حساب موظف |
+| [ ] | `admin.users.newPassword` | New password | كلمة مرور جديدة |
+| [ ] | `admin.users.password` | Password | كلمة المرور |
+| [ ] | `admin.users.passwordHint` | At least 10 characters | 10 أحرف على الأقل |
+| [ ] | `admin.users.passwordSet` | New password set for {{ name }}. | عُيّنت كلمة مرور جديدة لـ {{ name }}. |
+| [ ] | `admin.users.reassign` | Move students to another advisor | نقل طلاب إلى مرشد آخر |
+| [ ] | `admin.users.reassignHint` | The students, the old advisor and the new advisor are all told. | يُبلَّغ الطلاب والمرشد السابق والمرشد الجديد جميعًا. |
+| [ ] | `admin.users.reset` | Set a new password | تعيين كلمة مرور جديدة |
+| [ ] | `admin.users.role` | Role | الدور |
+| [ ] | `admin.users.set` | Set | تعيين |
+| [ ] | `admin.users.subtitle` | Advisor and administrator accounts. Students come from the student import and sign in with their university account. | حسابات المرشدين والمسؤولين. يأتي الطلاب من استيراد الطلاب ويسجلون الدخول بحسابهم الجامعي. |
+| [ ] | `admin.users.to` | To advisor | إلى المرشد |
+| [ ] | `admin.users.which` | Student IDs (optional) | أرقام الطلاب (اختياري) |
+| [ ] | `admin.users.whichHint` | Leave empty to move all of the advisor's students | اتركه فارغًا لنقل جميع طلاب المرشد |
+| [ ] | `admin.versions.changes` | Changes | التغييرات |
+| [ ] | `admin.versions.counts` | {{ created }} added, {{ updated }} changed, {{ removed }} removed | أُضيف {{ created }}، تغيّر {{ updated }}، حُذف {{ removed }} |
+| [ ] | `admin.versions.heading` | Data changes | تغييرات البيانات |
+| [ ] | `admin.versions.source` | How | كيف |
+| [ ] | `admin.versions.sources.Edit` | Edited on screen | تعديل على الشاشة |
+| [ ] | `admin.versions.sources.Removal` | Removed | حذف |
+| [ ] | `admin.versions.sources.Seed` | Demo data | بيانات تجريبية |
+| [ ] | `admin.versions.sources.Upload` | File upload | رفع ملف |
+| [ ] | `admin.versions.subtitle` | Every saved upload, edit and removal of catalog or student data, newest first. | كل رفع أو تعديل أو حذف محفوظ لبيانات الدليل أو الطلاب، الأحدث أولًا. |
+| [ ] | `admin.versions.what` | What | ماذا |
+| [ ] | `admin.versions.when` | When | متى |
+| [ ] | `admin.versions.who` | Who | من |
 | [ ] | `advisor.advisees.cols.activity` | Last activity | آخر نشاط |
 | [ ] | `advisor.advisees.cols.credits` | Credits | الساعات |
 | [ ] | `advisor.advisees.cols.gpa` | GPA | المعدل |
@@ -320,6 +502,25 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `errors.notFound.body` | The link may be old or mistyped. | ربما يكون الرابط قديماً أو مكتوباً بشكل خاطئ. |
 | [ ] | `errors.notFound.heading` | We couldn't find that page | لم نعثر على هذه الصفحة |
 | [ ] | `errors.notFound.title` | Page not found | الصفحة غير موجودة |
+| [ ] | `explainer.ask` | Ask | اسأل |
+| [ ] | `explainer.disclaimer` | Written by an AI assistant from the planner's results. Check anything important with your advisor. | كتبها مساعد ذكي اعتمادًا على نتائج المخطِّط. تحقق من أي أمر مهم مع مرشدك. |
+| [ ] | `explainer.draftNote` | Draft a note to the student | مسودة ملاحظة للطالب |
+| [ ] | `explainer.earlier` | That is {{ n }} semester(s) earlier. | أي مبكرًا {{ n }} فصل دراسي. |
+| [ ] | `explainer.error` | The assistant couldn't answer right now. Please try again. | لم يتمكن المساعد من الإجابة الآن. يُرجى المحاولة مرة أخرى. |
+| [ ] | `explainer.explainPlan` | Explain my plan | اشرح خطتي |
+| [ ] | `explainer.facts` | The planner's own figures: | أرقام المخطِّط نفسه: |
+| [ ] | `explainer.factsChange` | Graduation without summer: {{ before }} now, {{ after }} after this change. | التخرج دون الفصل الصيفي: {{ before }} الآن، و{{ after }} بعد هذا التغيير. |
+| [ ] | `explainer.factsSummer` | With summer classes you could graduate in {{ with }}; without them in {{ without }}. | مع الفصل الصيفي يمكنك التخرج في {{ with }}؛ ودونه في {{ without }}. |
+| [ ] | `explainer.heading` | Ask about your plan | اسأل عن خطتك |
+| [ ] | `explainer.intro` | The assistant explains the plan in plain words. It can't change anything: the planner decides, and your advisor approves. | يشرح المساعد الخطة بكلمات بسيطة. لا يستطيع تغيير أي شيء: المخطِّط هو من يقرر، ومرشدك هو من يعتمد. |
+| [ ] | `explainer.later` | That is {{ n }} semester(s) later. | أي متأخرًا {{ n }} فصل دراسي. |
+| [ ] | `explainer.notAvailable` | Not available | غير متاح |
+| [ ] | `explainer.placeholder` | e.g. What if I skip summer? Why can't I take ITC301? | مثلًا: ماذا لو لم أدرس في الصيف؟ لماذا لا يمكنني أخذ ITC301؟ |
+| [ ] | `explainer.questionLabel` | Your question about this plan | سؤالك عن هذه الخطة |
+| [ ] | `explainer.same` | Graduation stays the same. | يبقى موعد التخرج كما هو. |
+| [ ] | `explainer.thinking` | Thinking… | جارٍ التفكير… |
+| [ ] | `explainer.useNote` | Put this in my note to edit | ضعها في ملاحظتي لأعدّلها |
+| [ ] | `explainer.whyNot` | Why? | لماذا؟ |
 | [ ] | `graduation.both` | With your selection you graduate in {{ mine }}; with the recommended plan in {{ rec }}. | باختيارك تتخرج في {{ mine }}؛ وبالخطة المقترحة في {{ rec }}. |
 | [ ] | `graduation.columns` | Semesters until graduation | الفصول الدراسية حتى التخرج |
 | [ ] | `graduation.compare` | Which plan to show | أي خطة تُعرض |
@@ -406,13 +607,22 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `myPlan.toPlanner` | Go to the planner | انتقل إلى الخطة |
 | [ ] | `myPlan.version` | version {{ n }} | النسخة {{ n }} |
 | [ ] | `nav.advisees` | My students | طلابي |
+| [ ] | `nav.aiUsage` | AI usage | استخدام الذكاء الاصطناعي |
 | [ ] | `nav.availability` | Availability | أوقات الفراغ |
+| [ ] | `nav.catalog` | Catalog | الدليل الأكاديمي |
 | [ ] | `nav.graduation` | Graduation Path | مسار التخرج |
 | [ ] | `nav.home` | Home | الرئيسية |
+| [ ] | `nav.imports` | Imports & exports | الاستيراد والتصدير |
 | [ ] | `nav.messages` | Messages | الرسائل |
 | [ ] | `nav.myPlan` | My Plan | خطتي |
 | [ ] | `nav.planner` | Planner | الخطة |
 | [ ] | `nav.queue` | Plans to review | خطط للمراجعة |
+| [ ] | `nav.settings` | Settings | الإعدادات |
+| [ ] | `nav.users` | Users | المستخدمون |
+| [ ] | `nav.versions` | Data changes | تغييرات البيانات |
+| [ ] | `notifications.adviseesAssigned` | {{ n }} students moved to you from {{ advisor }}. | انتقل إليك {{ n }} من طلاب {{ advisor }}. |
+| [ ] | `notifications.adviseesMoved` | {{ n }} of your students moved to {{ advisor }}. | انتقل {{ n }} من طلابك إلى {{ advisor }}. |
+| [ ] | `notifications.advisorChanged` | Your academic advisor is now {{ advisor }}. | مرشدك الأكاديمي الآن هو {{ advisor }}. |
 | [ ] | `notifications.planAccepted` | {{ student }} accepted your suggested changes for {{ term }}. | قبل {{ student }} التعديلات المقترحة لفصل {{ term }}. |
 | [ ] | `notifications.planApproved` | {{ advisor }} approved your plan. | اعتمد {{ advisor }} خطتك. |
 | [ ] | `notifications.planChangesProposed` | {{ advisor }} suggested changes to your plan. | اقترح {{ advisor }} تعديلات على خطتك. |

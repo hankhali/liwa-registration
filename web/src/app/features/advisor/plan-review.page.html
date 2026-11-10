@@ -193,6 +193,9 @@
     </aside>
   </div>
 
+  <!-- AI explainer on the submitted plan; the draft note goes into the note box to edit, never sent automatically. -->
+  <app-explainer-panel [planId]="r.planId" (useNote)="note.set($event)" />
+
   <!-- Propose changes -->
   @if (mode() === 'propose') {
     <section class="proposal" aria-labelledby="proposal-h">

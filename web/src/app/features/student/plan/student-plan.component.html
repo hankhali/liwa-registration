@@ -290,6 +290,7 @@
                   @if (c.reasons[0]) {
                     <span class="liwa-muted">— {{ c.reasons[0] | reasonText }}</span>
                   }
+                  <button mat-button type="button" class="why-button" (click)="explainer.whyNot(c.courseCode)">{{ 'explainer.whyNot' | transloco }}</button>
                 </li>
               }
             </ul>
@@ -297,5 +298,7 @@
         }
       </details>
     }
+
+    <app-explainer-panel #explainer [sectionIds]="selectedIds()" />
   }
 </section>

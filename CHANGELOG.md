@@ -2,6 +2,17 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## M7: AI explainer and Arabic completion (2026-11-10)
+
+### Added
+- **"Ask about your plan"** on the Planner page: **Explain my plan** (4–6 plain sentences), **Why?** next to every not-eligible course, and a question box limited to the plan. On the advisor's review page the same explainer runs on the submitted plan, plus **Draft a note to the student**, which goes into the advisor's note box to edit and is never sent automatically. See [docs/explainer.md](docs/explainer.md).
+- **Grounding enforced in code** (`ExplainerGuard`): the payload is built only from planner output and the catalog entries of the courses in it, and is refused if it contains a name, ID or email; questions are stripped of those first; replies that name an unknown course, contradict the planner or are in the wrong language are discarded and replaced by "I can't explain that part — ask your advisor"; every discard is logged.
+- **What-if questions re-run the pure planner** (drop / add / summer / why), recognised by rules in English and Arabic, otherwise classified by one model call that the code checks; the model explains only the difference and the planner's own figures are shown under the answer. Anything the planner can't compute is declined.
+- Providers: Anthropic Messages API (default `claude-sonnet-5-5`), OpenAI-compatible endpoints, and a mock for demos that only runs in Development (any other environment refuses to start with it). 20-second timeout, one retry, then the fallback; 30-minute cache of identical plan + question pairs; per-person hourly limit; **Test connection** in Settings; the **AI usage** page fills in (requests, tokens, estimated cost, cache hits, fallbacks, discards). The log stores counts and reasons, never content. Migration `AiRequests`.
+- **Arabic completion:** every reason and warning code has an English and an Arabic sentence (a test fails if one is missing, or if both files don't have exactly the same keys); Arabic course titles for all 97 courses; [translations/REVIEW.md](translations/REVIEW.md) lists every machine-drafted Arabic string for native review.
+- API: `POST /api/students/me/explain`, `POST /api/advisor/plans/{id}/explain`, `GET /api/me/explainer`, `POST /api/admin/settings/ai/test`, `GET /api/admin/ai-usage`.
+- Tests: 21 unit tests for the grounding rules and question parsing; 9 integration tests with a scripted model (not available without a provider, no personal data sent, discarded reply, timeout → retry → fallback, cache, what-if re-run, declined question, hourly limit, advisor draft note). Totals: 218 unit, 95 integration, 63 frontend.
+
 ## M6: administration (2026-11-10)
 
 ### Added

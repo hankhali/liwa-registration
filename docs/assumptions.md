@@ -103,6 +103,16 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | S15 | Digits are Western (0–9) in both languages. `UI_ARABIC_DIGITS=true` switches the Arabic UI to Arabic-Indic digits. Dates are Gregorian with Arabic month names. | Brief §4. | Student Affairs | Open |
 | S16 | Demo credentials are listed on the sign-in page **only** when the API runs in Development with the demo seed on (`GET /api/auth/demo-accounts` is 404 otherwise). | Brief §4. | — | Decided |
 
+## AI explainer (M7)
+
+| # | Assumption / decision | Why | Confirm with | Status |
+|---|---|---|---|---|
+| X1 | The explainer is **off** until an administrator enters a provider and key (Settings → AI assistant). Without it the panel says "Not available". | Brief §12: fully optional. | University IT | Decided |
+| X2 | Only course codes, titles, credits, the planner's reason codes, limits and graduation terms are sent. No name, ID, email, GPA, grades, probation or hold wording. | Brief §12/§13: no PII to external services. | University IT (security) / Data protection | Open |
+| X3 | Default limits: 20 questions per person per hour, 20-second timeout, one retry, 30-minute cache. Cost estimate uses 3 / 15 USD per million input / output tokens (configurable). | Reasonable starting values. | University IT | Open |
+| X4 | "Contradiction" checks are deliberately simple: a not-eligible course described as takeable in the same sentence (without "if", "once", "after", "not"), or a graduation term the projection doesn't contain. When in doubt the reply is discarded, not shown. | Safer to fall back than to mislead. | — | Decided |
+| X5 | Advisor draft notes are written in the language the advisor's screen is in; the advisor edits them before sending. | Brief §12. | Academic advisors | Open |
+
 ## Advisor portal (M5)
 
 | # | Assumption / decision | Why | Confirm with | Status |

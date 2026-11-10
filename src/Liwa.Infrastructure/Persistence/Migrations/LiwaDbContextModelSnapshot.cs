@@ -581,6 +581,57 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                     b.ToTable("transfer_credits", (string)null);
                 });
 
+            modelBuilder.Entity("Liwa.Domain.Activity.AiRequestLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("at");
+
+                    b.Property<int>("InputTokens")
+                        .HasColumnType("integer")
+                        .HasColumnName("input_tokens");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("outcome");
+
+                    b.Property<int>("OutputTokens")
+                        .HasColumnType("integer")
+                        .HasColumnName("output_tokens");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("reason");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_ai_requests");
+
+                    b.HasIndex("At")
+                        .HasDatabaseName("ix_ai_requests_at");
+
+                    b.HasIndex("UserId", "At")
+                        .HasDatabaseName("ix_ai_requests_user_id_at");
+
+                    b.ToTable("ai_requests", (string)null);
+                });
+
             modelBuilder.Entity("Liwa.Domain.Activity.AppSetting", b =>
                 {
                     b.Property<string>("Key")

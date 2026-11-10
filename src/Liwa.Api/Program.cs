@@ -17,6 +17,7 @@ var app = builder.Build();
 app.UseLiwaApi();
 
 await app.Services.InitializeDatabaseAsync();
+await app.Services.EnsureAiProviderAllowedAsync();
 await app.RunAsync();
 
 /// <summary>Exposed for WebApplicationFactory in integration tests.</summary>

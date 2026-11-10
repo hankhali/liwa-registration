@@ -924,5 +924,26 @@
     "notes": "Notes from your advisor",
     "proposed": "{{ advisor }} suggested these changes",
     "changeInstead": "Change the plan myself instead"
+  },
+  "explainer": {
+    "heading": "Ask about your plan",
+    "intro": "The assistant explains the plan in plain words. It can't change anything: the planner decides, and your advisor approves.",
+    "notAvailable": "Not available",
+    "explainPlan": "Explain my plan",
+    "draftNote": "Draft a note to the student",
+    "questionLabel": "Your question about this plan",
+    "placeholder": "e.g. What if I skip summer? Why can't I take ITC301?",
+    "ask": "Ask",
+    "thinking": "Thinking…",
+    "facts": "The planner's own figures:",
+    "factsSummer": "With summer classes you could graduate in {{ with }}; without them in {{ without }}.",
+    "factsChange": "Graduation without summer: {{ before }} now, {{ after }} after this change.",
+    "later": "That is {{ n }} semester(s) later.",
+    "earlier": "That is {{ n }} semester(s) earlier.",
+    "same": "Graduation stays the same.",
+    "useNote": "Put this in my note to edit",
+    "disclaimer": "Written by an AI assistant from the planner's results. Check anything important with your advisor.",
+    "whyNot": "Why?",
+    "error": "The assistant couldn't answer right now. Please try again."
   }
 }

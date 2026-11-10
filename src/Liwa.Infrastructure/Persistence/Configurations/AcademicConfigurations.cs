@@ -314,3 +314,18 @@ internal sealed class AppSettingConfiguration : IEntityTypeConfiguration<AppSett
         b.Property(s => s.Value).HasMaxLength(4000);
     }
 }
+
+internal sealed class AiRequestLogConfiguration : IEntityTypeConfiguration<AiRequestLog>
+{
+    public void Configure(EntityTypeBuilder<AiRequestLog> b)
+    {
+        b.ToTable("ai_requests");
+        b.HasKey(r => r.Id);
+        b.Property(r => r.Id).ValueGeneratedNever();
+        b.Property(r => r.Kind).HasMaxLength(20).IsRequired();
+        b.Property(r => r.Outcome).HasConversion<string>().HasMaxLength(20);
+        b.Property(r => r.Reason).HasMaxLength(200);
+        b.HasIndex(r => new { r.UserId, r.At });
+        b.HasIndex(r => r.At);
+    }
+}

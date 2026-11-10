@@ -26,6 +26,7 @@ import {
 } from '../../../core/planning/planning.models';
 import { PlanningService } from '../../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../../core/planning/reason-text.pipe';
+import { ExplainerPanelComponent } from '../../../shared/explainer-panel.component';
 import { TimetableBlock, TimetableGridComponent } from '../../../shared/timetable-grid.component';
 
 interface PlannedRow {
@@ -51,7 +52,18 @@ const AUTOSAVE_MS = 1200;
  */
 @Component({
   selector: 'app-student-plan',
-  imports: [MatButtonModule, MatCheckboxModule, MatIconModule, MatProgressSpinnerModule, MatSelectModule, RouterLink, TranslocoPipe, ReasonTextPipe, TimetableGridComponent],
+  imports: [
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    RouterLink,
+    TranslocoPipe,
+    ReasonTextPipe,
+    TimetableGridComponent,
+    ExplainerPanelComponent,
+  ],
   templateUrl: './student-plan.component.html',
   styleUrls: ['../../../shared/page.scss', './student-plan.component.scss'],
 })
@@ -177,6 +189,7 @@ export class StudentPlanComponent {
   });
 
   protected readonly totalCredits = computed(() => this.rows().reduce((sum, r) => sum + r.credits, 0));
+  protected readonly selectedIds = computed(() => Object.values(this.selection()));
 
   /** Classes on the timetable grid; online classes (no meetings) are listed under it. */
   protected readonly blocks = computed<TimetableBlock[]>(() =>

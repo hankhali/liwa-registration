@@ -15,6 +15,14 @@ namespace Liwa.Infrastructure;
 
 public static class DependencyInjection
 {
+    /// <summary>Refuses to start with the mock AI provider outside Development (brief §4). Call after the database is ready.</summary>
+    public static async Task EnsureAiProviderAllowedAsync(this IServiceProvider services, CancellationToken ct = default)
+    {
+        using var scope = services.CreateScope();
+        var provider = await scope.ServiceProvider.GetRequiredService<Application.Admin.ISettingsService>().GetAiProviderAsync(ct);
+        Explainer.ExplainerService.EnsureProviderAllowed(provider, scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>());
+    }
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
         var connectionString = config.GetConnectionString("Liwa")
@@ -46,6 +54,11 @@ public static class DependencyInjection
         services.AddScoped<IPlanRevalidationService>(sp => sp.GetRequiredService<StudentPlanService>());
         services.AddScoped<Notifier>();
         services.AddSingleton<Security.SecretProtector>();
+        services.AddMemoryCache();
+        services.AddHttpClient("llm", c => c.Timeout = Timeout.InfiniteTimeSpan); // per-call timeout from the AI settings
+        services.AddSingleton<Explainer.ILlmClientFactory, Explainer.LlmClientFactory>();
+        services.AddScoped<Explainer.ExplainerService>();
+        services.AddScoped<Application.Explainer.IExplainerService>(sp => sp.GetRequiredService<Explainer.ExplainerService>());
         services.AddHttpClient("connection-test");
         services.AddScoped<Application.Admin.IAdminCatalogService, Admin.AdminCatalogService>();
         services.AddScoped<Application.Admin.ICreditPolicyAdmin, Admin.CreditPolicyAdmin>();

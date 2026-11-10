@@ -25,6 +25,7 @@ import {
   timeRange,
 } from '../../core/planning/planning.models';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
+import { ExplainerPanelComponent } from '../../shared/explainer-panel.component';
 import { PlanHistoryComponent } from '../../shared/plan-history.component';
 import { StatusChipComponent } from '../../shared/status-chip.component';
 import { TimetableBlock, TimetableGridComponent } from '../../shared/timetable-grid.component';
@@ -53,6 +54,7 @@ type Mode = 'none' | 'reject' | 'propose';
     PlanHistoryComponent,
     StatusChipComponent,
     TimetableGridComponent,
+    ExplainerPanelComponent,
   ],
   templateUrl: './plan-review.page.html',
   styleUrls: ['../../shared/page.scss', './plan-review.page.scss'],
