@@ -7,6 +7,9 @@
 appsettings.*.local.json
 secrets.json
 
+# ---- Project-local tool caches (NuGet, npm, dotnet CLI home; see README) ----
+.local/
+
 # ---- .NET ----
 [Bb]in/
 [Oo]bj/

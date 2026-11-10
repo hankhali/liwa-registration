@@ -9,5 +9,8 @@
     <!-- XML doc warnings are not useful for an application (not a library). -->
     <NoWarn>$(NoWarn);CS1591;CA1848;CA1716;CA1711;CA1062;CA1707;CA1515;CA1031;CA2007;CA1819;CA1812;CA1861;CA1305;CA1873</NoWarn>
     <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- No native Liwa.Api.exe launcher: endpoint Application Control blocks unsigned
+         locally built executables. Run with the signed host: dotnet Liwa.Api.dll -->
+    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
 </Project>
