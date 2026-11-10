@@ -13,18 +13,19 @@
 
 // Theme tokens (brief §9: Material 3 theme as CSS custom properties, light and dark).
 // Each colour is light-dark(<light>, <dark>); scripts/check_contrast.py checks every text/background pair (WCAG AA).
-// Brand values come from the official Liwa University logo (charcoal + sage); see docs/assumptions.md D1.
+// Brand values from the brief §9 (lu.ac.ae): indigo #3d3d5f for the header and headings, gold #f7bf0a for the primary
+// button and active states. See web/public/assets/brand/BRAND.md.
 :root {
-  --liwa-primary: light-dark(#272727, #e6e5dc); // charcoal: buttons, links
-  --liwa-primary-dark: #1a1a1a;
-  --liwa-header: #272727; // top bar stays charcoal in both themes
-  --liwa-sage: #b5b59e; // logo colour: ONLY on charcoal (7.2:1)
-  --liwa-accent: light-dark(#6b6a52, #c9c8b0); // deep olive accents and focus rings
-  --liwa-page: light-dark(#f5f5f3, #141413);
-  --liwa-surface: light-dark(#ffffff, #1f1f1d);
-  --liwa-border: light-dark(#dddcd5, #3a3a36);
-  --liwa-text: light-dark(#1d1d1b, #ecebe4);
-  --liwa-text-muted: light-dark(#5a5a54, #b4b3aa);
+  --liwa-primary: light-dark(#3d3d5f, #c9c9ee); // indigo: headings, links, secondary buttons
+  --liwa-header: #3d3d5f; // top bar stays indigo in both themes
+  --liwa-gold: #f7bf0a; // the ONE primary action per screen, active states, the rule under the header
+  --liwa-on-gold: #26263d; // text on gold
+  --liwa-accent: light-dark(#3d3d5f, #f7bf0a); // focus rings
+  --liwa-page: light-dark(#f6f6f9, #14141c);
+  --liwa-surface: light-dark(#ffffff, #1e1e2a);
+  --liwa-border: light-dark(#dcdce6, #3a3a4c);
+  --liwa-text: light-dark(#1c1c2b, #ececf4);
+  --liwa-text-muted: light-dark(#55556a, #b4b4c6);
   --liwa-danger: light-dark(#b3261e, #ffb4ab);
   --liwa-success: light-dark(#1e6b3a, #8fd6a4);
   --liwa-warning: light-dark(#8a5a00, #f2c46d);
@@ -32,14 +33,14 @@
   --liwa-gold-bg: light-dark(#fff1c2, #4a3a00);
   --liwa-gold-fg: light-dark(#5c4300, #ffe08a);
   // Timetable
-  --liwa-block: light-dark(#ecebe2, #2e2e2a);
-  --liwa-block-fg: light-dark(#1d1d1b, #ecebe4);
+  --liwa-block: light-dark(#e9e9f2, #2c2c3d);
+  --liwa-block-fg: light-dark(#1c1c2b, #ececf4);
   --liwa-clash: light-dark(#fde7e5, #4d1d19);
   --liwa-free: light-dark(#e3f2e7, #183a24);
   --liwa-free-hover: light-dark(#f0f7f2, #22442d);
   // Status chips: fixed colours per plan status (brief §9).
-  --liwa-chip-draft-bg: light-dark(#ecebe6, #33332f);
-  --liwa-chip-draft-fg: light-dark(#3d3d38, #dcdbd2);
+  --liwa-chip-draft-bg: light-dark(#ebebf0, #33333f);
+  --liwa-chip-draft-fg: light-dark(#3d3d4a, #dcdce6);
   --liwa-chip-submitted-bg: light-dark(#e3ecfb, #1d2c47);
   --liwa-chip-submitted-fg: light-dark(#1d4a8f, #b9cff5);
   --liwa-chip-reviewing-bg: light-dark(#ece5f8, #2f2546);
@@ -81,10 +82,13 @@ html {
     density: 0,
   ));
 
-  // Primary actions use the exact brand charcoal rather than the generated tonal palette.
+  // The primary action is the exact brand gold with dark indigo text (brief §9); everything else is secondary
+  // (outlined or text buttons in indigo).
   @include mat.button-overrides((
-    filled-container-color: var(--liwa-primary),
-    filled-label-text-color: light-dark(#fff, #1a1a1a),
+    filled-container-color: var(--liwa-gold),
+    filled-label-text-color: var(--liwa-on-gold),
+    outlined-label-text-color: var(--liwa-primary),
+    text-label-text-color: var(--liwa-primary),
   ));
 }
 
@@ -113,6 +117,7 @@ html[lang='ar'] body {
 h1, h2, h3 {
   line-height: 1.25;
   margin: 0 0 0.5rem;
+  color: var(--liwa-primary); // indigo headings (brief §9)
 }
 
 h1 { font-size: 1.625rem; font-weight: 700; }
@@ -129,9 +134,9 @@ a {
   outline-offset: 2px;
 }
 
-// On charcoal surfaces (top bar, sign-in band) the olive ring is too dark; use sage.
+// On indigo surfaces (top bar, sign-in band) the indigo ring is invisible; use gold.
 .liwa-on-dark :focus-visible {
-  outline-color: var(--liwa-sage);
+  outline-color: var(--liwa-gold);
 }
 
 .visually-hidden {

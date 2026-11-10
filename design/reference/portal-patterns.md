@@ -9,7 +9,7 @@ Notes from the vendors' public documentation and the live Liwa sign-in pages.
 | Pattern | From | In Smart Registration |
 |---|---|---|
 | Left navigation rail with icons and labels, collapsible | Blackboard Ultra base navigation | The role rail (`core/layout/nav.ts`), collapsible to icons; phone bottom bar + drawer |
-| Header / account bar: logo, page title, notifications, user menu | PeopleSoft Fluid banner | The charcoal top bar with the sage brand rule, page title, term selector, bell, EN/AR, user menu |
+| Header / account bar: logo, page title, notifications, user menu | PeopleSoft Fluid banner | The indigo top bar with the gold rule, white wordmark, page title, term selector, bell, EN/AR, user menu |
 | Tiles with a count that lead to a list | Fluid homepage tiles | Advisor home stat cards ("Plans waiting for review") |
 | Activity stream / notifications with unread count | Ultra activity stream | The bell and the Messages page |
 | One task per page, primary action bottom-right/end | Fluid activity guides | Planner: one primary "Send to my advisor"; review: decision panel |

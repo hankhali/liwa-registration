@@ -40,12 +40,14 @@ PAIRS = [
     ('chip-proposed-fg', 'chip-proposed-bg', 4.5, 'status chip: Changes suggested'),
     ('chip-needs-fg', 'chip-needs-bg', 4.5, 'status chip: Needs another look'),
     ('#ffffff', 'header', 4.5, 'top bar text'),
-    ('sage', 'header', 4.5, 'university name in the top bar'),
-    ('button-label', 'primary', 4.5, 'filled button label'),
+    ('gold', 'header', 3.0, 'gold rule and focus ring on the indigo top bar'),
+    ('on-gold', 'gold', 4.5, 'primary (gold) button label'),
+    ('primary', 'block', 4.5, 'active menu item'),
+    ('primary', 'gold-bg', 4.5, 'indigo text on the pale gold critical-path background'),
 ]
 
-# Values set outside the token block (filled button label in styles.scss).
-EXTRA = {'button-label': ('#ffffff', '#1a1a1a')}
+# Values set outside the token block.
+EXTRA = {}
 
 
 def tokens():

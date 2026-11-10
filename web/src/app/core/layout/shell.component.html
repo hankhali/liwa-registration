@@ -6,11 +6,9 @@
     <mat-icon aria-hidden="true">menu</mat-icon>
   </button>
   <a class="brand" [routerLink]="auth.homeUrl()" [attr.aria-label]="'shell.homeLink' | transloco">
-    <img class="brand-logo" src="assets/brand/logo-mark.png" alt="" width="34" height="42" />
-    <span class="brand-text">
-      <span class="brand-university">{{ 'app.university' | transloco }}</span>
-      <span class="brand-product">{{ 'app.product' | transloco }}</span>
-    </span>
+    <!-- Official white wordmark, unmodified, only on the indigo bar (brief §9). -->
+    <img class="brand-logo" src="assets/brand/liwa-university-scaled.png" [alt]="'app.university' | transloco" width="2560" height="922" />
+    <span class="brand-product">{{ 'app.product' | transloco }}</span>
   </a>
   @if (pageTitle(); as t) {
     <span class="page-title" aria-hidden="true">{{ t | transloco }}</span>

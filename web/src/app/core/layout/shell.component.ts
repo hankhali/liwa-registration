@@ -1,4 +1,4 @@
-import { A11yModule } from '@angular/cdk/a11y';
+﻿import { A11yModule } from '@angular/cdk/a11y';
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -26,7 +26,7 @@ interface TermOption {
 const RAIL_KEY = 'liwa.railCollapsed';
 
 /**
- * The app frame (brief §9): charcoal top bar with logo, page title, term selector, notifications, EN/AR and the
+ * The app frame (brief Â§9): indigo top bar with the white wordmark, page title, term selector, notifications, EN/AR and the
  * user menu; a collapsible left rail per role; on phones a bottom bar with the main items and a drawer with all.
  */
 @Component({
@@ -84,7 +84,7 @@ export class ShellComponent {
         queueMicrotask(() => this.main().nativeElement.focus({ preventScroll: true }));
       });
 
-    // Remember the language on the server too, so emails come in the same language (brief §4).
+    // Remember the language on the server too, so emails come in the same language (brief Â§4).
     effect(() => {
       const lang = this.language.lang();
       if (this.auth.isSignedIn()) void firstValueFrom(this.http.put('/api/me/language', { language: lang })).catch(() => undefined);

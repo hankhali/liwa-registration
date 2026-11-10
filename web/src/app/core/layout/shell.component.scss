@@ -33,7 +33,7 @@
   padding: 0 0.75rem;
   background: var(--liwa-header);
   color: #fff;
-  border-bottom: 3px solid var(--liwa-sage); // the brand rule under the header
+  border-bottom: 3px solid var(--liwa-gold); // the gold rule under the header (brief §9)
 }
 
 .menu-button {
@@ -52,25 +52,13 @@
 
 .brand-logo {
   flex: none;
-  height: 42px; // shield mark is 194x238
+  height: 40px; // white wordmark, 2560x922
   width: auto;
 }
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.2;
-}
-
-.brand-university {
-  font-size: 0.75rem;
-  color: var(--liwa-sage);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 .brand-product {
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.35);
   font-size: 1rem;
   font-weight: 700;
   white-space: nowrap;
@@ -118,8 +106,8 @@
   height: 32px;
   margin-inline-end: 0.5rem;
   border-radius: 50%;
-  background: var(--liwa-sage);
-  color: var(--liwa-primary-dark);
+  background: var(--liwa-gold);
+  color: var(--liwa-on-gold);
   font-size: 0.8125rem;
   font-weight: 700;
 }
@@ -179,8 +167,9 @@
 
     &.active {
       background: var(--liwa-block);
+      color: var(--liwa-primary);
       font-weight: 700;
-      box-shadow: inset 4px 0 0 var(--liwa-accent);
+      box-shadow: inset 4px 0 0 var(--liwa-gold);
     }
   }
 
@@ -204,7 +193,7 @@
 }
 
 :host-context([dir='rtl']) .rail a.active {
-  box-shadow: inset -4px 0 0 var(--liwa-accent);
+  box-shadow: inset -4px 0 0 var(--liwa-gold);
 }
 
 :host-context([dir='rtl']) .flip-rtl {
@@ -336,7 +325,11 @@
 }
 
 @media (max-width: 600px) {
-  .brand-university {
+  .brand-logo {
+    height: 32px;
+  }
+
+  .brand-product {
     display: none;
   }
 

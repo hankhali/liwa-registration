@@ -9,7 +9,7 @@ don't know registration vocabulary, so every string has to pass that test (brief
 
 | Part | What it does |
 |---|---|
-| Top bar | Charcoal (`--liwa-header`) with the sage brand rule. Logo, the current page's title, the term selector (only the current semester is open for planning), notifications bell with unread count, EN/AR switch, user menu (theme: device / light / dark, sign out). |
+| Top bar | Indigo (`--liwa-header`) with the gold rule. White wordmark, the current page's title, the term selector (only the current semester is open for planning), notifications bell with unread count, EN/AR switch, user menu (theme: device / light / dark, sign out). |
 | Left rail | One menu per role (`core/layout/nav.ts`). Collapsible to icons only (remembered per browser). Student: Home, Availability, Planner, Graduation Path, My Plan, Messages. Advisor: Home, Plans to review (badge = waiting + needs review), My students, Messages. Admin: Home and the admin areas. |
 | Phones (≤ 760 px) | The rail becomes a bottom bar with the first four items and **More**, which opens a drawer with everything (focus trapped, Escape closes). |
 | Focus | After every navigation, focus moves to `<main>` (WCAG 2.4.3). A skip link jumps there too. |

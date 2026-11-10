@@ -7,9 +7,17 @@
 
 .login-logo {
   display: block;
-  height: 150px;
+  height: 96px;
   width: auto;
+  margin: 1rem 0 0.25rem;
+}
+
+// The wordmark is English only; the brief asks for the university name in both languages on the brand panel.
+.login-university-ar {
   margin: 0 0 1.5rem;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 @media (max-width: 600px) {
@@ -19,7 +27,11 @@
   }
 
   .login-logo {
-    height: 120px;
+    height: 72px;
+    margin-top: 0.5rem;
+  }
+
+  .login-university-ar {
     margin-bottom: 1.25rem;
   }
 }
@@ -50,13 +62,13 @@
   width: 100%;
   max-width: 440px;
   padding: 2rem 1.75rem 1.5rem;
-  border-top: 4px solid var(--liwa-sage);
-  box-shadow: 0 8px 24px rgb(29 29 27 / 10%);
+  border-top: 4px solid var(--liwa-gold);
+  box-shadow: 0 8px 24px rgb(28 28 43 / 12%);
 }
 
 .login-product {
   margin-bottom: 0.25rem;
-  color: var(--liwa-accent);
+  color: var(--liwa-primary);
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -75,7 +87,7 @@
 .notice {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
-  background: #f0f0ea;
+  background: var(--liwa-block);
   border-inline-start: 4px solid var(--liwa-primary);
   border-radius: 4px;
 }
