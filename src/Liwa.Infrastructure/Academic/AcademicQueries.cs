@@ -46,7 +46,7 @@ internal sealed class AcademicQueries(LiwaDbContext db) : IAcademicQueries
                 var s = AcademicSummary.From(r, rule);
                 var p = programs[r.ProgramId];
                 return new AdviseeSummary(r.UserId, r.StudentId, names.GetValueOrDefault(r.UserId, r.StudentId), p.Code, p.Name, p.NameAr,
-                    s.CreditsEarned, p.TotalCredits, s.Gpa, r.Status == AcademicStatus.Probation);
+                    s.CreditsEarned, p.TotalCredits, s.Gpa, r.Status == AcademicStatus.Probation, s.Standing, r.Hold);
             })
             .OrderBy(a => a.DisplayName, StringComparer.Ordinal)
             .ToList();

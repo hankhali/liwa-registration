@@ -117,12 +117,17 @@ public sealed class StudentController(IAcademicQueries queries, IRecommendationS
 [ApiController]
 [Route("api/advisor")]
 [Authorize(Policy = Policies.Advisor)]
-public sealed class AdvisorController(IAcademicQueries queries, IAdvisorService advisor, ICurrentUser user) : ControllerBase
+public sealed class AdvisorController(IAdvisorService advisor, ICurrentUser user) : ControllerBase
 {
     public sealed record ProposalCheckRequest(IReadOnlyList<Guid> SectionIds);
 
+    /// <summary>Own students with standing, GPA, plan status, projected graduation and last activity.</summary>
     [HttpGet("students")]
-    public Task<IReadOnlyList<AdviseeSummary>> Students(CancellationToken ct) => queries.GetAdviseesAsync(user.UserId, ct);
+    public Task<IReadOnlyList<AdviseeSummary>> Students(CancellationToken ct) => advisor.GetAdviseesAsync(user.UserId, ct);
+
+    /// <summary>Counts for the advisor home page: awaiting review, needs review, approved this term, changes suggested.</summary>
+    [HttpGet("overview")]
+    public Task<AdvisorOverview> Overview(CancellationToken ct) => advisor.GetOverviewAsync(user.UserId, ct);
 
     /// <summary>Read-only student record with transcript (own students only).</summary>
     [HttpGet("students/{studentUserId:guid}")]
@@ -190,9 +195,32 @@ public sealed class NotificationsController(INotificationService notifications, 
 [ApiController]
 [Route("api/admin")]
 [Authorize(Policy = Policies.Admin)]
-public sealed class AdminDataController(IAcademicQueries queries, IImportService imports, ICurrentUser user) : ControllerBase
+public sealed class AdminDataController(IAcademicQueries queries, IImportService imports, IPlanRevalidationService revalidation, ICurrentUser user) : ControllerBase
 {
     public const long MaxUploadBytes = 10 * 1024 * 1024;
+
+    /// <summary>
+    /// Posts one final grade for a course in progress, then re-checks the student's approved plan: a prerequisite
+    /// or corequisite that is no longer met moves it to "Needs review" and notifies the student and the advisor.
+    /// </summary>
+    [HttpPost("grades")]
+    [ProducesResponseType<RecheckResult>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> PostGrade(GradePostingRequest request, CancellationToken ct)
+    {
+        var result = await revalidation.PostGradeAsync(user.UserId, request, ct);
+        return result.Outcome switch
+        {
+            GradePostingOutcome.Posted => Ok(result.Recheck),
+            GradePostingOutcome.InvalidGrade => Problem(statusCode: StatusCodes.Status400BadRequest, title: $"'{request.Grade}' isn't a final grade (A to F, P or W)."),
+            GradePostingOutcome.StudentNotFound => Problem(statusCode: StatusCodes.Status404NotFound, title: $"There is no student {request.StudentId}."),
+            GradePostingOutcome.CourseNotFound => Problem(statusCode: StatusCodes.Status404NotFound, title: $"There is no course {request.CourseCode}."),
+            _ => Problem(statusCode: StatusCodes.Status409Conflict, title: $"{request.CourseCode} in {request.TermCode} isn't in progress for this student, so there is no grade to post."),
+        };
+    }
+
+    /// <summary>Re-checks every approved plan for the current term (e.g. after a batch of grades was posted).</summary>
+    [HttpPost("recheck")]
+    public Task<RecheckResult> Recheck(CancellationToken ct) => revalidation.RecheckCurrentTermAsync(user.UserId, null, ct);
 
     [HttpGet("overview")]
     public Task<DataOverview> Overview(CancellationToken ct) => queries.GetOverviewAsync(ct);
@@ -214,6 +242,9 @@ public sealed class AdminDataController(IAcademicQueries queries, IImportService
             return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Choose a CSV file to upload.");
 
         await using var stream = file.OpenReadStream();
-        return Ok(await imports.ImportAsync(importKind, stream, dryRun, user.UserId, ct));
+        var report = await imports.ImportAsync(importKind, stream, dryRun, user.UserId, ct);
+        // New grades in a transcript file can invalidate approved plans (brief §10).
+        if (report.Saved && importKind == ImportKind.Transcripts) await revalidation.RecheckCurrentTermAsync(user.UserId, null, ct);
+        return Ok(report);
     }
 }

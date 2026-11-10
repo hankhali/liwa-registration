@@ -29,7 +29,14 @@ public sealed record AdviseeSummary(
     int CreditsEarned,
     int CreditsRequired,
     decimal? Gpa,
-    bool OnProbation);
+    bool OnProbation,
+    Liwa.Domain.Academic.Standing? Standing = null,
+    string? Hold = null,
+    Liwa.Domain.Planning.PlanStatus? PlanStatus = null,
+    Guid? PlanId = null,
+    string? ProjectedGraduation = null,
+    int? TermsRemaining = null,
+    DateTimeOffset? LastActivity = null);
 
 /// <summary>What the admin home page shows about the data in the system.</summary>
 public sealed record DataOverview(

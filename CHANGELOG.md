@@ -21,6 +21,30 @@ All notable changes are listed here, newest first, grouped by milestone.
 ### Tests
 - 153 unit, 70 integration (now on the local PostgreSQL), 38 frontend: all pass.
 
+## M5: advisor portal, plan history, notifications (2026-11-09)
+
+### Added
+- **Review queue** (`/advisor/plans`): the advisor's own students' plans, filtered by status and program with a count on each filter, three sort orders (oldest first, newest first, student name), and an "urgent" marker (needs review, on probation, or waiting more than 3 days). A table on computers, cards on phones.
+- **One-page review** (`/advisor/plans/{id}`), no tabs: the student's program, year, credits, GPA, holds and free time on the left; the plan on a weekly timetable and every class with the planner's reasons, why other class times lost, the warnings the student confirmed and today's live checks in the centre; graduation for this plan against the recommendation, with the difference, on the right; and the plan's history.
+- **Decisions:** Approve (optional note; switched off while today's checks show errors), Send back (comment required) and Suggest changes (the same course choices the student sees, run on the student's record, with a live check and a required note; a plan with errors can't be sent). Suggesting changes saves a new version as "Changes suggested". **Opening a newly sent plan marks it "Advisor reviewing".**
+- **Student record** (`/advisor/students/{id}`): read-only transcript and plan history for the advisor's own students. The advisor home lists plans needing attention first.
+- **Student side:** the advisor's reply and note, "Accept changes" (the plan becomes approved) or change and send again, and the plan history ("Version 1 → 2" with classes added and removed).
+- **Audit and notifications:** every status change is written to the audit log with the plan versions before and after, and notifies the other side. Notification bell with an unread count in the top bar for every role.
+- **API:** `GET /api/advisor/plans`, `GET /api/advisor/plans/{planId}` (marks a sent plan as under review), `POST /api/advisor/plans/{planId}/check`, `POST /api/advisor/plans/{planId}/decision`, `GET /api/advisor/students/{studentUserId}`, `POST /api/students/me/plan/accept`, `GET /api/notifications`, `POST /api/notifications/read`. Advisors can only see and act on their own students (403 otherwise).
+- All text in English and Arabic.
+- Tests: 5 more integration tests for the advisor flow (totals: 153 unit, 70 integration, 38 frontend).
+
+### Filled after checking M5 against brief §10 (2026-11-10)
+- **Grade posting** (`POST /api/admin/grades`) and a **whole-term re-check** (`POST /api/admin/recheck`); saving a transcripts import also re-checks. An approved plan whose prerequisite or corequisite is no longer met moves to **Needs review**, is audited (`plan.needsReview`, with the problems found) and notifies the student and the advisor. A section filling up never moves a plan (`Planner.RevalidationCodes`).
+- **Account holds:** students CSV column `hold` (e.g. `FINANCE`). The student can still plan; the plan carries an `AccountHold` warning to confirm, and the advisor sees a hold marker.
+- **Both sides are notified** of every status change: the other person gets the existing message, the person who acted gets a confirmation (`notifications.you.*`).
+- **Email stubs:** every notification also writes an email to the log in the recipient's language (`User.PreferredLanguage`, English or Arabic) until a mail server exists. The stub carries the user id, never the address.
+- **Advisor overview** (`GET /api/advisor/overview`): plans awaiting review, needing review, approved this term, changes suggested.
+- **Queue markers:** hold and "close to graduating" (two semesters or fewer left, from the planner's projection) now also mark a plan urgent.
+- **Advisee list** (`GET /api/advisor/students`) adds standing, hold, this term's plan status (drafts too), projected graduation and last activity. The read-only **student record** adds the plan history.
+- Migration `HoldsAndUserPreferences` (hold, preferred language, walkthrough dismissed). Migrations can now be added without the dotnet-ef CLI (`tests/Liwa.UnitTests/Tools/MigrationScaffolderTool.cs`).
+- Tests: 12 more unit tests (holds, revalidation rule, grade posting, languages, email templates match the app's messages) and 2 more integration tests (failed prerequisite → Needs review for both sides, approve blocked by errors, propose rules; grade-posting errors). Totals: 165 unit, 72 integration, 38 frontend.
+
 ## M4: student planning screens (2026-11-09)
 
 ### Added

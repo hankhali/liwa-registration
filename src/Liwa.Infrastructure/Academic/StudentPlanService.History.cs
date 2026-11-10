@@ -19,15 +19,43 @@ internal sealed partial class StudentPlanService
             note = string.IsNullOrWhiteSpace(note) ? null : note.Trim(),
         }, Json);
 
-    /// <summary>Writes the audit entry for a status change and notifies the other side (brief §10).</summary>
-    private void RecordChange(Plan plan, Guid actorUserId, string action, PlanStatus beforeStatus, PlanVersion? beforeVersion, string? note,
-        Guid? notifyUserId, string messageKey, object parameters, string link)
+    /// <summary>Names used in notification messages: student, advisor, term.</summary>
+    private sealed record MessageNames(string Student, string Advisor, string Term);
+
+    private async Task<MessageNames> NamesAsync(Guid studentUserId, Guid? advisorUserId, Guid termId, CancellationToken ct)
     {
-        var now = clock.GetUtcNow();
-        db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), now, actorUserId, action, "Plan", plan.Id.ToString(),
+        var student = await db.Users.AsNoTracking().Where(u => u.Id == studentUserId).Select(u => u.DisplayName).SingleAsync(ct);
+        var advisor = advisorUserId is { } a ? await db.Users.AsNoTracking().Where(u => u.Id == a).Select(u => u.DisplayName).SingleOrDefaultAsync(ct) : null;
+        var term = await db.Terms.AsNoTracking().Where(t => t.Id == termId).Select(t => t.Name).SingleAsync(ct);
+        return new MessageNames(student, advisor ?? "", term);
+    }
+
+    /// <summary>
+    /// Writes the audit entry for a status change and notifies both sides (brief §4/§10): the other person gets
+    /// <paramref name="otherKey"/>, the person who acted gets a "notifications.you.{action}" confirmation.
+    /// </summary>
+    private void RecordChange(Plan plan, Guid actorUserId, string action, PlanStatus beforeStatus, PlanVersion? beforeVersion, string? note,
+        Guid studentUserId, Guid? advisorUserId, string otherKey, MessageNames names)
+    {
+        db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), clock.GetUtcNow(), actorUserId, action, "Plan", plan.Id.ToString(),
             Snapshot(beforeStatus, beforeVersion), Snapshot(plan.Status, plan.Current, note)));
-        if (notifyUserId is { } to)
-            db.Notifications.Add(new Notification(Guid.NewGuid(), to, now, messageKey, JsonSerializer.Serialize(parameters, Json), link));
+
+        var parameters = new { student = names.Student, advisor = names.Advisor, term = names.Term };
+        var studentLink = "/student/plan";
+        var advisorLink = $"/advisor/plans/{plan.Id}";
+        var self = "notifications.you." + action.Replace("plan.", "", StringComparison.Ordinal);
+        var actorIsStudent = actorUserId == studentUserId;
+
+        if (actorIsStudent)
+        {
+            if (advisorUserId is { } advisor) notifier.Notify(advisor, otherKey, parameters, advisorLink);
+            notifier.Notify(studentUserId, self, parameters, studentLink);
+        }
+        else
+        {
+            notifier.Notify(studentUserId, otherKey, parameters, studentLink);
+            notifier.Notify(actorUserId, self, parameters, advisorLink);
+        }
     }
 
     /// <summary>The plan's history from the audit log: who did what, with classes added and removed at each step.</summary>
@@ -84,9 +112,9 @@ internal sealed partial class StudentPlanService
 
         var before = plan.Status;
         plan.SetStatus(PlanStatus.Approved, clock.GetUtcNow());
-        var name = await db.Users.Where(u => u.Id == studentUserId).Select(u => u.DisplayName).SingleAsync(ct);
-        RecordChange(plan, studentUserId, "plan.accepted", before, plan.Current, null, record.AdvisorUserId,
-            "notifications.planAccepted", new { student = name, term = term.Name }, $"/advisor/plans/{plan.Id}");
+        var names = await NamesAsync(studentUserId, record.AdvisorUserId, term.Id, ct);
+        RecordChange(plan, studentUserId, "plan.accepted", before, plan.Current, null, studentUserId, record.AdvisorUserId,
+            "notifications.planAccepted", names);
         await db.SaveChangesAsync(ct);
         return SaveOutcome.Saved;
     }

@@ -13,7 +13,7 @@ namespace Liwa.Infrastructure.Academic;
 /// Student planning: builds the planner input from the database (all I/O and "today" live here; the
 /// planner stays pure), checks hand-picked plans, and saves versioned plans.
 /// </summary>
-internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider clock, Application.Academic.IAcademicQueries queries)
+internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider clock, Application.Academic.IAcademicQueries queries, Notifier notifier)
     : IStudentPlanService, IRecommendationService, IAdvisorService
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
@@ -99,16 +99,13 @@ internal sealed partial class StudentPlanService(LiwaDbContext db, TimeProvider 
             request.Availability is { Count: > 0 } ? JsonSerializer.Serialize(request.Availability, Json) : null);
         plan.SetStatus(request.Submit ? PlanStatus.Submitted : PlanStatus.Draft, now);
 
-        // Every status change is logged with the versions before and after (brief §10).
-        db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), now, studentUserId, request.Submit ? "plan.submitted" : "plan.saved", "Plan", plan.Id.ToString(),
-            Snapshot(beforeStatus, before), Snapshot(plan.Status, version, request.Note)));
-
-        if (request.Submit && ctx.Record.AdvisorUserId is { } advisor)
-        {
-            var name = await db.Users.Where(u => u.Id == studentUserId).Select(u => u.DisplayName).SingleAsync(ct);
-            db.Notifications.Add(new Notification(Guid.NewGuid(), advisor, now, "notifications.planSubmitted",
-                JsonSerializer.Serialize(new { student = name, term = ctx.Term.Name }, Json), "/advisor"));
-        }
+        // Every status change is logged with the versions before and after, and notifies both sides (brief §10).
+        if (request.Submit)
+            RecordChange(plan, studentUserId, "plan.submitted", beforeStatus, before, request.Note, studentUserId, ctx.Record.AdvisorUserId,
+                "notifications.planSubmitted", await NamesAsync(studentUserId, ctx.Record.AdvisorUserId, ctx.Term.Id, ct));
+        else
+            db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), now, studentUserId, "plan.saved", "Plan", plan.Id.ToString(),
+                Snapshot(beforeStatus, before), Snapshot(plan.Status, version, request.Note)));
 
         await db.SaveChangesAsync(ct);
         return new SavePlanResult(SaveOutcome.Saved, check, ToSaved(plan));

@@ -123,7 +123,30 @@ public sealed class StudentRecord
 
     public Guid? AdvisorUserId { get; private set; }
 
+    /// <summary>
+    /// A registrar hold on the account (e.g. "FINANCE", "REGISTRAR"), or null. A hold doesn't stop planning,
+    /// but registration can't happen until it is cleared, so the plan carries an AccountHold warning.
+    /// </summary>
+    public string? Hold { get; private set; }
+
     public IReadOnlyList<TranscriptEntry> Transcript => _transcript;
+
+    public void SetHold(string? hold) => Hold = string.IsNullOrWhiteSpace(hold) ? null : hold.Trim().ToUpperInvariant();
+
+    /// <summary>
+    /// Posts a final grade for a course in progress (grade posting). Returns false if the course isn't in progress.
+    /// </summary>
+    public bool PostGrade(Guid courseId, string termCode, string grade)
+    {
+        var code = termCode.Trim().ToUpperInvariant();
+        var entry = _transcript.FirstOrDefault(t => t.CourseId == courseId && t.TermCode == code && t.Status == TranscriptStatus.InProgress);
+        if (entry is null) return false;
+        _transcript.Remove(entry);
+        var withdrawn = Grades.Normalize(grade) == "W";
+        _transcript.Add(new TranscriptEntry(Guid.NewGuid(), Id, courseId, code, entry.Credits, withdrawn ? null : grade,
+            withdrawn ? TranscriptStatus.Withdrawn : TranscriptStatus.Completed));
+        return true;
+    }
 
     public IReadOnlyList<TransferCredit> TransferCredits => _transfers;
 

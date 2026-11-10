@@ -79,8 +79,25 @@ public static partial class Planner
         else if (total < limits.MinCredits && picked.Count > 0)
             warnings.Add(PlannerReason.Of(ReasonCode.BelowMinimumCredits, limits.MinCredits.ToString(CultureInfo.InvariantCulture)));
 
+        // A hold doesn't block the plan, but the student must know registration waits until it's cleared.
+        if (student.Hold is { } hold && picked.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.AccountHold, hold));
+
         return new PlanCheckResult(total, limits, recommendation.MaxCredits, errors.Distinct().ToList(), warnings.Distinct().ToList());
     }
+
+    /// <summary>
+    /// Codes that mean an approved plan is no longer valid after grades were posted: a prerequisite or corequisite
+    /// is no longer met. A section filling up (SectionFull) or other changes never flip an approved plan (brief §4).
+    /// </summary>
+    public static readonly IReadOnlySet<ReasonCode> RevalidationCodes = new HashSet<ReasonCode>
+    {
+        ReasonCode.NotEligibleNow, ReasonCode.PrerequisiteNotMet, ReasonCode.PrerequisiteFailed, ReasonCode.MinimumGradeNotMet,
+        ReasonCode.StandingRequired, ReasonCode.CreditsRequired, ReasonCode.CorequisiteMissing,
+    };
+
+    /// <summary>The errors in a re-check that should move an approved plan to "Needs review" (empty = still fine).</summary>
+    public static IReadOnlyList<PlannerReason> RevalidationFailures(PlanCheckResult check) =>
+        check.Errors.Where(e => RevalidationCodes.Contains(e.Code)).ToList();
 
     /// <summary>
     /// Graduation projection for a specific set of sections (e.g. the plan a student sent), so an advisor can

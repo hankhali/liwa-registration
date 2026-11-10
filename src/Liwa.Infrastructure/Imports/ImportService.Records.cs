@@ -199,6 +199,9 @@ public sealed partial class ImportService
     [GeneratedRegex("^[A-Za-z0-9._-]{3,20}$")]
     private static partial Regex StudentIdPattern();
 
+    [GeneratedRegex("^[A-Za-z_]{2,30}$")]
+    private static partial Regex HoldPattern();
+
     private async Task ImportStudentsAsync(CsvTable table, ImportReport report, CancellationToken ct)
     {
         var programs = await db.Programs.ToDictionaryAsync(p => p.Code, ct);
@@ -223,7 +226,9 @@ public sealed partial class ImportService
             var email = r.Optional("email")?.ToLowerInvariant();
             var username = User.NormalizeUsername(r.Optional("username") ?? studentId);
             var advisorName = r.Optional("advisor_username");
+            var hold = r.Optional("hold");
             if (!r.Ok) continue;
+            if (hold is not null && !HoldPattern().IsMatch(hold)) { r.Fail("hold", $"'{hold}' isn't a hold type. Use one word, e.g. FINANCE or REGISTRAR, or leave it empty."); continue; }
 
             if (!StudentIdPattern().IsMatch(studentId)) { r.Fail("student_id", $"'{studentId}' isn't a valid student ID (3–20 letters or digits)."); continue; }
             if (!seen.Add(studentId)) { r.Fail("student_id", $"{studentId} appears more than once in this file."); continue; }
@@ -273,6 +278,7 @@ public sealed partial class ImportService
             }
 
             record!.Update(program.Id, catalogYear, admitTerm, status, advisorId);
+            record.SetHold(hold);
 
             if (isNew) report.Created++;
             else

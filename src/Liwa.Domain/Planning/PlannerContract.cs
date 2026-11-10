@@ -35,6 +35,7 @@ public sealed record PlannerTerm(string Code, TermSeason Season, int Year);
 /// <param name="OnProbation">Academic probation, as reported by the registrar.</param>
 /// <param name="TotalCreditsRequired">Credits the program needs (e.g. 120).</param>
 /// <param name="PermissionsGranted">Courses for which department permission has been given.</param>
+/// <param name="Hold">A registrar hold on the account (e.g. "FINANCE"), or null.</param>
 public sealed record PlannerStudent(
     IReadOnlyDictionary<string, string> Passed,
     IReadOnlySet<string> Failed,
@@ -43,7 +44,8 @@ public sealed record PlannerStudent(
     decimal? Gpa,
     bool OnProbation,
     int TotalCreditsRequired,
-    IReadOnlySet<string> PermissionsGranted);
+    IReadOnlySet<string> PermissionsGranted,
+    string? Hold = null);
 
 public sealed record PlannerCourse(string Code, int Credits, Prerequisite? Prerequisite, OfferedIn Offered);
 
@@ -184,6 +186,7 @@ public enum ReasonCode
     OfferedButNoSections = 102,   // Courses = courses offered this season with no sections
     InProgressPrerequisite = 103, // Courses = planned courses that depend on a grade in progress
     GraduationNotReachable = 104,
+    AccountHold = 105,            // Value = hold type (e.g. FINANCE): plan can be made, registration waits until it's cleared
 
     // Checking a plan the student changed by hand (Planner.Check)
     NotInDegreePlan = 120,        // Courses = course

@@ -31,6 +31,9 @@ internal sealed partial class StudentPlanService
             .Join(db.Courses.AsNoTracking(), s => s.CourseId, c => c.Id, (s, c) => new { s.Id, c.Credits })
             .ToDictionaryAsync(x => x.Id, x => x.Credits, ct);
         var now = clock.GetUtcNow();
+        var remaining = new Dictionary<Guid, int?>();
+        foreach (var r in records.Where(r => plans.Any(p => p.StudentRecordId == r.Id)))
+            remaining[r.Id] = (await ProjectionAsync(r.UserId, ct))?.TermsRemaining;
 
         return plans.Select(p =>
         {
@@ -40,10 +43,69 @@ internal sealed partial class StudentPlanService
             var warnings = v.AcknowledgedWarnings is null ? 0 : JsonDocument.Parse(v.AcknowledgedWarnings).RootElement.GetArrayLength();
             var probation = r.Status == AcademicStatus.Probation;
             var waitingLong = p.Status is PlanStatus.Submitted or PlanStatus.AdvisorReviewing && now - p.UpdatedAt > UrgentAfter;
+            var terms = remaining.GetValueOrDefault(r.Id);
+            var nearGraduation = terms is > 0 and <= NearGraduationTerms;
             return new QueueItem(p.Id, r.UserId, names.GetValueOrDefault(r.UserId, r.StudentId), r.StudentId, program.Code, program.Name, program.NameAr,
                 p.Status, v.Number, v.Sections.Sum(s => credits.GetValueOrDefault(s.SectionId)), warnings, p.UpdatedAt, probation,
-                p.Status == PlanStatus.NeedsReview || (Decidable.Contains(p.Status) && (probation || waitingLong)));
+                p.Status == PlanStatus.NeedsReview || (Decidable.Contains(p.Status) && (probation || waitingLong || r.Hold is not null || nearGraduation)),
+                r.Hold, nearGraduation, terms);
         }).OrderBy(q => q.UpdatedAt).ToList();
+    }
+
+    /// <summary>Students this close to graduating (terms left, including this one) get an urgency marker.</summary>
+    private const int NearGraduationTerms = 2;
+
+    /// <summary>The recommendation's graduation projection (with summer) for a student, or null if it can't be built.</summary>
+    private async Task<TermProjection?> ProjectionAsync(Guid studentUserId, CancellationToken ct)
+    {
+        var ctx = await BuildAsync(studentUserId, null, PlannerPreferences.None, ct);
+        return ctx is null ? null : Planner.Plan(ctx.Input).Projection.WithSummer;
+    }
+
+    public async Task<IReadOnlyList<Application.Academic.AdviseeSummary>> GetAdviseesAsync(Guid advisorUserId, CancellationToken ct)
+    {
+        var advisees = await queries.GetAdviseesAsync(advisorUserId, ct);
+        if (advisees.Count == 0) return advisees;
+        var term = await db.Terms.AsNoTracking().FirstOrDefaultAsync(t => t.IsCurrent, ct);
+        var userIds = advisees.Select(a => a.UserId).ToList();
+        var records = await db.StudentRecords.AsNoTracking().Where(r => userIds.Contains(r.UserId)).ToDictionaryAsync(r => r.UserId, ct);
+        var recordIds = records.Values.Select(r => r.Id).ToList();
+        var plans = term is null ? [] : await db.Plans.AsNoTracking().Where(p => p.TermId == term.Id && recordIds.Contains(p.StudentRecordId)).ToListAsync(ct);
+        var planIds = plans.Select(p => p.Id.ToString()).ToList();
+        var lastAudit = await db.AuditLog.AsNoTracking().Where(a => a.EntityType == "Plan" && planIds.Contains(a.EntityId!))
+            .GroupBy(a => a.EntityId).Select(g => new { Id = g.Key, At = g.Max(a => a.At) }).ToDictionaryAsync(x => x.Id!, x => x.At, ct);
+
+        var result = new List<Application.Academic.AdviseeSummary>();
+        foreach (var a in advisees)
+        {
+            var record = records[a.UserId];
+            var plan = plans.SingleOrDefault(p => p.StudentRecordId == record.Id);
+            var projection = await ProjectionAsync(a.UserId, ct);
+            DateTimeOffset? last = plan is null ? null : lastAudit.TryGetValue(plan.Id.ToString(), out var at) && at > plan.UpdatedAt ? at : plan.UpdatedAt;
+            result.Add(a with
+            {
+                PlanStatus = plan?.Status,
+                PlanId = plan?.Id,
+                ProjectedGraduation = projection?.GraduationTerm,
+                TermsRemaining = projection?.TermsRemaining,
+                LastActivity = last,
+            });
+        }
+        return result;
+    }
+
+    public async Task<AdvisorOverview> GetOverviewAsync(Guid advisorUserId, CancellationToken ct)
+    {
+        var term = await db.Terms.AsNoTracking().FirstOrDefaultAsync(t => t.IsCurrent, ct);
+        if (term is null) return new AdvisorOverview(0, 0, 0, 0);
+        var recordIds = db.StudentRecords.Where(r => r.AdvisorUserId == advisorUserId).Select(r => r.Id);
+        var statuses = await db.Plans.AsNoTracking().Where(p => p.TermId == term.Id && recordIds.Contains(p.StudentRecordId))
+            .Select(p => p.Status).ToListAsync(ct);
+        return new AdvisorOverview(
+            statuses.Count(s => s is PlanStatus.Submitted or PlanStatus.AdvisorReviewing),
+            statuses.Count(s => s == PlanStatus.NeedsReview),
+            statuses.Count(s => s == PlanStatus.Approved),
+            statuses.Count(s => s == PlanStatus.ChangesProposed));
     }
 
     public async Task<(DecisionOutcome Outcome, PlanReview? Review)> OpenReviewAsync(Guid advisorUserId, Guid planId, CancellationToken ct)
@@ -55,9 +117,8 @@ internal sealed partial class StudentPlanService
         {
             var before = plan.Status;
             plan.SetStatus(PlanStatus.AdvisorReviewing, clock.GetUtcNow());
-            var advisor = await db.Users.Where(u => u.Id == advisorUserId).Select(u => u.DisplayName).SingleAsync(ct);
-            RecordChange(plan, advisorUserId, "plan.reviewing", before, plan.Current, null, record!.UserId,
-                "notifications.planReviewing", new { advisor }, "/student");
+            RecordChange(plan, advisorUserId, "plan.reviewing", before, plan.Current, null, record!.UserId, advisorUserId,
+                "notifications.planReviewing", await NamesAsync(record.UserId, advisorUserId, plan.TermId, ct));
             await db.SaveChangesAsync(ct);
         }
 
@@ -102,7 +163,7 @@ internal sealed partial class StudentPlanService
 
         var before = plan.Status;
         var now = clock.GetUtcNow();
-        var advisor = await db.Users.Where(u => u.Id == advisorUserId).Select(u => u.DisplayName).SingleAsync(ct);
+        var names = await NamesAsync(record.UserId, advisorUserId, plan.TermId, ct);
         PlanCheckResult? check = null;
         string action, messageKey;
 
@@ -131,7 +192,7 @@ internal sealed partial class StudentPlanService
                 return new DecisionResult(DecisionOutcome.NotDecidable, null);
         }
 
-        RecordChange(plan, advisorUserId, action, before, current, note, record.UserId, messageKey, new { advisor }, "/student");
+        RecordChange(plan, advisorUserId, action, before, current, note, record.UserId, advisorUserId, messageKey, names);
         await db.SaveChangesAsync(ct);
         return new DecisionResult(DecisionOutcome.Done, check);
     }
@@ -154,7 +215,8 @@ internal sealed partial class StudentPlanService
         var term = await db.Terms.AsNoTracking().FirstOrDefaultAsync(t => t.IsCurrent, ct);
         var plan = term is null ? null : await db.Plans.AsNoTracking().SingleOrDefaultAsync(p => p.StudentRecordId == record.Id && p.TermId == term.Id, ct);
         var name = await db.Users.AsNoTracking().Where(u => u.Id == studentUserId).Select(u => u.DisplayName).SingleAsync(ct);
-        return new StudentRecordView(studentUserId, name, summary, lines, plan?.Status, plan?.Id);
+        return new StudentRecordView(studentUserId, name, summary, lines, plan?.Status, plan?.Id,
+            plan is null ? [] : await HistoryAsync(plan.Id, ct), record.Hold);
     }
 
     private async Task<(DecisionOutcome, Plan?, StudentRecord?)> LoadForAdvisorAsync(Guid advisorUserId, Guid planId, bool tracking, CancellationToken ct)

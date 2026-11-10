@@ -49,6 +49,23 @@ public sealed class User
 
     public DateTimeOffset? LastSignInAt { get; private set; }
 
+    /// <summary>"en" or "ar": the language of emails and other messages generated for this person.</summary>
+    public string PreferredLanguage { get; private set; } = "en";
+
+    /// <summary>When the first-login walkthrough was dismissed (students), or null if never shown/dismissed.</summary>
+    public DateTimeOffset? WalkthroughDismissedAt { get; private set; }
+
+    public static readonly IReadOnlySet<string> Languages = new HashSet<string>(StringComparer.Ordinal) { "en", "ar" };
+
+    public void SetPreferredLanguage(string language)
+    {
+        var lang = (language ?? string.Empty).Trim().ToLowerInvariant();
+        if (!Languages.Contains(lang)) throw new ArgumentException($"Unsupported language '{language}'.", nameof(language));
+        PreferredLanguage = lang;
+    }
+
+    public void DismissWalkthrough(DateTimeOffset at) => WalkthroughDismissedAt ??= at;
+
     public static string NormalizeUsername(string username) => username.Trim().ToLowerInvariant();
 
     /// <summary>Profile fields that come from registrar data (imports).</summary>

@@ -456,7 +456,17 @@
     "planApproved": "اعتمد {{ advisor }} خطتك.",
     "planRejected": "أعاد {{ advisor }} خطتك مع تعليق.",
     "planChangesProposed": "اقترح {{ advisor }} تعديلات على خطتك.",
-    "planAccepted": "قبل {{ student }} التعديلات المقترحة لفصل {{ term }}."
+    "planAccepted": "قبل {{ student }} التعديلات المقترحة لفصل {{ term }}.",
+    "planNeedsReviewStudent": "رُصدت درجات جديدة: خطتك المعتمدة لفصل {{ term }} تحتاج إلى مراجعة مع مرشدك.",
+    "planNeedsReviewAdvisor": "رُصدت درجات جديدة: خطة {{ student }} المعتمدة لفصل {{ term }} تحتاج إلى مراجعة.",
+    "you": {
+      "submitted": "أرسلت خطتك لفصل {{ term }} إلى مرشدك.",
+      "reviewing": "بدأت مراجعة خطة {{ student }}.",
+      "approved": "اعتمدت خطة {{ student }}.",
+      "rejected": "أعدت خطة {{ student }}.",
+      "proposed": "اقترحت تعديلات على خطة {{ student }}.",
+      "accepted": "قبلت تعديلات مرشدك. خطتك لفصل {{ term }} معتمدة."
+    }
   },
   "planStatus": {
     "Draft": "مسودة",

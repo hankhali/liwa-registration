@@ -26,7 +26,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             [ImportKind.Programs] = (["program_code", "name", "total_credits"], ["name_ar", "college"]),
             [ImportKind.DegreePlans] = (["program_code", "catalog_year", "group_key", "group_type"], ["group_name", "group_credits", "course_code", "suggested_semester"]),
             [ImportKind.Sections] = (["term_code", "course_code", "section", "capacity"], ["delivery", "instructor", "room", "enrolled", "days", "start_time", "end_time"]),
-            [ImportKind.Students] = (["student_id", "display_name", "program_code", "catalog_year", "admit_term"], ["email", "username", "status", "advisor_username"]),
+            [ImportKind.Students] = (["student_id", "display_name", "program_code", "catalog_year", "admit_term"], ["email", "username", "status", "advisor_username", "hold"]),
             [ImportKind.Transcripts] = (["student_id", "course_code"], ["term_code", "credits", "grade", "status", "source"]),
         };
 

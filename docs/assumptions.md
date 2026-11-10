@@ -87,6 +87,17 @@ Status key: **Open** = needs confirmation · **Decided** = project decision, cha
 | S4 | Changing courses shows only courses from the degree plan. Free electives outside the plan aren't offered on this screen yet. | The brief says plans contain only degree-plan courses. | Academic advisors | Open |
 | S5 | **No screenshot routine and no Playwright** (removed 2026-11-10, brief §13). The M1/M2 screenshots stay in `docs/screenshots/` as history. Contrast and RTL are checked by scripts and unit tests instead. | Brief §13; Playwright needs a browser download. | — | Decided |
 
+## Advisor portal (M5)
+
+| # | Assumption / decision | Why | Confirm with | Status |
+|---|---|---|---|---|
+| R1 | A **hold** doesn't stop a student planning or sending a plan. It adds an `AccountHold` warning ("registration waits until it's cleared") that the student confirms, and the advisor sees a hold marker. | The advisor can still help; PeopleSoft enforces the hold at registration. | Registrar | Open |
+| R2 | **Needs review** is triggered only when a re-check of an approved plan finds a prerequisite, minimum grade, standing, credits or corequisite problem. Full sections, clashes and credit-limit changes never flip an approved plan. | Brief §4. | Registrar | Decided |
+| R3 | Grades arrive either one at a time (`POST /api/admin/grades`) or in a transcripts file; both re-check approved plans for the current term. | Until PeopleSoft pushes grade changes. | Registrar / IT | Open |
+| R4 | Every status change notifies **both** people: the other person gets the news, the person who acted gets a short confirmation. | Brief §4 ("in-app for both sides on every status change"). | — | Decided |
+| R5 | **Email stubs** are written to the application log, in the recipient's preferred language, with the user id but never the email address. A real mail sender replaces the stub later. | No mail server yet; keep PII out of logs. | University IT | Open |
+| R6 | "Close to graduating" (urgency marker) means **two semesters or fewer** left in the recommendation's projection with summer. | Brief §10 ("within two terms of graduation"). | Academic advisors | Open |
+
 ## Pending verification — Smart App Control
 
 Windows **Smart App Control** on the development machine sometimes blocks loading a freshly built, unsigned `Liwa.Api.dll` (Code Integrity events 3077/3118, 2026-11-10). It judges each build separately: two builds were blocked, the next one loaded. When a build is blocked, nothing that loads `Liwa.Api.dll` can run: the API and every integration test. Rebuilding after a code change produced a build that loaded. Items that could not be run against the real API stay **Pending** here until they have been.

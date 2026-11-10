@@ -139,6 +139,7 @@ One row per meeting pattern. Several rows with the same key add more meeting tim
 | `admit_term` | yes | e.g. `2025FA` | `ADMIT_TERM` |
 | `status` | no | `Good` (default) or `Probation`, as set by the Registrar | academic standing |
 | `advisor_username` | no | Username of an existing advisor | `ADVISOR_ID` (mapped) |
+| `hold` | no | A hold on the account, one word (e.g. `FINANCE`, `REGISTRAR`); empty = no hold. The student can still plan, but sees that registration waits until it's cleared | `SRVC_IND_CD` (service indicator, mapped) |
 
 A new student gets an account **without a password**: they sign in with their university account. Matching is by `student_id` first; a username that belongs to a staff account or another student is an error.
 

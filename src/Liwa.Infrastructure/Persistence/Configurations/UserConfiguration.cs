@@ -22,5 +22,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         b.Property(u => u.PasswordHash).HasMaxLength(256);
         b.Property(u => u.ExternalSubject).HasMaxLength(256);
         b.HasIndex(u => u.ExternalSubject).IsUnique().HasFilter("external_subject IS NOT NULL");
+        b.Property(u => u.PreferredLanguage).HasMaxLength(5).IsRequired().HasDefaultValue("en");
     }
 }

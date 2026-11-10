@@ -28,6 +28,6 @@ internal static class PlannerFacts
         var summary = AcademicSummary.From(record, rule);
 
         return new PlannerStudent(passed, failed, inProgress, summary.CreditsEarned, summary.Gpa, record.Status == AcademicStatus.Probation,
-            totalCredits, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+            totalCredits, new HashSet<string>(StringComparer.OrdinalIgnoreCase), record.Hold);
     }
 }

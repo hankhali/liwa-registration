@@ -392,6 +392,11 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("catalog_year");
 
+                    b.Property<string>("Hold")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("hold");
+
                     b.Property<Guid>("ProgramId")
                         .HasColumnType("uuid")
                         .HasColumnName("program_id");
@@ -815,6 +820,14 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("password_hash");
 
+                    b.Property<string>("PreferredLanguage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)")
+                        .HasDefaultValue("en")
+                        .HasColumnName("preferred_language");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -831,6 +844,10 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("username");
+
+                    b.Property<DateTimeOffset?>("WalkthroughDismissedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("walkthrough_dismissed_at");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

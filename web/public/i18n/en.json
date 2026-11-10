@@ -456,7 +456,17 @@
     "planApproved": "{{ advisor }} approved your plan.",
     "planRejected": "{{ advisor }} sent your plan back with a comment.",
     "planChangesProposed": "{{ advisor }} suggested changes to your plan.",
-    "planAccepted": "{{ student }} accepted your suggested changes for {{ term }}."
+    "planAccepted": "{{ student }} accepted your suggested changes for {{ term }}.",
+    "planNeedsReviewStudent": "New grades were posted: your approved plan for {{ term }} needs another look with your advisor.",
+    "planNeedsReviewAdvisor": "New grades were posted: {{ student }}'s approved plan for {{ term }} needs review.",
+    "you": {
+      "submitted": "You sent your plan for {{ term }} to your advisor.",
+      "reviewing": "You started reviewing {{ student }}'s plan.",
+      "approved": "You approved {{ student }}'s plan.",
+      "rejected": "You sent {{ student }}'s plan back.",
+      "proposed": "You suggested changes to {{ student }}'s plan.",
+      "accepted": "You accepted your advisor's changes. Your plan for {{ term }} is approved."
+    }
   },
   "planStatus": {
     "Draft": "Draft",

@@ -25,7 +25,13 @@ public sealed record QueueItem(
     int WarningCount,
     DateTimeOffset UpdatedAt,
     bool OnProbation,
-    bool Urgent);
+    bool Urgent,
+    string? Hold = null,
+    bool NearGraduation = false,
+    int? TermsRemaining = null);
+
+/// <summary>The counts on the advisor's home page (brief §10).</summary>
+public sealed record AdvisorOverview(int AwaitingReview, int NeedsReview, int ApprovedThisTerm, int ChangesProposed);
 
 public sealed record ConfirmedWarning(string Key, string Code, IReadOnlyList<string> Courses, string? Value);
 
@@ -68,11 +74,17 @@ public sealed record DecisionResult(DecisionOutcome Outcome, PlanCheckResult? Ch
 /// <summary>A student's transcript line for the advisor's read-only view.</summary>
 public sealed record TranscriptLine(string TermCode, string CourseCode, string Title, string? TitleAr, int Credits, string? Grade, string Status);
 
-public sealed record StudentRecordView(Guid UserId, string StudentName, StudentSummary Summary, IReadOnlyList<TranscriptLine> Transcript, PlanStatus? CurrentPlanStatus, Guid? CurrentPlanId);
+public sealed record StudentRecordView(Guid UserId, string StudentName, StudentSummary Summary, IReadOnlyList<TranscriptLine> Transcript, PlanStatus? CurrentPlanStatus, Guid? CurrentPlanId,
+    IReadOnlyList<PlanEvent>? PlanHistory = null, string? Hold = null);
 
 public interface IAdvisorService
 {
     Task<IReadOnlyList<QueueItem>> GetQueueAsync(Guid advisorUserId, CancellationToken ct);
+
+    /// <summary>The advisor's students with standing, plan status, projected graduation and last activity.</summary>
+    Task<IReadOnlyList<Liwa.Application.Academic.AdviseeSummary>> GetAdviseesAsync(Guid advisorUserId, CancellationToken ct);
+
+    Task<AdvisorOverview> GetOverviewAsync(Guid advisorUserId, CancellationToken ct);
 
     /// <summary>Opening a newly sent plan marks it "Advisor reviewing" (and tells the student).</summary>
     Task<(DecisionOutcome Outcome, PlanReview? Review)> OpenReviewAsync(Guid advisorUserId, Guid planId, CancellationToken ct);

@@ -34,6 +34,8 @@ internal sealed class Scenario
 
     public bool Probation { get; set; }
 
+    public string? Hold { get; set; }
+
     public PlannerTerm Term { get; set; } = new("2027SP", TermSeason.Spring, 2027);
 
     public Availability? Availability { get; set; }
@@ -102,7 +104,7 @@ internal sealed class Scenario
         return new PlannerInput(
             new DateOnly(2026, 11, 9),
             Term,
-            new PlannerStudent(Passed, Failed, InProgress, Earned, Gpa, Probation, 120, Permissions),
+            new PlannerStudent(Passed, Failed, InProgress, Earned, Gpa, Probation, 120, Permissions, Hold),
             Catalog, groups, Sections, Policy, Availability, Preferences);
     }
 

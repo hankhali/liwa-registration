@@ -110,6 +110,7 @@ public static partial class Planner
         }
 
         if (offeredNoSections.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.OfferedButNoSections, offeredNoSections.Order(StringComparer.Ordinal)));
+        if (student.Hold is { } hold) warnings.Add(PlannerReason.Of(ReasonCode.AccountHold, hold));
 
         // 4. Credit limits ----------------------------------------------------------------------
         var limits = policy.LimitsFor(input.Term.Season, standing, student.Gpa, student.OnProbation, creditsLeft);

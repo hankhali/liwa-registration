@@ -133,6 +133,7 @@ internal sealed class StudentRecordConfiguration : IEntityTypeConfiguration<Stud
         b.HasIndex(s => s.AdvisorUserId);
         b.Property(s => s.AdmitTermCode).HasMaxLength(10);
         b.Property(s => s.Status).HasConversion<string>().HasMaxLength(20);
+        b.Property(s => s.Hold).HasMaxLength(30);
         b.HasOne<User>().WithMany().HasForeignKey(s => s.UserId).OnDelete(DeleteBehavior.Restrict);
         b.HasOne<User>().WithMany().HasForeignKey(s => s.AdvisorUserId).OnDelete(DeleteBehavior.SetNull);
         b.HasOne<AcademicProgram>().WithMany().HasForeignKey(s => s.ProgramId).OnDelete(DeleteBehavior.Restrict);
