@@ -81,7 +81,10 @@ describe('planner view (brief §9, UX pass)', () => {
 
   it('shows the credits as a big number and one plain reason per class', async () => {
     const el = await renderPlanner();
-    expect(el.querySelector('.credits-big .num')!.textContent).toBe('3');
+    // Students count classes: 1 class big, (3 credits) small.
+    expect(el.querySelector('.credits-big .num')!.textContent).toBe('1');
+    expect(el.querySelector('.credits-big .small-credits')!.textContent).toContain('(3 credits)');
+    expect(el.querySelector('.credits-big .range')!.textContent).toContain('You can take up to 6 classes (18 credits).');
     // The top chain-starting course says "Take this first" and spells out its chain.
     expect(el.querySelector('.course .take-first')!.textContent).toContain('Take this first');
     expect(el.querySelector('.course .chain')!.textContent).toContain('ITC201 → ITC301 → ITC401 & ITC402');
@@ -91,7 +94,7 @@ describe('planner view (brief §9, UX pass)', () => {
 
   it('lists the classes you can\'t take yet, visible, each with code, title and a reason naming the course and its title', async () => {
     const el = await renderPlanner();
-    expect(el.textContent).toContain('Add 9 more credits to reach the 12-credit minimum');
+    expect(el.textContent).toContain('Add 3 more classes to reach the minimum (4 classes / 12 credits)');
     expect(el.querySelector('details')).toBeNull();
     const cant = el.querySelector('.cant-take')!;
     expect(cant.querySelector('h3')!.textContent).toContain("Classes you can't take yet (2)");

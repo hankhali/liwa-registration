@@ -43,7 +43,7 @@ public sealed class TranslationCoverageTests
 
     /// <summary>Translation sections a student reads (UX pass: words a 17-year-old uses).</summary>
     private static readonly string[] StudentSections =
-        ["student", "home", "studentStatus", "plan", "planner.reasons", "planner.actions", "myPlan", "graduation", "availability", "walkthrough", "timetable", "historyStudent", "messages"];
+        ["student", "home", "studentStatus", "plan", "planner.reasons", "planner.actions", "planner.studentReasons", "planner.studentActions", "units", "months", "myPlan", "graduation", "availability", "walkthrough", "timetable", "historyStudent", "messages"];
 
     private static IEnumerable<(string Key, string Value)> Strings(JsonElement e, string prefix) =>
         e.ValueKind == JsonValueKind.Object

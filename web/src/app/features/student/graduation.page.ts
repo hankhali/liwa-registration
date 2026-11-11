@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../core/i18n/language.service';
 import { localDigits } from '../../core/i18n/digits';
-import { GraduationProjection, Reason, courseTitle, criticalCodes, graduationDate, parseTermCode, semesterDelay, semestersAndSummers, summerSentence, termLabel } from '../../core/planning/planning.models';
+import { GraduationProjection, Reason, classesFromCredits, courseTitle, criticalCodes, graduationDate, parseTermCode, semesterDelay, semestersAndSummers, summerSentence, termLabel } from '../../core/planning/planning.models';
 import { isolate } from '../../shared/bidi';
 import { PlanningService } from '../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
@@ -66,7 +66,7 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
             }
           </p>
           @if (d.view.recommendation.freeTime; as ft) {
-            <p class="compare liwa-muted small assumes">{{ (ft.onlinePerTerm === 1 ? 'graduation.assumesOnlineOne' : 'graduation.assumesOnline') | transloco: { n: ft.onlinePerTerm } }}</p>
+            <p class="compare liwa-muted small assumes">{{ 'graduation.assumesClasses' | transloco: { total: digits(ft.inPersonSlots + ft.onlinePerTerm), slots: digits(ft.inPersonSlots), n: digits(ft.onlinePerTerm) } }}</p>
           }
         }
         @if (d.selection && selectionTerm() !== recommendedTerm()) {
@@ -87,7 +87,7 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
         @for (t of terms(); track t.termCode; let first = $first) {
           <section class="term liwa-card" role="listitem" [attr.aria-labelledby]="'t-' + t.termCode">
             <h2 [id]="'t-' + t.termCode">{{ label(t.termCode) }}@if (first) { <span class="now">{{ 'graduation.now' | transloco }}</span>}</h2>
-            <p class="liwa-muted small">{{ 'plan.credits' | transloco: { n: t.credits } }}</p>
+            <p class="liwa-muted small" [title]="'plan.creditsSmall' | transloco: { n: t.credits }">{{ termClasses(t) === 1 ? ('graduation.classesOne' | transloco) : ('graduation.classes' | transloco: { n: digits(termClasses(t)) }) }}</p>
             <ul>
               @for (c of t.courses; track c) {
                 <li class="card" [class.critical]="critical().has(c)">
@@ -99,7 +99,7 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
                 </li>
               }
               @if (t.electiveCredits > 0) {
-                <li class="card elective">{{ (t.electiveCredits === 1 ? 'graduation.electivesOne' : 'graduation.electives') | transloco: { n: t.electiveCredits } }}</li>
+                <li class="card elective">{{ (classesOf(t.electiveCredits) === 1 ? 'graduation.electiveClassesOne' : 'graduation.electiveClasses') | transloco: { n: digits(classesOf(t.electiveCredits)) } }}</li>
               }
             </ul>
           </section>
@@ -379,6 +379,15 @@ export class GraduationPage {
 
   protected label(code: string | null): string {
     return code ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+  }
+
+  /** Classes in a projected semester: its courses plus free electives counted as classes (display only). */
+  protected termClasses(t: { courses: string[]; electiveCredits: number }): number {
+    return t.courses.length + classesFromCredits(t.electiveCredits);
+  }
+
+  protected classesOf(credits: number): number {
+    return classesFromCredits(credits);
   }
 
   /** "May 2030". */

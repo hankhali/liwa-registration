@@ -69,6 +69,19 @@ describe('page header, stat card, empty state', () => {
   });
 });
 
+describe('reason sentences: students count classes, staff keep credits', () => {
+  it('words credit reasons as classes for students only', async () => {
+    setupI18n('en');
+    const t = TestBed.inject(TranslocoService);
+    const tr = (k: string, p?: Record<string, unknown>) => t.translate(k, p);
+    const has = (k: string) => t.translate(k) !== k;
+    const min = { code: 'BelowMinimumCredits', courses: [], value: '12' };
+    expect(reasonSentence(min, tr, 'action', { total: 6, student: true }, has)).toContain('Add 2 more classes to reach the minimum (4 classes / 12 credits)');
+    expect(reasonSentence(min, tr, 'action', { total: 6 }, has)).toContain('Add 6 more credits');
+    expect(reasonSentence({ code: 'CreditsRequired', courses: [], value: '99' }, tr, 'plain', { student: true }, has)).toBe('You need 33 classes (99 credits) done first');
+    expect(reasonSentence({ code: 'CreditsRequired', courses: [], value: '99' }, tr, 'plain', {}, has)).toBe('You need 99 credits first');
+  });
+});
 describe('timetable grid', () => {
   const blocks = [
     { key: 'a', code: 'ITC201', day: 'Monday', start: '10:00', end: '11:15' },

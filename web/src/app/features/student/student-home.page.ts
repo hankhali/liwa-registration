@@ -9,7 +9,7 @@ import { StudentSummary, formatGpa, programName } from '../../core/academic/acad
 import { AuthService } from '../../core/auth/auth.service';
 import { localDigits } from '../../core/i18n/digits';
 import { LanguageService } from '../../core/i18n/language.service';
-import { PlanStatus, graduationDate, termLabel } from '../../core/planning/planning.models';
+import { PlanStatus, classesAndCredits, classesFromCredits, classesLeft, graduationDate, termLabel } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { greetingName } from '../../shared/first-name';
 import { StatCardComponent } from '../../shared/stat-card.component';
@@ -55,7 +55,7 @@ export const HOME_ACTIONS: Record<PlanStatus | 'none', { label: string; link: st
             @if (v.saved) {
               {{ 'studentStatus.meaning.' + v.saved.status | transloco }}
             } @else {
-              {{ 'home.meaningNone' | transloco: { n: v.recommendation.totalCredits } }}
+              {{ 'home.meaningNone' | transloco: { text: classesText(v.recommendation.plan.length, v.recommendation.totalCredits) } }}
             }
           </p>
         </div>
@@ -71,7 +71,9 @@ export const HOME_ACTIONS: Record<PlanStatus | 'none', { label: string; link: st
     }
 
     <div class="numbers">
-      <app-stat-card icon="task_alt" [value]="creditsValue()" [label]="'home.numbers.credits' | transloco" />
+      <!-- Students count classes (display only; the record is in credits) -->
+      <app-stat-card icon="event_note" [value]="classesNow()" [label]="'home.numbers.classesNow' | transloco" link="/student/planner" />
+      <app-stat-card icon="task_alt" [value]="classesToGo()" [label]="'home.numbers.classesLeft' | transloco" />
       <app-stat-card icon="grade" [value]="gpaValue()" [label]="'home.numbers.gpa' | transloco" />
       <app-stat-card icon="school" [value]="graduation()" [label]="'home.numbers.graduation' | transloco" link="/student/graduation" />
     </div>
@@ -153,6 +155,29 @@ export class StudentHomePage {
     const s = this.summary.value();
     return s ? this.transloco.translate('home.numbers.creditsValue', { earned: localDigits(String(s.creditsEarned), this.language.lang()), required: localDigits(String(s.creditsRequired), this.language.lang()) }) : '–';
   });
+  /** Classes in this semester's plan: the saved plan when there is one, otherwise the recommendation. */
+  protected readonly classesNow = computed(() => {
+    const v = this.plan.value();
+    if (!v) return '–';
+    return localDigits(String(v.saved ? v.saved.sectionIds.length : v.recommendation.plan.length), this.language.lang());
+  });
+
+  /** Classes left to graduate: remaining credits ÷ 3 when every course is 3 credits, else the exact count. */
+  protected readonly classesToGo = computed(() => {
+    const s = this.summary.value();
+    const v = this.plan.value();
+    if (!s || !v) return '–';
+    const projected = v.recommendation.projection.withoutSummer.terms ?? [];
+    const projectedClasses = projected.reduce((n, t) => n + t.courses.length + classesFromCredits(t.electiveCredits), 0);
+    const inProgress = classesFromCredits(s.inProgressCredits);
+    const n = classesLeft(s.creditsRequired - s.creditsEarned, v.courses.map((c) => c.credits), projectedClasses, inProgress);
+    return localDigits(String(n), this.language.lang());
+  });
+
+  protected classesText(classes: number, credits: number): string {
+    return classesAndCredits(classes, credits, (k, p) => this.transloco.translate(k, p), this.language.lang());
+  }
+
   protected readonly gpaValue = computed(() => {
     const s = this.summary.value();
     if (!s) return '–';

@@ -608,9 +608,10 @@
       "deliveryAny": "في الحرم الجامعي أو عن بُعد",
       "deliveryCampus": "في الحرم الجامعي فقط",
       "deliveryOnline": "عن بُعد فقط",
-      "maxCredits": "عدد الساعات المستهدف",
+      "maxCredits": "كم مادة؟",
       "noLimit": "العبء المعتاد",
-      "upTo": "حتى {{ n }} ساعة"
+      "upTo": "حتى {{ n }} ساعة",
+      "upToClasses": "حتى {{ text }}"
     },
     "listLabel": "المواد في خطتك",
     "credits": "{{ n }} ساعات",
@@ -662,7 +663,8 @@
         "other": "أسباب أخرى ({{ n }})"
       },
       "counter": "{{ n }} ساعة معتمدة",
-      "counterLimits": "حدّك: {{ min }}–{{ max }} ساعة معتمدة"
+      "counterLimits": "حدّك: {{ min }}–{{ max }} ساعة معتمدة",
+      "limitClasses": "حدك: حتى {{ text }}"
     },
     "credit1": "ساعة واحدة",
     "dayJoin": " و",
@@ -709,8 +711,16 @@
     "chainLabel": "تفتح هذه السلسلة من المواد:",
     "load": {
       "label": "عدد الساعات المعتمدة المستهدف هذا الفصل",
-      "usual": "العبء المعتاد ({{ n }} ساعة معتمدة)"
-    }
+      "usual": "العبء المعتاد ({{ n }} ساعة معتمدة)",
+      "question": "كم مادة تريد هذا الفصل؟",
+      "usualHint": "المعتاد {{ text }}"
+    },
+    "classesThisSemester": "مواد هذا الفصل",
+    "classesThisSemesterOne": "مادة هذا الفصل",
+    "creditsSmall": "({{ n }} ساعة معتمدة)",
+    "limitsClasses": "يمكنك تسجيل حتى {{ classes }} مواد ({{ credits }} ساعة معتمدة).",
+    "creditsHint": "كل مادة تساوي 3 ساعات معتمدة. الجامعة تحسب الساعات المعتمدة، ويمكنك أن تحسب المواد فقط.",
+    "creditsHintOk": "فهمت"
   },
   "planner": {
     "join": {
@@ -796,7 +806,19 @@
       "Spring": "الربيع",
       "Summer": "الصيف 1"
     },
-    "summer2": "الصيف 2"
+    "summer2": "الصيف 2",
+    "studentReasons": {
+      "CreditLimitReached": "ستتجاوز حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة)",
+      "CreditsRequired": "عليك أن تُنهي {{ classes }} مادة ({{ value }} ساعة معتمدة) أولًا",
+      "BelowMinimumCredits": "هذا أقل من الحد الأدنى المعتاد وهو {{ classes }} مواد ({{ value }} ساعة معتمدة)",
+      "OverCreditLimit": "هذا أكثر من حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة)",
+      "OnlyCreditsFit": "لا تتسع أوقات فراغك إلا لـ {{ classes }} مواد ({{ value }} ساعة معتمدة)"
+    },
+    "studentActions": {
+      "BelowMinimumCredits": "أضف {{ missingClasses }} مواد أخرى لتبلغ الحد الأدنى ({{ classes }} مواد / {{ value }} ساعة معتمدة)، أو اطلب من مرشدك الموافقة على عبء أخف.",
+      "OverCreditLimit": "احذف {{ overClasses }} مواد لتعود تحت حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة).",
+      "OnlyCreditsFit": "لا تتسع أوقات فراغك إلا لـ {{ classes }} مواد ({{ value }} ساعة معتمدة). أضف أوقات فراغ لتسجّل مواد أكثر، أو أبقِ هذا الفصل أخف."
+    }
   },
   "notifications": {
     "planSubmitted": "أرسل {{ student }} خطة لفصل {{ term }}.",
@@ -966,7 +988,12 @@
     "summerForward": "تسجيل مواد صيفية يقدّم موعد تخرجك {{ n }} فصول: {{ without }} ← {{ with }}.",
     "summerForwardOne": "تسجيل مواد صيفية يقدّم موعد تخرجك فصلًا واحدًا: {{ without }} ← {{ with }}.",
     "summerNoChange": "مواد الصيف لن تغيّر موعد تخرجك.",
-    "keepSame": "مع {{ freeTime }} أو جدول دوام كامل، تتخرج في {{ term }} في الحالتين."
+    "keepSame": "مع {{ freeTime }} أو جدول دوام كامل، تتخرج في {{ term }} في الحالتين.",
+    "classes": "{{ n }} مواد",
+    "classesOne": "مادة واحدة",
+    "electiveClasses": "{{ n }} مواد اختيارية حرة (أي مادة)",
+    "electiveClassesOne": "مادة اختيارية حرة واحدة (أي مادة)",
+    "assumesClasses": "يفترض هذا نحو {{ total }} مواد في كل فصل: {{ slots }} في أوقات فراغك ونحو {{ n }} عن بُعد، مثل هذا الفصل."
   },
   "myPlan": {
     "heading": "أين وصلت خطتي",
@@ -1035,7 +1062,7 @@
     "hello": "مرحبًا {{ name }}",
     "answer": "{{ term }}: خطتك",
     "answerNone": "{{ term }}: خطتك جاهزة لتطّلع عليها",
-    "meaningNone": "جهّزنا لك خطة من {{ n }} ساعة معتمدة من مواد يمكنك تسجيلها. اطّلع عليها، ثم أرسلها إلى مرشدك.",
+    "meaningNone": "جهّزنا لك خطة من {{ text }} يمكنك تسجيلها. اطّلع عليها، ثم أرسلها إلى مرشدك.",
     "notReady": "خطتك ليست جاهزة بعد",
     "action": {
       "none": "اعرض خطتي",
@@ -1050,7 +1077,9 @@
       "credits": "الساعات المعتمدة المنجزة",
       "creditsValue": "{{ earned }} من {{ required }}",
       "gpa": "المعدل التراكمي",
-      "graduation": "موعد التخرج (بدون الصيف)"
+      "graduation": "موعد التخرج (بدون الصيف)",
+      "classesNow": "مواد هذا الفصل",
+      "classesLeft": "المواد المتبقية للتخرج"
     },
     "facts": {
       "program": "البرنامج"
@@ -1097,5 +1126,9 @@
     "10": "أكتوبر",
     "11": "نوفمبر",
     "12": "ديسمبر"
+  },
+  "units": {
+    "classesCredits": "{{ classes }} مواد ({{ credits }} ساعة معتمدة)",
+    "classCredits": "مادة واحدة ({{ credits }} ساعات معتمدة)"
   }
 }

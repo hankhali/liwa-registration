@@ -3,7 +3,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '../../core/i18n/language.service';
 import {
   AvailabilityPreset,
   DeliveryPreference,
@@ -11,6 +12,8 @@ import {
   PRESET_CARDS,
   TEACHING_DAYS,
   TimeWindow,
+  classesAndCredits,
+  classesFromCredits,
 } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { PageHeaderComponent } from '../../shared/page-header.component';
@@ -62,8 +65,8 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
               <mat-label>{{ 'plan.prefs.maxCredits' | transloco }}</mat-label>
               <mat-select [value]="maxCredits()" (valueChange)="maxCredits.set($event)">
                 <mat-option [value]="null">{{ 'plan.prefs.noLimit' | transloco }}</mat-option>
-                @for (n of [6, 9, 12, 15, 18, 21]; track n) {
-                  <mat-option [value]="n">{{ 'plan.prefs.upTo' | transloco: { n: n } }}</mat-option>
+                @for (n of [9, 12, 15, 18, 21]; track n) {
+                  <mat-option [value]="n">{{ 'plan.prefs.upToClasses' | transloco: { text: classesText(n) } }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -151,6 +154,8 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
 export class AvailabilityPage {
   private readonly planning = inject(PlanningService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
+  private readonly language = inject(LanguageService);
 
   protected readonly cards = PRESET_CARDS;
   protected readonly icons: Record<string, string> = { daytime: 'light_mode', evenings: 'nights_stay', weekends: 'weekend', custom: 'tune' };
@@ -172,6 +177,11 @@ export class AvailabilityPage {
       return p;
     },
   });
+
+  /** "5 classes (15 credits)" for a credit figure. */
+  protected classesText(credits: number): string {
+    return classesAndCredits(classesFromCredits(credits), credits, (k, p) => this.transloco.translate(k, p), this.language.lang());
+  }
 
   /** Saturday shows only when the free time includes it (it's off by default for teaching). */
   protected gridDays() {

@@ -3,7 +3,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { isolate } from '../../shared/bidi';
 import { LanguageService } from '../i18n/language.service';
 import { CourseTitles } from './course-titles';
-import { Reason } from './planning.models';
+import { AuthService } from '../auth/auth.service';
+import { CREDITS_PER_CLASS, Reason, classesFromCredits } from './planning.models';
 
 /** Reasons whose course list means "any one of these" rather than "all of these". */
 const OR_LISTS = new Set(['PrerequisiteNotMet']);
@@ -14,7 +15,12 @@ const SECTION_ONLY = new Set(['SectionFull', 'OutsideAvailability']);
 export interface ReasonContext {
   /** Credits currently selected (for "add N more credits"). */
   total?: number;
+  /** Student wording: credit figures as classes first ("Add 2 more classes … (4 classes / 12 credits)"). */
+  student?: boolean;
 }
+
+/** Reasons with a credit figure; students get a "classes first" version (planner.studentReasons / studentActions). */
+const CREDIT_REASONS = new Set(['CreditLimitReached', 'CreditsRequired', 'BelowMinimumCredits', 'OverCreditLimit', 'OnlyCreditsFit']);
 
 /**
  * Turns a planner reason code into a plain sentence in the reader's language (brief §8/§9: the server sends
@@ -27,10 +33,13 @@ export class ReasonTextPipe implements PipeTransform {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
   private readonly titles = inject(CourseTitles);
+  private readonly auth = inject(AuthService);
 
   transform(r: Reason, mode: 'plain' | 'action' = 'plain', ctx: ReasonContext = {}): string {
     this.language.lang(); // re-render on language change
-    return reasonSentence(r, (key, params) => this.transloco.translate(key, params), mode, ctx, (key) => this.has(key), (code) => this.titles.title(code));
+    // Students count classes; advisors and admins keep credits (display only).
+    const context = { ...ctx, student: ctx.student ?? this.auth.role() === 'Student' };
+    return reasonSentence(r, (key, params) => this.transloco.translate(key, params), mode, context, (key) => this.has(key), (code) => this.titles.title(code));
   }
 
   private has(key: string): boolean {
@@ -74,12 +83,18 @@ export function reasonSentence(
   else if (r.code === 'ClashesWith' && r.courses.length === 1) key = 'planner.reasons.ClashesWithOne';
 
   const params: Record<string, unknown> = { courses, value, first: codes[0] ?? '', second: codes[1] ?? '' };
+  const n = Number(r.value);
+  const total = ctx.total ?? 0;
+  const student = !!ctx.student && CREDIT_REASONS.has(r.code);
+  if (Number.isFinite(n)) params['classes'] = classesFromCredits(n);
   if (mode === 'action' && has(`planner.actions.${r.code}`)) {
-    const min = Number(r.value);
-    const total = ctx.total ?? 0;
-    params['missing'] = Number.isFinite(min) ? Math.max(0, min - total) : '';
-    params['over'] = Number.isFinite(min) ? Math.max(0, total - min) : '';
-    key = `planner.actions.${r.code}`;
+    params['missing'] = Number.isFinite(n) ? Math.max(0, n - total) : '';
+    params['over'] = Number.isFinite(n) ? Math.max(0, total - n) : '';
+    params['missingClasses'] = Number.isFinite(n) ? Math.ceil(Math.max(0, n - total) / CREDITS_PER_CLASS) : '';
+    params['overClasses'] = Number.isFinite(n) ? Math.ceil(Math.max(0, total - n) / CREDITS_PER_CLASS) : '';
+    key = student && has(`planner.studentActions.${r.code}`) ? `planner.studentActions.${r.code}` : `planner.actions.${r.code}`;
+  } else if (student && has(`planner.studentReasons.${r.code}`)) {
+    key = `planner.studentReasons.${r.code}`;
   }
   return t(key, params);
 }

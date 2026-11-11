@@ -245,6 +245,27 @@ export function parseTermCode(code: string): { season: 'Spring' | 'Summer' | 'Fa
   return { year: Number(m[1]), season: m[2] === 'SP' ? 'Spring' : m[2] === 'SU' ? 'Summer' : 'Fall' };
 }
 
+/** Credits per class in the catalog (every course is 3 credits); used only to show credit figures as classes. */
+export const CREDITS_PER_CLASS = 3;
+
+/** A credit figure as classes (21 → 7). Display only: rules and the API stay in credits. */
+export function classesFromCredits(credits: number): number {
+  return Math.round(credits / CREDITS_PER_CLASS);
+}
+
+/** "5 classes (15 credits)" / "1 class (3 credits)" in the reader's language: students count classes first. */
+export function classesAndCredits(classes: number, credits: number, t: (key: string, params?: Record<string, unknown>) => string, lang: string): string {
+  return t(classes === 1 ? 'units.classCredits' : 'units.classesCredits', { classes: localDigits(String(classes), lang), credits: localDigits(String(credits), lang) });
+}
+
+/**
+ * Classes left to graduate: remaining credits ÷ 3 when every course is 3 credits; otherwise the exact number of
+ * classes still to take (from the projection, plus the classes in progress).
+ */
+export function classesLeft(creditsLeft: number, courseCredits: number[], projectedClasses: number, inProgressClasses: number): number {
+  return courseCredits.every((c) => c === CREDITS_PER_CLASS) ? Math.ceil(Math.max(0, creditsLeft) / CREDITS_PER_CLASS) : projectedClasses + inProgressClasses;
+}
+
 /**
  * The month each kind of term ends (docs/assumptions.md K19; from the demo term dates, a registrar question):
  * Fall → December, Spring → May, Summer 1 → July, Summer 2 → August.

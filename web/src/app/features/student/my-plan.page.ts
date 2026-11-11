@@ -6,7 +6,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { formatDateTime } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
 import { CourseTitles, courseOnly } from '../../core/planning/course-titles';
-import { PlanEvent, PlanStatus, courseTitle, meetingPatterns, timeRange } from '../../core/planning/planning.models';
+import { PlanEvent, PlanStatus, classesAndCredits, courseTitle, meetingPatterns, timeRange } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { PageHeaderComponent } from '../../shared/page-header.component';
@@ -99,7 +99,7 @@ export const MY_PLAN_ACTIONS: Partial<Record<PlanStatus, { label: string; link: 
                       </li>
                     }
                   </ul>
-                  <p class="side-total">{{ 'myPlan.compare.total' | transloco: { n: side.credits } }}</p>
+                  <p class="side-total">{{ classesText(side.rows.length, side.credits) }}</p>
                 </div>
               }
             </div>
@@ -388,6 +388,11 @@ export class MyPlanPage {
         return { id: s.id, code: s.courseCode, title: courseTitle(course, lang), credits: course?.credits ?? 0, when };
       })
       .sort((a, b) => a.code.localeCompare(b.code));
+  }
+
+  /** "5 classes (15 credits)": students count classes first. */
+  protected classesText(classes: number, credits: number): string {
+    return classesAndCredits(classes, credits, (k, p) => this.transloco.translate(k, p), this.language.lang());
   }
 
   protected course(entry: string): string {

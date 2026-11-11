@@ -2,6 +2,22 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: students count classes (2026-11-11)
+
+Display only: rules, the API, and the advisor and admin views stay in credits.
+
+- **Planner:** "5 classes this semester" big, "(15 credits)" small; "You can take up to 7 classes (21 credits)"; "How
+  many classes do you want this semester?" is a slider from 3 to the limit, showing credits alongside. A one-time hint
+  on the word "credits": "Each class is worth 3 credits. The university counts credits; you can just count classes."
+- **Home:** "Classes this semester" and "Classes left to graduate" (remaining credits ÷ 3 when every course is 3
+  credits, otherwise the exact count), next to GPA and the graduation date.
+- **Graduation:** semester cards say "5 classes"; free electives as classes; "This assumes about 5 classes a semester:
+  4 at the times you're free and about 1 online".
+- **Messages and checks for students:** "Add 2 more classes to reach the minimum (4 classes / 12 credits)", "You need
+  33 classes (99 credits) done first", "Only 4 classes (12 credits) fit your free time" (new `planner.studentReasons`
+  and `planner.studentActions`, chosen by role).
+- My plan's side-by-side totals, the "Change courses" counter and the Free time page use classes too.
+
 ## Unreleased: unambiguous graduation dates (2026-11-11)
 
 - **Month-first graduation dates** everywhere a graduation date appears (Graduation, Home, the planner, the advisor's

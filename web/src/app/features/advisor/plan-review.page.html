@@ -179,6 +179,7 @@
       <p class="small muted">{{ 'advisor.review.proposeHint' | transloco }}</p>
       <app-plan-editor
         idPrefix="adv-"
+        [student]="false"
         [view]="r.planning"
         [selection]="proposal()"
         (selectionChange)="setProposal($event)"

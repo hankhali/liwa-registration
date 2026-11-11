@@ -10,6 +10,8 @@ import {
   SectionInfo,
   TEACHING_DAYS,
   TimeWindow,
+  classesAndCredits,
+  classesFromCredits,
   courseTitle,
   criticalCodes,
   meetingPatterns,
@@ -81,9 +83,17 @@ export function editorReason(reasons: Reason[]): Reason {
       </div>
       <div class="editor-right">
         <div class="counter" [class.over]="limits() && totalCredits() > limits()!.max" aria-live="polite">
-          <strong>{{ 'plan.editor.counter' | transloco: { n: totalCredits() } }}</strong>
-          @if (limits(); as l) {
-            <span>{{ 'plan.editor.counterLimits' | transloco: { min: l.min ?? 0, max: l.max } }}</span>
+          @if (student()) {
+            <!-- Students count classes; credits second -->
+            <strong>{{ classesText(classCount(), totalCredits()) }}</strong>
+            @if (limits(); as l) {
+              <span>{{ 'plan.editor.limitClasses' | transloco: { text: classesText(classesOf(l.max), l.max) } }}</span>
+            }
+          } @else {
+            <strong>{{ 'plan.editor.counter' | transloco: { n: totalCredits() } }}</strong>
+            @if (limits(); as l) {
+              <span>{{ 'plan.editor.counterLimits' | transloco: { min: l.min ?? 0, max: l.max } }}</span>
+            }
           }
         </div>
         <app-timetable-grid [blocks]="blocks()" [online]="online()" [days]="gridDays()" [free]="availability()" />
@@ -181,6 +191,8 @@ export class PlanEditorComponent {
   readonly selection = input.required<Record<string, string>>();
   readonly availability = input<TimeWindow[]>([]);
   readonly limits = input<{ min: number | null; max: number } | null>(null);
+  /** Student wording (classes first); advisors keep credits. */
+  readonly student = input(true);
   /** Keeps element ids unique when two editors could be on one page. */
   readonly idPrefix = input('ed-');
   readonly selectionChange = output<Record<string, string>>();
@@ -232,6 +244,15 @@ export class PlanEditorComponent {
   protected readonly gridDays = computed(() => (this.blocks().some((b) => b.day === 'Saturday') ? [...TEACHING_DAYS, 'Saturday' as const] : TEACHING_DAYS));
 
   protected readonly reason = editorReason;
+  protected readonly classCount = computed(() => Object.keys(this.selection()).length);
+
+  protected classesOf(credits: number): number {
+    return classesFromCredits(credits);
+  }
+
+  protected classesText(classes: number, credits: number): string {
+    return classesAndCredits(classes, credits, (k, p) => this.transloco.translate(k, p), this.language.lang());
+  }
 
   protected toggleCourse(code: string, checked: boolean): void {
     const next = { ...this.selection() };

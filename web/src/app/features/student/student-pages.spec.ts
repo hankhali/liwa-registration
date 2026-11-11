@@ -139,7 +139,7 @@ describe('Graduation: summer-only class (follow-up 3)', () => {
     const el = await render(GraduationPage, view);
     prefs.preset = 'any';
     expect(el.querySelector('.keep')!.textContent).toContain('If you keep evenings only: December 2030. With a full-time schedule: May 2029.');
-    expect(el.querySelector('.assumes')!.textContent).toContain('This assumes about 1 online class a semester, like this semester.');
+    expect(el.querySelector('.assumes')!.textContent).toContain("This assumes about 5 classes a semester: 4 at the times you're free and about 1 online, like this semester.");
   });
 
   it('shows no such line when summer does change the date', async () => {

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { setArabicDigits } from '../i18n/digits';
 import {
+  classesAndCredits,
+  classesFromCredits,
+  classesLeft,
   graduationDate,
   graduationMonth,
   semestersAndSummers,
@@ -156,5 +159,22 @@ describe('graduation dates, month first', () => {
   it('counts semesters left (Fall and Spring) separately from summers', () => {
     expect(semestersAndSummers([{ termCode: '2027SP' }, { termCode: '2027SU' }, { termCode: '2027FA' }, { termCode: '2028SP' }, { termCode: '2028SU' }]))
       .toEqual({ semesters: 3, summers: 2 });
+  });
+});
+describe('classes first, credits second (students)', () => {
+  const strings: Record<string, string> = { 'units.classesCredits': '{{ classes }} classes ({{ credits }} credits)', 'units.classCredits': '1 class ({{ credits }} credits)' };
+  const t = (k: string, p?: Record<string, unknown>) => (strings[k] ?? k).replace(/\{\{ (\w+) \}\}/g, (_, n: string) => String(p?.[n] ?? ''));
+
+  it('shows "5 classes (15 credits)" and the singular', () => {
+    expect(classesAndCredits(5, 15, t, 'en')).toBe('5 classes (15 credits)');
+    expect(classesAndCredits(1, 3, t, 'en')).toBe('1 class (3 credits)');
+    expect(classesFromCredits(21)).toBe(7);
+    expect(classesFromCredits(12)).toBe(4);
+  });
+
+  it('counts classes left from credits when every course is 3 credits, otherwise exactly', () => {
+    expect(classesLeft(105, [3, 3, 3], 31, 4)).toBe(35);
+    expect(classesLeft(104, [3, 4, 3], 31, 4)).toBe(35); // a 4-credit course: count the classes themselves
+    expect(classesLeft(104, [3, 4, 3], 30, 4)).toBe(34);
   });
 });

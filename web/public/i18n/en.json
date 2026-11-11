@@ -608,9 +608,10 @@
       "deliveryAny": "On campus or online",
       "deliveryCampus": "On campus only",
       "deliveryOnline": "Online only",
-      "maxCredits": "Credits to aim for",
+      "maxCredits": "How many classes?",
       "noLimit": "The usual load",
-      "upTo": "Up to {{ n }} credits"
+      "upTo": "Up to {{ n }} credits",
+      "upToClasses": "Up to {{ text }}"
     },
     "listLabel": "Classes in your plan",
     "credits": "{{ n }} credits",
@@ -662,7 +663,8 @@
         "other": "Other reasons ({{ n }})"
       },
       "counter": "{{ n }} credits",
-      "counterLimits": "Your limit: {{ min }}–{{ max }} credits"
+      "counterLimits": "Your limit: {{ min }}–{{ max }} credits",
+      "limitClasses": "Your limit: up to {{ text }}"
     },
     "credit1": "1 credit",
     "dayJoin": " & ",
@@ -709,8 +711,16 @@
     "chainLabel": "Opens this chain of classes:",
     "load": {
       "label": "Credits to aim for this semester",
-      "usual": "The usual load ({{ n }} credits)"
-    }
+      "usual": "The usual load ({{ n }} credits)",
+      "question": "How many classes do you want this semester?",
+      "usualHint": "Usually {{ text }}"
+    },
+    "classesThisSemester": "classes this semester",
+    "classesThisSemesterOne": "class this semester",
+    "creditsSmall": "({{ n }} credits)",
+    "limitsClasses": "You can take up to {{ classes }} classes ({{ credits }} credits).",
+    "creditsHint": "Each class is worth 3 credits. The university counts credits; you can just count classes.",
+    "creditsHintOk": "Got it"
   },
   "planner": {
     "join": {
@@ -796,7 +806,19 @@
       "Spring": "Spring",
       "Summer": "Summer 1"
     },
-    "summer2": "Summer 2"
+    "summer2": "Summer 2",
+    "studentReasons": {
+      "CreditLimitReached": "Would go over your limit of {{ classes }} classes ({{ value }} credits)",
+      "CreditsRequired": "You need {{ classes }} classes ({{ value }} credits) done first",
+      "BelowMinimumCredits": "This is below the usual minimum of {{ classes }} classes ({{ value }} credits)",
+      "OverCreditLimit": "That's more than your limit of {{ classes }} classes ({{ value }} credits)",
+      "OnlyCreditsFit": "Only {{ classes }} classes ({{ value }} credits) fit your free time"
+    },
+    "studentActions": {
+      "BelowMinimumCredits": "Add {{ missingClasses }} more classes to reach the minimum ({{ classes }} classes / {{ value }} credits), or ask your advisor to approve a lighter load.",
+      "OverCreditLimit": "Remove {{ overClasses }} classes to get back under your limit of {{ classes }} classes ({{ value }} credits).",
+      "OnlyCreditsFit": "Only {{ classes }} classes ({{ value }} credits) fit your free time. Add more free time to take more classes, or keep this lighter semester."
+    }
   },
   "notifications": {
     "planSubmitted": "{{ student }} sent a plan for {{ term }}.",
@@ -966,7 +988,12 @@
     "summerForward": "Taking summer classes brings your graduation forward by {{ n }} semesters: {{ without }} → {{ with }}.",
     "summerForwardOne": "Taking summer classes brings your graduation forward by 1 semester: {{ without }} → {{ with }}.",
     "summerNoChange": "Summer classes wouldn't change your graduation date.",
-    "keepSame": "With {{ freeTime }} or a full-time schedule, you graduate in {{ term }} either way."
+    "keepSame": "With {{ freeTime }} or a full-time schedule, you graduate in {{ term }} either way.",
+    "classes": "{{ n }} classes",
+    "classesOne": "1 class",
+    "electiveClasses": "{{ n }} free elective classes (any class)",
+    "electiveClassesOne": "1 free elective class (any class)",
+    "assumesClasses": "This assumes about {{ total }} classes a semester: {{ slots }} at the times you're free and about {{ n }} online, like this semester."
   },
   "myPlan": {
     "heading": "Where my plan is",
@@ -1035,7 +1062,7 @@
     "hello": "Hi {{ name }}",
     "answer": "{{ term }}: your plan is",
     "answerNone": "{{ term }}: your plan is ready to look at",
-    "meaningNone": "We've built a plan with {{ n }} credits of classes you can take. Have a look, then send it to your advisor.",
+    "meaningNone": "We've built a plan with {{ text }} you can take. Have a look, then send it to your advisor.",
     "notReady": "Your plan isn't ready yet",
     "action": {
       "none": "See my plan",
@@ -1050,7 +1077,9 @@
       "credits": "Credits done",
       "creditsValue": "{{ earned }} of {{ required }}",
       "gpa": "GPA",
-      "graduation": "Graduation date (without summer)"
+      "graduation": "Graduation date (without summer)",
+      "classesNow": "Classes this semester",
+      "classesLeft": "Classes left to graduate"
     },
     "facts": {
       "program": "Program"
@@ -1097,5 +1126,9 @@
     "10": "October",
     "11": "November",
     "12": "December"
+  },
+  "units": {
+    "classesCredits": "{{ classes }} classes ({{ credits }} credits)",
+    "classCredits": "1 class ({{ credits }} credits)"
   }
 }

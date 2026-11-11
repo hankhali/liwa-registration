@@ -4,6 +4,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { localDigits } from '../../../core/i18n/digits';
@@ -21,6 +22,9 @@ import {
   SectionInfo,
   TEACHING_DAYS,
   blockedGroup,
+  CREDITS_PER_CLASS,
+  classesAndCredits,
+  classesFromCredits,
   chainText,
   courseTitle,
   criticalCodes,
@@ -74,6 +78,16 @@ export function blockingReason(reasons: Reason[]): Reason {
   return reasons.find((r) => !POSITIVE.has(r.code)) ?? reasons[0] ?? { code: 'NotEligibleNow', courses: [], value: null };
 }
 
+const CREDITS_HINT_KEY = 'liwa.creditsHintSeen';
+
+function readFlag(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return 'unavailable'; // no storage (private mode, previews): don't nag on every visit
+  }
+}
+
 /** The free-time choices offered as one-tap buttons on the planner. */
 export const QUICK_PRESETS: Exclude<AvailabilityPreset, 'custom'>[] = ['any', 'daytime', 'evenings', 'weekends'];
 
@@ -93,6 +107,7 @@ const AUTOSAVE_MS = 1200;
     MatIconModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatSliderModule,
     RouterLink,
     TranslocoPipe,
     ReasonTextPipe,
@@ -272,6 +287,38 @@ export class StudentPlanComponent {
     return [6, 9, 12, 15, 18, 21].filter((n) => n <= max);
   });
   protected readonly usualLoad = computed(() => this.view.value()?.recommendation.limits?.normalLoad ?? 15);
+
+  // ---- Classes first (display only: the API and rules stay in credits)
+  /** Up to this many classes: the policy maximum ÷ 3 (the slider's top). */
+  protected readonly maxClasses = computed(() => Math.max(3, classesFromCredits(this.view.value()?.recommendation.limits?.maxCredits ?? 18)));
+  protected readonly usualClasses = computed(() => classesFromCredits(this.usualLoad()));
+  /** What the slider shows: the student's own choice, or the usual load. */
+  protected readonly aimClasses = computed(() => Math.min(this.maxClasses(), classesFromCredits(this.loadChoice() ?? this.usualLoad())));
+
+  protected classes(credits: number): number {
+    return classesFromCredits(credits);
+  }
+
+  /** "5 classes (15 credits)". */
+  protected classesText(n: number): string {
+    return classesAndCredits(n, n * CREDITS_PER_CLASS, (k, p) => this.transloco.translate(k, p), this.language.lang());
+  }
+
+  protected setLoadClasses(n: number): Promise<void> {
+    return this.setLoad(Number.isFinite(n) && n > 0 ? n * CREDITS_PER_CLASS : null);
+  }
+
+  /** "Each class is worth 3 credits…": shown once, the first time a student sees credits. */
+  protected readonly showCreditsHint = signal(readFlag(CREDITS_HINT_KEY) === null);
+
+  protected dismissCreditsHint(): void {
+    this.showCreditsHint.set(false);
+    try {
+      localStorage.setItem(CREDITS_HINT_KEY, 'seen');
+    } catch {
+      /* storage unavailable: the hint just comes back next time */
+    }
+  }
 
   protected async setLoad(credits: number | null): Promise<void> {
     if (credits === this.loadChoice()) return;

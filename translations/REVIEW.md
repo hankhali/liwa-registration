@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 112 · UI strings: 871
+- Programs: 3 · Courses: 112 · UI strings: 898
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -537,9 +537,12 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `explainer.thinking` | Thinking… | جارٍ التفكير… |
 | [ ] | `explainer.useNote` | Put this in my note to edit | ضعها في ملاحظتي لأعدّلها |
 | [ ] | `explainer.whyNot` | Why? | لماذا؟ |
+| [ ] | `graduation.assumesClasses` | This assumes about {{ total }} classes a semester: {{ slots }} at the times you're free and about {{ n }} online, like this semester. | يفترض هذا نحو {{ total }} مواد في كل فصل: {{ slots }} في أوقات فراغك ونحو {{ n }} عن بُعد، مثل هذا الفصل. |
 | [ ] | `graduation.assumesOnline` | This assumes about {{ n }} online classes a semester, like this semester. | يفترض هذا نحو {{ n }} مواد عن بُعد في كل فصل، مثل هذا الفصل. |
 | [ ] | `graduation.assumesOnlineOne` | This assumes about 1 online class a semester, like this semester. | يفترض هذا نحو مادة واحدة عن بُعد في كل فصل، مثل هذا الفصل. |
 | [ ] | `graduation.both` | With your selection you graduate in {{ mine }}; with the recommended plan in {{ rec }}. | باختيارك تتخرج في {{ mine }}؛ وبالخطة المقترحة في {{ rec }}. |
+| [ ] | `graduation.classes` | {{ n }} classes | {{ n }} مواد |
+| [ ] | `graduation.classesOne` | 1 class | مادة واحدة |
 | [ ] | `graduation.columns` | Semesters until graduation | الفصول الدراسية حتى التخرج |
 | [ ] | `graduation.compare` | Which plan to show | أي خطة تُعرض |
 | [ ] | `graduation.creditLimit` | there isn't room within your credit limit this semester | لا يوجد متسع ضمن حدّ ساعاتك هذا الفصل الدراسي |
@@ -547,6 +550,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `graduation.dateLabel` | You could graduate in | يمكنك التخرج في |
 | [ ] | `graduation.delay` | Your plan pushes back your graduation date by {{ n }} semesters. | خطتك تؤخر موعد تخرجك {{ n }} فصول. |
 | [ ] | `graduation.delayOne` | Your plan pushes back your graduation date by one semester. | خطتك تؤخر موعد تخرجك فصلًا واحدًا. |
+| [ ] | `graduation.electiveClasses` | {{ n }} free elective classes (any class) | {{ n }} مواد اختيارية حرة (أي مادة) |
+| [ ] | `graduation.electiveClassesOne` | 1 free elective class (any class) | مادة اختيارية حرة واحدة (أي مادة) |
 | [ ] | `graduation.electives` | {{ n }} credits of free electives (any class) | {{ n }} ساعات معتمدة من المواد الاختيارية الحرة (أي مادة) |
 | [ ] | `graduation.electivesOne` | 1 credit of free electives (any class) | ساعة معتمدة واحدة من المواد الاختيارية الحرة (أي مادة) |
 | [ ] | `graduation.fix` | Change my plan | عدّل خطتي |
@@ -610,8 +615,10 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `home.answerNone` | {{ term }}: your plan is ready to look at | {{ term }}: خطتك جاهزة لتطّلع عليها |
 | [ ] | `home.facts.program` | Program | البرنامج |
 | [ ] | `home.hello` | Hi {{ name }} | مرحبًا {{ name }} |
-| [ ] | `home.meaningNone` | We've built a plan with {{ n }} credits of classes you can take. Have a look, then send it to your advisor. | جهّزنا لك خطة من {{ n }} ساعة معتمدة من مواد يمكنك تسجيلها. اطّلع عليها، ثم أرسلها إلى مرشدك. |
+| [ ] | `home.meaningNone` | We've built a plan with {{ text }} you can take. Have a look, then send it to your advisor. | جهّزنا لك خطة من {{ text }} يمكنك تسجيلها. اطّلع عليها، ثم أرسلها إلى مرشدك. |
 | [ ] | `home.notReady` | Your plan isn't ready yet | خطتك ليست جاهزة بعد |
+| [ ] | `home.numbers.classesLeft` | Classes left to graduate | المواد المتبقية للتخرج |
+| [ ] | `home.numbers.classesNow` | Classes this semester | مواد هذا الفصل |
 | [ ] | `home.numbers.credits` | Credits done | الساعات المعتمدة المنجزة |
 | [ ] | `home.numbers.creditsValue` | {{ earned }} of {{ required }} | {{ earned }} من {{ required }} |
 | [ ] | `home.numbers.gpa` | GPA | المعدل التراكمي |
@@ -741,6 +748,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.cantTake.intro` | Why each one has to wait. | سبب انتظار كل واحدة منها. |
 | [ ] | `plan.chainLabel` | Opens this chain of classes: | تفتح هذه السلسلة من المواد: |
 | [ ] | `plan.change` | Change courses | تغيير المواد |
+| [ ] | `plan.classesThisSemester` | classes this semester | مواد هذا الفصل |
+| [ ] | `plan.classesThisSemesterOne` | class this semester | مادة هذا الفصل |
 | [ ] | `plan.confirm.cancel` | Not yet | ليس الآن |
 | [ ] | `plan.confirm.heading` | Send your plan to {{ advisor }}? | هل تريد إرسال خطتك إلى {{ advisor }}؟ |
 | [ ] | `plan.confirm.intro` | Before you send it, please read each note and tick "I understand". | قبل الإرسال، يرجى قراءة كل ملاحظة ووضع علامة على "فهمت". |
@@ -748,6 +757,9 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.confirm.understand` | I understand | فهمت |
 | [ ] | `plan.credit1` | 1 credit | ساعة واحدة |
 | [ ] | `plan.credits` | {{ n }} credits | {{ n }} ساعات |
+| [ ] | `plan.creditsHint` | Each class is worth 3 credits. The university counts credits; you can just count classes. | كل مادة تساوي 3 ساعات معتمدة. الجامعة تحسب الساعات المعتمدة، ويمكنك أن تحسب المواد فقط. |
+| [ ] | `plan.creditsHintOk` | Got it | فهمت |
+| [ ] | `plan.creditsSmall` | ({{ n }} credits) | ({{ n }} ساعة معتمدة) |
 | [ ] | `plan.creditsThisSemester` | credits this semester | ساعة معتمدة هذا الفصل |
 | [ ] | `plan.creditsThisSemesterOne` | credit this semester | ساعة معتمدة هذا الفصل |
 | [ ] | `plan.critical` | Take this soon | سجّلها قريبًا |
@@ -766,6 +778,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.editor.groups.other` | Other reasons ({{ n }}) | أسباب أخرى ({{ n }}) |
 | [ ] | `plan.editor.groups.permission` | The department has to say yes first ({{ n }}) | يجب أن يوافق القسم أولًا ({{ n }}) |
 | [ ] | `plan.editor.groups.prerequisite` | You need to pass another class first ({{ n }}) | عليك أن تنجح في مادة أخرى أولًا ({{ n }}) |
+| [ ] | `plan.editor.limitClasses` | Your limit: up to {{ text }} | حدك: حتى {{ text }} |
 | [ ] | `plan.editor.notAvailable` | Classes you can't take yet ({{ n }}) | مواد لا يمكنك تسجيلها بعد ({{ n }}) |
 | [ ] | `plan.empty` | No classes fit your choices right now. Try different free times, or tap "Change courses". | لا توجد مواد تناسب اختياراتك الآن. جرّب أوقات فراغ أخرى، أو اضغط "تغيير المواد". |
 | [ ] | `plan.fixFirst` | Please fix these before sending: | يرجى إصلاح ما يلي قبل الإرسال: |
@@ -796,9 +809,12 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.headingSent` | Your plan for {{ term }} | خطتك لفصل {{ term }} |
 | [ ] | `plan.intro` | Here is the plan we recommend for {{ term }}. We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor. | هذه هي الخطة التي نقترحها لفصل {{ term }}. اخترنا فقط مواد يمكنك تسجيلها، في أوقات لا تتعارض. هل أعجبتك؟ أرسلها إلى مرشدك. |
 | [ ] | `plan.limits` | You can take {{ min }}–{{ max }} credits this semester. | يمكنك تسجيل {{ min }}–{{ max }} ساعة معتمدة هذا الفصل الدراسي. |
+| [ ] | `plan.limitsClasses` | You can take up to {{ classes }} classes ({{ credits }} credits). | يمكنك تسجيل حتى {{ classes }} مواد ({{ credits }} ساعة معتمدة). |
 | [ ] | `plan.listLabel` | Classes in your plan | المواد في خطتك |
 | [ ] | `plan.load.label` | Credits to aim for this semester | عدد الساعات المعتمدة المستهدف هذا الفصل |
+| [ ] | `plan.load.question` | How many classes do you want this semester? | كم مادة تريد هذا الفصل؟ |
 | [ ] | `plan.load.usual` | The usual load ({{ n }} credits) | العبء المعتاد ({{ n }} ساعة معتمدة) |
+| [ ] | `plan.load.usualHint` | Usually {{ text }} | المعتاد {{ text }} |
 | [ ] | `plan.messages.accepted` | Done. Your plan is approved. | تم. خطتك معتمدة الآن. |
 | [ ] | `plan.messages.error` | Your plan couldn't be sent. Please check the notes above and try again. | تعذّر إرسال خطتك. يرجى مراجعة الملاحظات أعلاه والمحاولة مرة أخرى. |
 | [ ] | `plan.messages.saved` | Saved. You can come back and send it later. | تم الحفظ. يمكنك العودة وإرسالها لاحقاً. |
@@ -813,9 +829,10 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.prefs.deliveryAny` | On campus or online | في الحرم الجامعي أو عن بُعد |
 | [ ] | `plan.prefs.deliveryCampus` | On campus only | في الحرم الجامعي فقط |
 | [ ] | `plan.prefs.deliveryOnline` | Online only | عن بُعد فقط |
-| [ ] | `plan.prefs.maxCredits` | Credits to aim for | عدد الساعات المستهدف |
+| [ ] | `plan.prefs.maxCredits` | How many classes? | كم مادة؟ |
 | [ ] | `plan.prefs.noLimit` | The usual load | العبء المعتاد |
 | [ ] | `plan.prefs.upTo` | Up to {{ n }} credits | حتى {{ n }} ساعة |
+| [ ] | `plan.prefs.upToClasses` | Up to {{ text }} | حتى {{ text }} |
 | [ ] | `plan.quickPresets.any` | Any time | أي وقت |
 | [ ] | `plan.quickPresets.custom` | Choose my own hours | أختار ساعاتي بنفسي |
 | [ ] | `plan.quickPresets.customOn` | My own hours (change) | ساعاتي الخاصة (تغيير) |
@@ -919,6 +936,14 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `planner.season.Fall` | Fall | الخريف |
 | [ ] | `planner.season.Spring` | Spring | الربيع |
 | [ ] | `planner.season.Summer` | Summer | الصيف |
+| [ ] | `planner.studentActions.BelowMinimumCredits` | Add {{ missingClasses }} more classes to reach the minimum ({{ classes }} classes / {{ value }} credits), or ask your advisor to approve a lighter load. | أضف {{ missingClasses }} مواد أخرى لتبلغ الحد الأدنى ({{ classes }} مواد / {{ value }} ساعة معتمدة)، أو اطلب من مرشدك الموافقة على عبء أخف. |
+| [ ] | `planner.studentActions.OnlyCreditsFit` | Only {{ classes }} classes ({{ value }} credits) fit your free time. Add more free time to take more classes, or keep this lighter semester. | لا تتسع أوقات فراغك إلا لـ {{ classes }} مواد ({{ value }} ساعة معتمدة). أضف أوقات فراغ لتسجّل مواد أكثر، أو أبقِ هذا الفصل أخف. |
+| [ ] | `planner.studentActions.OverCreditLimit` | Remove {{ overClasses }} classes to get back under your limit of {{ classes }} classes ({{ value }} credits). | احذف {{ overClasses }} مواد لتعود تحت حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة). |
+| [ ] | `planner.studentReasons.BelowMinimumCredits` | This is below the usual minimum of {{ classes }} classes ({{ value }} credits) | هذا أقل من الحد الأدنى المعتاد وهو {{ classes }} مواد ({{ value }} ساعة معتمدة) |
+| [ ] | `planner.studentReasons.CreditLimitReached` | Would go over your limit of {{ classes }} classes ({{ value }} credits) | ستتجاوز حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة) |
+| [ ] | `planner.studentReasons.CreditsRequired` | You need {{ classes }} classes ({{ value }} credits) done first | عليك أن تُنهي {{ classes }} مادة ({{ value }} ساعة معتمدة) أولًا |
+| [ ] | `planner.studentReasons.OnlyCreditsFit` | Only {{ classes }} classes ({{ value }} credits) fit your free time | لا تتسع أوقات فراغك إلا لـ {{ classes }} مواد ({{ value }} ساعة معتمدة) |
+| [ ] | `planner.studentReasons.OverCreditLimit` | That's more than your limit of {{ classes }} classes ({{ value }} credits) | هذا أكثر من حدك وهو {{ classes }} مواد ({{ value }} ساعة معتمدة) |
 | [ ] | `planner.summer2` | Summer 2 | الصيف 2 |
 | [ ] | `planner.termSeason.Fall` | Fall | الخريف |
 | [ ] | `planner.termSeason.Spring` | Spring | الربيع |
@@ -1005,5 +1030,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `timetable.online` | Online, no fixed time: | عن بُعد، دون وقت محدد: |
 | [ ] | `timetable.showGrid` | Show week grid | عرض جدول الأسبوع |
 | [ ] | `timetable.showList` | Show as a list | عرض كقائمة |
+| [ ] | `units.classCredits` | 1 class ({{ credits }} credits) | مادة واحدة ({{ credits }} ساعات معتمدة) |
+| [ ] | `units.classesCredits` | {{ classes }} classes ({{ credits }} credits) | {{ classes }} مواد ({{ credits }} ساعة معتمدة) |
 | [ ] | `walkthrough.dismiss` | Got it, don't show again | فهمت، لا تُظهرها مرة أخرى |
 | [ ] | `walkthrough.heading` | Three steps to your next semester | ثلاث خطوات لفصلك الدراسي القادم |
