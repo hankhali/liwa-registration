@@ -83,6 +83,11 @@ public sealed class AdvisorFlowTests(AdvisorFlowApiFactory factory) : IClassFixt
         var proposedEvent = studentView.History.Single(h => h.Action == "proposed");
         Assert.Single(proposedEvent.Removed);
         Assert.Empty(proposedEvent.Added);
+        // The previous version's classes come back too, so My Plan can show before / after side by side.
+        Assert.Equal(proposal.Order(), studentView.Saved.SectionIds.Order());
+        Assert.NotNull(studentView.Saved.PreviousSectionIds);
+        Assert.Equal(proposal.Length + 1, studentView.Saved.PreviousSectionIds!.Count);
+        Assert.Empty(proposal.Except(studentView.Saved.PreviousSectionIds));
 
         // The student accepts: approved, and the advisor is told.
         Assert.Equal(HttpStatusCode.NoContent, (await student.PostAsync("/api/students/me/plan/accept", null)).StatusCode);

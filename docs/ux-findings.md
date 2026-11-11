@@ -101,6 +101,14 @@ Clicks counted from Home. Checked on the "after" captures and by hand on the run
 
 Captures: `docs/screenshots/ux-pass-after/advisor.it__{en,ar}__desktop__{review,suggest-changes}.png`.
 
+## Follow-ups (2026-11-11)
+
+| ID | Finding | What changed |
+|---|---|---|
+| F1 | The rail said "Availability", "Planner", "Graduation Path", "My Plan", but the page headings said other things, and "Planner" next to "My Plan" was confusing. | The student menu is now **Home, My free time, My plan, Graduation, Messages**, matching the headings. "My plan" is the planner. The status page is "Where my plan is", reached from Home, the planner and messages. The brief's names stay in code, routes and staff menus. |
+| F2 | With suggested changes, My Plan listed only the advisor's version. | The API returns the previous version's classes (`saved.previousSectionIds`). My Plan shows **What you sent** (removed classes struck through) next to **With your advisor's changes** (added classes highlighted), with credit totals and the **Accept the changes / Fix my plan** buttons underneath. |
+| F3 | For a student with a summer-only required class, "Include summer classes" changed nothing, with no explanation. | One line instead of the "with summer: …" hint: "Summer classes don't change your date: BUS410 Business Internship is only offered in summer, so your path includes that summer either way." |
+
 ## Not fixed (and why)
 
 - **Instructor names and advisor notes stay in English on Arabic screens.** Names are proper nouns from the
@@ -110,15 +118,6 @@ Captures: `docs/screenshots/ux-pass-after/advisor.it__{en,ar}__desktop__{review,
   all 3 programs, but real data may not.
 - The term selector in the top bar remains (with one open semester it is a label in practice). It is needed once two
   semesters overlap.
-- **The rail still says "Availability" and "Graduation Path"**, as the brief (§9) names them.
-  The page headings use the plainer "When are you free?" and "Graduation", and the phone bottom bar says
-  "Graduation".
-- When an advisor has suggested changes, **"Your classes" on My Plan lists the suggested version** (that is what is
-  saved as the current plan). The diff above it shows what changed. A side-by-side "yours / suggested" view would
-  be clearer, but needs the previous version's classes from the API.
-- **Graduation for students in a summer-only course** (e.g. `student.transfer`'s BUS410 internship): the "without
-  summer" path still shows that one summer, because the course is only offered then. The planner is right, but the
-  toggle can look as if it does nothing for these students. A one-line note there would help.
 - **Advisor-side jargon is unchanged** on purpose: advisors keep "section 02", ranking details and version numbers.
 - Full-page screenshots show the advisor's sticky decision bar and the phone bottom bar part-way down the image. In
   a real window they sit at the bottom of the screen.

@@ -6,7 +6,8 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../core/i18n/language.service';
 import { localDigits } from '../../core/i18n/digits';
-import { GraduationProjection, Reason, courseTitle, criticalCodes, semesterDelay, termLabel } from '../../core/planning/planning.models';
+import { GraduationProjection, Reason, courseTitle, criticalCodes, parseTermCode, semesterDelay, termLabel } from '../../core/planning/planning.models';
+import { isolate } from '../../shared/bidi';
 import { PlanningService } from '../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
 import { PageHeaderComponent } from '../../shared/page-header.component';
@@ -41,7 +42,12 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
         </div>
         <div class="toggle">
           <mat-slide-toggle [checked]="summer()" (change)="summer.set($event.checked)">{{ 'graduation.summer' | transloco }}</mat-slide-toggle>
-          <span class="liwa-muted small">{{ (summer() ? 'graduation.summerOn' : 'graduation.summerOff') | transloco: { term: label(otherTerm()) } }}</span>
+          @if (summerOnly(); as courses) {
+            <!-- The toggle changes nothing: a required class only runs in summer, so the path has that summer anyway -->
+            <span class="summer-note" role="note">{{ (courses.count === 1 ? 'graduation.summerOnlyOne' : 'graduation.summerOnly') | transloco: { courses: courses.text } }}</span>
+          } @else {
+            <span class="liwa-muted small">{{ (summer() ? 'graduation.summerOn' : 'graduation.summerOff') | transloco: { term: label(otherTerm()) } }}</span>
+          }
         </div>
         @if (d.selection && selectionTerm() !== recommendedTerm()) {
           <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: label(recommendedTerm()) } }}</p>
@@ -135,6 +141,10 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
     .compare {
       flex-basis: 100%;
       margin: 0;
+    }
+    .summer-note {
+      max-width: 34rem;
+      font-size: 0.9375rem;
     }
     .banner {
       display: flex;
@@ -280,6 +290,23 @@ export class GraduationPage {
     const p = d.selection ?? d.view.recommendation.projection;
     return (this.summer() ? p.withoutSummer : p.withSummer).graduationTerm;
   });
+  /**
+   * When "Include summer classes" can't change the date because the path has a summer anyway: a required class is
+   * only offered in summer (e.g. an internship). Returns those classes as "BUS410 Business Internship", or null.
+   */
+  protected readonly summerOnly = computed(() => {
+    const d = this.data.value();
+    if (!d) return null;
+    const p = d.selection ?? d.view.recommendation.projection;
+    if (p.withSummer.graduationTerm !== p.withoutSummer.graduationTerm) return null;
+    const codes = (p.withoutSummer.terms ?? [])
+      .filter((t) => parseTermCode(t.termCode)?.season === 'Summer')
+      .flatMap((t) => t.courses);
+    if (codes.length === 0) return null;
+    const unique = [...new Set(codes)];
+    return { count: unique.length, text: unique.map((c) => `${isolate(c)} ${this.title(c)}`.trim()).join(', ') };
+  });
+
   protected readonly delay = computed(() => (this.data.value()?.selection ? semesterDelay(this.recommendedTerm(), this.selectionTerm(), this.summer()) : 0));
   protected readonly critical = computed(() => criticalCodes(this.data.value()?.view.recommendation.courses ?? []));
 

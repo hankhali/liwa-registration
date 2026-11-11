@@ -11,19 +11,23 @@ export interface NavItem {
   badge?: 'queue';
   /** Phone bottom bar: shown there, under this shorter label (translation key under nav.*). */
   bottom?: string;
+  /** Label in the rail and drawer when it differs from the key (translation key under nav.*). */
+  label?: string;
 }
 
 /**
- * The left rail per role (brief §9). Phones: students get exactly Home / Plan / Graduation / Messages in the bottom
- * bar (UX pass); other roles get their first four plus "More". Everything is also in the drawer (top-bar menu).
+ * The left rail per role (brief §9). Students see the plain labels that match their page headings: Home, My free
+ * time, My plan, Graduation, Messages (the brief's names stay in code, routes and staff views). The plan's status
+ * page (/student/plan, "Where my plan is") is reached from Home, the planner and messages, not the menu.
+ * Phones: students get Home / My plan / Graduation / Messages in the bottom bar; other roles get their first four
+ * plus "More". Everything is also in the drawer (top-bar menu).
  */
 export const NAV: Record<Role, NavItem[]> = {
   Student: [
     { key: 'home', icon: 'home', link: '/student', exact: true, bottom: 'home' },
-    { key: 'availability', icon: 'schedule', link: '/student/availability' },
-    { key: 'planner', icon: 'event_note', link: '/student/planner', bottom: 'plan' },
-    { key: 'graduation', icon: 'school', link: '/student/graduation', bottom: 'graduationShort' },
-    { key: 'myPlan', icon: 'assignment_turned_in', link: '/student/plan' },
+    { key: 'availability', icon: 'schedule', link: '/student/availability', label: 'studentFreeTime' },
+    { key: 'planner', icon: 'event_note', link: '/student/planner', label: 'studentMyPlan', bottom: 'studentMyPlan' },
+    { key: 'graduation', icon: 'school', link: '/student/graduation', label: 'graduationShort', bottom: 'graduationShort' },
     { key: 'messages', icon: 'mail', link: '/student/messages', bottom: 'messages' },
   ],
   Advisor: [

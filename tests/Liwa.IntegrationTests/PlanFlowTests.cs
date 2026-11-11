@@ -128,7 +128,7 @@ public sealed class PlanFlowTests(PlanFlowApiFactory factory) : IClassFixture<Pl
 
     public sealed record ResultBody(List<PlannedBody> Plan, int TotalCredits);
 
-    public sealed record SavedBody(Guid Id, string Status, int Version, List<Guid> SectionIds);
+    public sealed record SavedBody(Guid Id, string Status, int Version, List<Guid> SectionIds, List<Guid>? PreviousSectionIds = null);
 
     public sealed record ViewBody(string TermCode, string TermName, string? AdvisorName, ResultBody Recommendation, List<CourseBody> Courses, List<SectionBody> Sections, SavedBody? Saved);
 

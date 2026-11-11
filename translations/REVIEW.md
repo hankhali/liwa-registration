@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 97 · UI strings: 825
+- Programs: 3 · Courses: 97 · UI strings: 835
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -465,8 +465,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `availability.error` | We couldn't save your free time. Please try again. | تعذّر حفظ أوقات فراغك. يُرجى المحاولة مرة أخرى. |
 | [ ] | `availability.gridHeading` | Your free time each week | أوقات فراغك كل أسبوع |
 | [ ] | `availability.gridHint` | Green hours are free. Tap an hour to change it, or tap a day to select the whole day. There are never classes on Friday afternoon. | الساعات الخضراء هي أوقات فراغك. اضغط على ساعة لتغييرها، أو على يوم لاختياره كاملًا. لا توجد محاضرات بعد ظهر الجمعة أبدًا. |
-| [ ] | `availability.heading` | When are you free? | متى تكون متفرغًا؟ |
-| [ ] | `availability.intro` | Pick the times you're free, or skip this to see every class. | اختر الأوقات التي تكون فيها متفرغًا، أو تخطَّ هذه الخطوة لترى كل المحاضرات. |
+| [ ] | `availability.heading` | My free time | أوقات فراغي |
+| [ ] | `availability.intro` | When are you free? Pick the times that suit you, or skip this to see every class. | متى تكون متفرغًا؟ اختر الأوقات التي تناسبك، أو تخطَّ هذه الخطوة لترى كل المواد. |
 | [ ] | `availability.loadError` | We couldn't load your free time. Please refresh the page. | تعذّر تحميل أوقات فراغك. يُرجى تحديث الصفحة. |
 | [ ] | `availability.pickSome` | Pick at least one hour, or skip this step. | اختر ساعة واحدة على الأقل، أو تخطَّ هذه الخطوة. |
 | [ ] | `availability.presets.custom.body` | I'll pick the days and hours myself | سأختار الأيام والساعات بنفسي |
@@ -545,6 +545,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `graduation.summer` | Include summer classes | تضمين الفصل الصيفي |
 | [ ] | `graduation.summerOff` | With summer classes: {{ term }} | مع مواد الصيف: {{ term }} |
 | [ ] | `graduation.summerOn` | Without summer classes: {{ term }} | بدون مواد الصيف: {{ term }} |
+| [ ] | `graduation.summerOnly` | Summer classes don't change your date: {{ courses }} are only offered in summer, so your path includes a summer either way. | مواد الصيف لا تغيّر موعد تخرجك: {{ courses }} لا تُطرح إلا في الصيف، لذلك يتضمن مسارك فصلًا صيفيًا في كل الأحوال. |
+| [ ] | `graduation.summerOnlyOne` | Summer classes don't change your date: {{ courses }} is only offered in summer, so your path includes that summer either way. | مواد الصيف لا تغيّر موعد تخرجك: {{ courses }} لا تُطرح إلا في الصيف، لذلك يتضمن مسارك ذلك الصيف في كل الأحوال. |
 | [ ] | `graduation.whyWait` | Why some classes wait ({{ n }}) | لماذا تنتظر بعض المواد ({{ n }}) |
 | [ ] | `history.accepted` | {{ actor }} accepted the suggested changes | قبل {{ actor }} التعديلات المقترحة |
 | [ ] | `history.added` | Added: | أُضيف: |
@@ -629,7 +631,12 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `myPlan.action.Rejected` | Fix my plan | عدّل خطتي |
 | [ ] | `myPlan.changeInstead` | Change the plan myself instead | سأعدّل الخطة بنفسي |
 | [ ] | `myPlan.classes` | Your classes ({{ n }}) | موادك ({{ n }}) |
-| [ ] | `myPlan.heading` | My Plan | خطتي |
+| [ ] | `myPlan.compare.added` | Added | أُضيفت |
+| [ ] | `myPlan.compare.after` | With your advisor's changes | مع تعديلات مرشدك |
+| [ ] | `myPlan.compare.before` | What you sent | ما أرسلته |
+| [ ] | `myPlan.compare.removed` | Removed | حُذفت |
+| [ ] | `myPlan.compare.total` | {{ n }} credits | {{ n }} ساعة معتمدة |
+| [ ] | `myPlan.heading` | Where my plan is | أين وصلت خطتي |
 | [ ] | `myPlan.needsReview` | New grades were posted, so this plan needs another look. | رُصدت درجات جديدة، لذا تحتاج هذه الخطة إلى مراجعة. |
 | [ ] | `myPlan.none` | You haven't saved or sent a plan yet | لم تحفظ أو ترسل خطة بعد |
 | [ ] | `myPlan.noneBody` | Start from the plan we recommend. | ابدأ بالخطة التي نقترحها. |
@@ -663,6 +670,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `nav.planner` | Planner | الخطة |
 | [ ] | `nav.queue` | Plans to review | خطط للمراجعة |
 | [ ] | `nav.settings` | Settings | الإعدادات |
+| [ ] | `nav.studentFreeTime` | My free time | أوقات فراغي |
+| [ ] | `nav.studentMyPlan` | My plan | خطتي |
 | [ ] | `nav.users` | Users | المستخدمون |
 | [ ] | `nav.versions` | Data changes | تغييرات البيانات |
 | [ ] | `notifications.adviseesAssigned` | {{ n }} students moved to you from {{ advisor }}. | انتقل إليك {{ n }} من طلاب {{ advisor }}. |
@@ -743,7 +752,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.graduateSummer` | With summer classes: {{ term }}. | مع الدراسة الصيفية: {{ term }}. |
 | [ ] | `plan.heading` | Here is the plan we recommend for {{ term }} | هذه هي الخطة التي نقترحها لفصل {{ term }} |
 | [ ] | `plan.headingSent` | Your plan for {{ term }} | خطتك لفصل {{ term }} |
-| [ ] | `plan.intro` | We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor. | اخترنا فقط مواد يمكنك تسجيلها، في أوقات لا تتعارض. هل أعجبتك؟ أرسلها إلى مرشدك. |
+| [ ] | `plan.intro` | Here is the plan we recommend for {{ term }}. We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor. | هذه هي الخطة التي نقترحها لفصل {{ term }}. اخترنا فقط مواد يمكنك تسجيلها، في أوقات لا تتعارض. هل أعجبتك؟ أرسلها إلى مرشدك. |
 | [ ] | `plan.limits` | You can take {{ min }}–{{ max }} credits this semester. | يمكنك تسجيل {{ min }}–{{ max }} ساعة معتمدة هذا الفصل الدراسي. |
 | [ ] | `plan.listLabel` | Classes in your plan | المواد في خطتك |
 | [ ] | `plan.messages.accepted` | Done. Your plan is approved. | تم. خطتك معتمدة الآن. |
@@ -755,6 +764,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.onlineAnyTime` | Online, study any time | عن بُعد، ادرس في أي وقت |
 | [ ] | `plan.onlineList` | Online (no fixed time): | عن بُعد (دون وقت محدد): |
 | [ ] | `plan.otherTimes` | Other times for this class | أوقات أخرى لهذه المادة |
+| [ ] | `plan.pageHeading` | My plan | خطتي |
 | [ ] | `plan.prefs.delivery` | How do you want to study? | كيف تفضّل أن تدرس؟ |
 | [ ] | `plan.prefs.deliveryAny` | On campus or online | في الحرم الجامعي أو عن بُعد |
 | [ ] | `plan.prefs.deliveryCampus` | On campus only | في الحرم الجامعي فقط |

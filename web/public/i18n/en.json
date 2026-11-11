@@ -568,7 +568,7 @@
     "heading": "Here is the plan we recommend for {{ term }}",
     "building": "Building your plan…",
     "notReady": "We can't build your plan yet because your study record or this semester's timetable hasn't arrived. Please check again later.",
-    "intro": "We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor.",
+    "intro": "Here is the plan we recommend for {{ term }}. We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor.",
     "yourAdvisor": "your advisor",
     "freeTime": {
       "heading": "When are you free?",
@@ -703,7 +703,8 @@
     "cantTake": {
       "heading": "Classes you can't take yet ({{ n }})",
       "intro": "Why each one has to wait."
-    }
+    },
+    "pageHeading": "My plan"
   },
   "planner": {
     "join": {
@@ -849,7 +850,9 @@
     "aiUsage": "AI usage",
     "versions": "Data changes",
     "plan": "Plan",
-    "graduationShort": "Graduation"
+    "graduationShort": "Graduation",
+    "studentFreeTime": "My free time",
+    "studentMyPlan": "My plan"
   },
   "timetable": {
     "caption": "Your classes this week",
@@ -873,8 +876,8 @@
     "toPlan": "See my plan"
   },
   "availability": {
-    "heading": "When are you free?",
-    "intro": "Pick the times you're free, or skip this to see every class.",
+    "heading": "My free time",
+    "intro": "When are you free? Pick the times that suit you, or skip this to see every class.",
     "presetsHeading": "Choose what fits your week",
     "presets": {
       "daytime": {
@@ -931,10 +934,12 @@
     "summerOn": "Without summer classes: {{ term }}",
     "summerOff": "With summer classes: {{ term }}",
     "recommendedLine": "With the plan we recommend, you could graduate in {{ term }}.",
-    "electivesOne": "1 credit of free electives (any class)"
+    "electivesOne": "1 credit of free electives (any class)",
+    "summerOnly": "Summer classes don't change your date: {{ courses }} are only offered in summer, so your path includes a summer either way.",
+    "summerOnlyOne": "Summer classes don't change your date: {{ courses }} is only offered in summer, so your path includes that summer either way."
   },
   "myPlan": {
-    "heading": "My Plan",
+    "heading": "Where my plan is",
     "subtitle": "Where your plan is and what your advisor said.",
     "none": "You haven't saved or sent a plan yet",
     "noneBody": "Start from the plan we recommend.",
@@ -966,7 +971,14 @@
       "ChangesProposed": "Accept the changes, or change the plan yourself.",
       "NeedsReview": "Check your plan and send it again."
     },
-    "classes": "Your classes ({{ n }})"
+    "classes": "Your classes ({{ n }})",
+    "compare": {
+      "before": "What you sent",
+      "after": "With your advisor's changes",
+      "removed": "Removed",
+      "added": "Added",
+      "total": "{{ n }} credits"
+    }
   },
   "explainer": {
     "heading": "Ask about your plan",

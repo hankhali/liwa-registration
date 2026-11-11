@@ -254,7 +254,6 @@ export class StudentPlanComponent {
   protected readonly currentPreset = computed(() => this.prefs.value()?.preset ?? null);
 
   /** Page heading and first sentence (what to do here) for each state of the plan. */
-  protected readonly heading = computed(() => (this.sent() ? 'plan.headingSent' : 'plan.heading'));
   protected readonly firstLine = computed(() => {
     const status = this.view.value()?.saved?.status;
     if (status && status !== 'Draft') return 'studentStatus.meaning.' + status;

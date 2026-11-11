@@ -147,7 +147,9 @@ internal sealed partial class StudentPlanService(
     {
         var current = plan.Current!;
         var availability = current.Availability is null ? null : JsonSerializer.Deserialize<List<TimeWindow>>(current.Availability, Json);
-        return new SavedPlan(plan.Id, plan.Status, current.Number, current.Sections.Select(s => s.SectionId).ToList(), plan.UpdatedAt, availability);
+        var previous = plan.Versions.Where(v => v.Number < current.Number).MaxBy(v => v.Number);
+        return new SavedPlan(plan.Id, plan.Status, current.Number, current.Sections.Select(s => s.SectionId).ToList(), plan.UpdatedAt, availability,
+            previous?.Sections.Select(s => s.SectionId).ToList());
     }
 
     private async Task<Context?> BuildAsync(Guid studentUserId, Availability? availability, PlannerPreferences preferences, CancellationToken ct)

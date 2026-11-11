@@ -123,6 +123,8 @@ export interface SavedPlan {
   sectionIds: string[];
   updatedAt: string;
   availability: TimeWindow[] | null;
+  /** Classes of the version before this one (null for version 1): what the student sent before an advisor's changes. */
+  previousSectionIds?: string[] | null;
 }
 
 export interface PlanningView {

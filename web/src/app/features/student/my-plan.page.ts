@@ -33,7 +33,7 @@ export function trackerSteps(history: PlanEvent[], status: PlanStatus): { step: 
 export const MY_PLAN_ACTIONS: Partial<Record<PlanStatus, { label: string; link: string | null }>> = {
   Draft: { label: 'myPlan.action.Draft', link: '/student/planner' },
   Rejected: { label: 'myPlan.action.Rejected', link: '/student/planner' },
-  ChangesProposed: { label: 'plan.reply.accept', link: null },
+  // ChangesProposed: Accept / Fix my plan sit under the side-by-side comparison instead.
   NeedsReview: { label: 'myPlan.action.NeedsReview', link: '/student/planner' },
 };
 
@@ -78,17 +78,35 @@ export const MY_PLAN_ACTIONS: Partial<Record<PlanStatus, { label: string; link: 
         }
 
         @if (proposal(); as p) {
+          <!-- What you sent | with your advisor's changes, side by side; then the two ways forward -->
           <section class="liwa-card proposal" aria-labelledby="diff-heading">
             <h2 id="diff-heading">{{ 'myPlan.proposed' | transloco: { advisor: p.actorName } }}</h2>
-            <ul class="diff">
-              @for (a of p.added; track a) {
-                <li class="add"><mat-icon aria-hidden="true">add</mat-icon> <span class="visually-hidden">{{ 'history.added' | transloco }}</span> {{ course(a) }}</li>
+            <div class="compare">
+              @for (side of compare(); track side.key) {
+                <div class="side" [attr.aria-labelledby]="'side-' + side.key">
+                  <h3 [id]="'side-' + side.key">{{ 'myPlan.compare.' + side.key | transloco }}</h3>
+                  <ul>
+                    @for (c of side.rows; track c.code) {
+                      <li [class.removed]="c.change === 'removed'" [class.added]="c.change === 'added'">
+                        @if (c.change) {
+                          <mat-icon aria-hidden="true">{{ c.change === 'added' ? 'add_circle' : 'remove_circle' }}</mat-icon>
+                          <span class="visually-hidden">{{ 'myPlan.compare.' + c.change | transloco }}</span>
+                        }
+                        <span class="what">
+                          <span><bdi class="code" dir="ltr">{{ c.code }}</bdi> <span class="name">{{ c.title }}</span></span>
+                          <span class="liwa-muted small">{{ c.when }}</span>
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                  <p class="side-total">{{ 'myPlan.compare.total' | transloco: { n: side.credits } }}</p>
+                </div>
               }
-              @for (r of p.removed; track r) {
-                <li class="remove"><mat-icon aria-hidden="true">remove</mat-icon> <span class="visually-hidden">{{ 'history.removed' | transloco }}</span> {{ course(r) }}</li>
-              }
-            </ul>
-            <a mat-button routerLink="/student/planner">{{ 'myPlan.changeInstead' | transloco }}</a>
+            </div>
+            <div class="actions">
+              <button mat-flat-button type="button" class="primary" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
+              <a mat-stroked-button routerLink="/student/planner">{{ 'myPlan.action.Rejected' | transloco }}</a>
+            </div>
           </section>
         }
 
@@ -115,17 +133,20 @@ export const MY_PLAN_ACTIONS: Partial<Record<PlanStatus, { label: string; link: 
           </ol>
         </section>
 
-        <section class="liwa-card" aria-labelledby="classes-heading">
-          <h2 id="classes-heading">{{ 'myPlan.classes' | transloco: { n: classes().length } }}</h2>
-          <ul class="classes">
-            @for (c of classes(); track c.code) {
-              <li>
-                <span><bdi class="code" dir="ltr">{{ c.code }}</bdi> <strong>{{ c.title }}</strong></span>
-                <span class="liwa-muted">{{ c.when }}</span>
-              </li>
-            }
-          </ul>
-        </section>
+        <!-- (While changes are suggested, the comparison above already lists both versions.) -->
+        @if (compare().length === 0) {
+          <section class="liwa-card" aria-labelledby="classes-heading">
+            <h2 id="classes-heading">{{ 'myPlan.classes' | transloco: { n: classes().length } }}</h2>
+            <ul class="classes">
+              @for (c of classes(); track c.code) {
+                <li>
+                  <span><bdi class="code" dir="ltr">{{ c.code }}</bdi> <strong>{{ c.title }}</strong></span>
+                  <span class="liwa-muted">{{ c.when }}</span>
+                </li>
+              }
+            </ul>
+          </section>
+        }
 
         <section class="liwa-card" aria-labelledby="history-heading">
           <h2 id="history-heading">{{ 'history.heading' | transloco }}</h2>
@@ -226,23 +247,67 @@ export const MY_PLAN_ACTIONS: Partial<Record<PlanStatus, { label: string; link: 
       color: var(--liwa-primary);
       margin-inline-end: 0.375rem;
     }
-    .diff {
-      list-style: none;
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+      gap: 1rem;
+    }
+    .side {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--liwa-border);
+      border-radius: var(--liwa-radius);
+    }
+    .side h3 {
       margin: 0 0 0.5rem;
+    }
+    .side ul {
+      list-style: none;
+      margin: 0;
       padding: 0;
     }
-    .diff li {
+    .side li {
       display: flex;
-      align-items: center;
       gap: 0.5rem;
-      padding: 0.25rem 0;
-      font-weight: 600;
+      align-items: flex-start;
+      padding: 0.375rem 0.5rem;
+      border-radius: 6px;
     }
-    .add {
+    .side li .what {
+      display: flex;
+      flex-direction: column;
+    }
+    .side li mat-icon {
+      flex: none;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+    }
+    li.removed {
+      background: var(--liwa-clash);
+      color: var(--liwa-danger);
+    }
+    li.removed .code,
+    li.removed .name {
+      text-decoration: line-through;
+      color: var(--liwa-danger);
+    }
+    li.added {
+      background: var(--liwa-free);
+      font-weight: 700;
+    }
+    li.added mat-icon {
       color: var(--liwa-success);
     }
-    .remove {
-      color: var(--liwa-danger);
+    .side-total {
+      margin: 0.5rem 0 0;
+      font-weight: 600;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
     }
     @media (max-width: 600px) {
       .primary {
@@ -288,11 +353,28 @@ export class MyPlanPage {
   });
 
   /** The classes in the saved plan: code, title, days and times. */
-  protected readonly classes = computed(() => {
+  protected readonly classes = computed(() => this.rowsFor(this.view.value()?.saved?.sectionIds ?? []));
+
+  /**
+   * Suggested changes side by side: what the student sent (removed classes struck through) and the plan with the
+   * advisor's changes (added classes highlighted). Same course at a different time counts as removed + added.
+   */
+  protected readonly compare = computed(() => {
+    const saved = this.view.value()?.saved;
+    if (saved?.status !== 'ChangesProposed' || !saved.previousSectionIds) return [];
+    const before = new Set(saved.previousSectionIds);
+    const after = new Set(saved.sectionIds);
+    const mark = (ids: string[], other: Set<string>, change: 'removed' | 'added') =>
+      this.rowsFor(ids).map((r) => ({ ...r, change: other.has(r.id) ? null : change }));
+    const side = (key: 'before' | 'after', rows: ReturnType<typeof mark>) => ({ key, rows, credits: rows.reduce((n, r) => n + r.credits, 0) });
+    return [side('before', mark(saved.previousSectionIds, after, 'removed')), side('after', mark(saved.sectionIds, before, 'added'))];
+  });
+
+  private rowsFor(ids: string[]) {
     const v = this.view.value();
-    if (!v?.saved) return [];
+    if (!v) return [];
     const lang = this.language.lang();
-    return v.saved.sectionIds
+    return ids
       .map((id) => v.sections.find((s) => s.id === id))
       .filter((s) => !!s)
       .map((s) => {
@@ -302,10 +384,11 @@ export class MyPlanPage {
             : meetingPatterns(s.meetings)
                 .map((p) => `${p.days.map((d) => this.transloco.translate('daysShort.' + d)).join(this.transloco.translate('plan.dayJoin'))} ${timeRange({ day: p.days[0], start: p.start, end: p.end }, lang)}`)
                 .join(', ');
-        return { code: s.courseCode, title: courseTitle(v.courses.find((c) => c.code === s.courseCode), lang), when };
+        const course = v.courses.find((c) => c.code === s.courseCode);
+        return { id: s.id, code: s.courseCode, title: courseTitle(course, lang), credits: course?.credits ?? 0, when };
       })
       .sort((a, b) => a.code.localeCompare(b.code));
-  });
+  }
 
   protected course(entry: string): string {
     const code = courseOnly(entry);

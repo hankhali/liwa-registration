@@ -8,8 +8,10 @@ public sealed record CourseInfo(string Code, string Title, string? TitleAr, int 
 public sealed record SectionInfo(Guid Id, string CourseCode, string SectionCode, DeliveryMode Delivery, string? Instructor, string? Room,
     IReadOnlyList<MeetingTime> Meetings, int SeatsLeft);
 
+/// <param name="PreviousSectionIds">The classes of the version before the current one (null for version 1), so the
+/// student can see an advisor's suggested changes side by side with what they sent.</param>
 public sealed record SavedPlan(Guid Id, PlanStatus Status, int Version, IReadOnlyList<Guid> SectionIds, DateTimeOffset UpdatedAt,
-    IReadOnlyList<TimeWindow>? Availability);
+    IReadOnlyList<TimeWindow>? Availability, IReadOnlyList<Guid>? PreviousSectionIds = null);
 
 /// <summary>Everything the student planning screen needs in one response.</summary>
 public sealed record PlanningView(

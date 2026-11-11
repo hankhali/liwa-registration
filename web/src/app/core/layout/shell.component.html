@@ -81,10 +81,10 @@
             routerLinkActive="active"
             ariaCurrentWhenActive="page"
             [routerLinkActiveOptions]="{ exact: !!item.exact }"
-            [title]="collapsed() ? ('nav.' + item.key | transloco) : ''"
+            [title]="collapsed() ? ('nav.' + (item.label ?? item.key) | transloco) : ''"
           >
             <mat-icon aria-hidden="true" [matBadge]="item.badge ? badges()[item.badge] || null : null" matBadgeSize="small" matBadgeColor="warn">{{ item.icon }}</mat-icon>
-            <span class="label">{{ 'nav.' + item.key | transloco }}</span>
+            <span class="label">{{ 'nav.' + (item.label ?? item.key) | transloco }}</span>
             @if (item.badge && badges()[item.badge]) {
               <span class="visually-hidden">{{ 'shell.badge' | transloco: { n: badges()[item.badge] } }}</span>
             }
@@ -130,7 +130,7 @@
         <li>
           <a [routerLink]="item.link" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: !!item.exact }">
             <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
-            <span>{{ 'nav.' + item.key | transloco }}</span>
+            <span>{{ 'nav.' + (item.label ?? item.key) | transloco }}</span>
           </a>
         </li>
       }

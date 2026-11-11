@@ -1,6 +1,6 @@
 @if (view.hasValue()) {
   @let v = view.value();
-  <app-page-header [heading]="heading() | transloco: { term: termLabel(v.termCode) }" [subtitle]="firstLine() | transloco">
+  <app-page-header [heading]="'plan.pageHeading' | transloco" [subtitle]="firstLine() | transloco: { term: termLabel(v.termCode) }">
     @if (!sent()) {
       @if (reply()?.status === 'ChangesProposed') {
         <button mat-flat-button type="button" class="primary" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
@@ -15,7 +15,7 @@
     }
   </app-page-header>
 } @else {
-  <app-page-header [heading]="'student.home.planHeading' | transloco" />
+  <app-page-header [heading]="'plan.pageHeading' | transloco" />
 }
 
 <section class="liwa-card plan" aria-labelledby="plan-heading" [attr.aria-busy]="view.isLoading()">

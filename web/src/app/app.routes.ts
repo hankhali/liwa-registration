@@ -24,25 +24,25 @@ export const routes: Routes = [
       {
         path: 'student/availability',
         canActivate: [roleGuard('Student')],
-        title: 'nav.availability',
+        title: 'nav.studentFreeTime',
         loadComponent: () => import('./features/student/availability.page').then((m) => m.AvailabilityPage),
       },
       {
         path: 'student/planner',
         canActivate: [roleGuard('Student')],
-        title: 'nav.planner',
+        title: 'nav.studentMyPlan',
         loadComponent: () => import('./features/student/planner.page').then((m) => m.PlannerPage),
       },
       {
         path: 'student/graduation',
         canActivate: [roleGuard('Student')],
-        title: 'nav.graduation',
+        title: 'nav.graduationShort',
         loadComponent: () => import('./features/student/graduation.page').then((m) => m.GraduationPage),
       },
       {
         path: 'student/plan',
         canActivate: [roleGuard('Student')],
-        title: 'nav.myPlan',
+        title: 'myPlan.heading',
         loadComponent: () => import('./features/student/my-plan.page').then((m) => m.MyPlanPage),
       },
       ...(['student', 'advisor', 'admin'] as const).map((area) => ({

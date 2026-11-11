@@ -31,10 +31,16 @@ Based on screenshots of every student screen (EN/AR, desktop/phone). Findings an
 - **Arabic:** semester names in Arabic everywhere (top bar, headings, messages).
 - **Advisor review:** three columns (student | plan | graduation) with the decision bar at the bottom. **Suggest
   changes** opens the same two-panel planner the student uses (`shared/plan-editor.component.ts`).
+- **Follow-ups:** the student menu is Home / My free time / My plan / Graduation / Messages, matching the page
+  headings (staff menus unchanged). My Plan shows suggested changes side by side (what you sent, with removed classes
+  struck through, next to the advisor's version, with added classes highlighted); the API adds
+  `saved.previousSectionIds`. Graduation explains when a summer-only required class makes the summer toggle change
+  nothing.
 - Dev: `playwright` devDependency driving the installed Chrome (`channel: 'chrome'`, no browser download);
   `web/scripts/ux-screenshots.mjs` and `web/scripts/advisor-review-shot.mjs`.
-- Tests: 220 unit (+2: student-text jargon, Arabic completeness), 95 integration, 67 frontend (+4: grid rows, plan
-  editor, student history wording, one-tap free time).
+- Tests: 220 unit (+2: student-text jargon, Arabic completeness), 95 integration (previous version returned), 72
+  frontend (+9: grid rows, plan editor, student history wording, one-tap free time, menu labels, side-by-side
+  changes, summer-only note).
 
 ## v0.1.0 — first release (2026-11-10)
 
