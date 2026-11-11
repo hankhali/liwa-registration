@@ -40,7 +40,12 @@ const view: PlanningView = {
 const prefs: Preferences = { preset: 'daytime', availability: [], delivery: 'Any', maxCredits: null, draftSectionIds: [] };
 const check: PlanCheck = { totalCredits: 3, limits: view.recommendation.limits, maxCredits: 18, errors: [], warnings: [{ code: 'BelowMinimumCredits', courses: [], value: '12' }] };
 
+const saved: unknown[][] = [];
 const fake: Partial<PlanningService> = {
+  savePreferences: (...args: unknown[]) => {
+    saved.push(args);
+    return Promise.resolve(null);
+  },
   preferences: () => Promise.resolve(prefs),
   view: () => Promise.resolve(view),
   check: () => Promise.resolve(check),
@@ -61,34 +66,52 @@ async function renderPlanner(lang: 'en' | 'ar' = 'en'): Promise<HTMLElement> {
   return f.nativeElement as HTMLElement;
 }
 
-describe('planner view (brief §9)', () => {
-  it('shows the recommended plan first, with one primary "Send to my advisor"', async () => {
+describe('planner view (brief §9, UX pass)', () => {
+  it('says what to do first and has one gold action, "Send to my advisor", in the page header', async () => {
     const el = await renderPlanner();
-    expect(el.querySelector('h2')!.textContent).toContain('Here is the plan we recommend for Spring 2027');
-    const primary = [...el.querySelectorAll('button[mat-flat-button]')].map((b) => b.textContent!.trim());
+    expect(el.querySelector('h1')!.textContent).toContain('Here is the plan we recommend for Spring 2027');
+    expect(el.querySelector('app-page-header')!.textContent).toContain('Happy with it? Send it to your advisor.');
+    const primary = [...el.querySelectorAll('[mat-flat-button]')].map((b) => b.textContent!.trim());
     expect(primary).toHaveLength(1);
     expect(primary[0]).toContain('Send to my advisor');
+    expect(el.querySelector('app-page-header [mat-flat-button]')).not.toBeNull();
     expect(el.textContent).toContain('Change courses');
   });
 
-  it('marks critical-path courses in gold and explains why in plain words', async () => {
+  it('shows the credits as a big number and one plain reason per class', async () => {
     const el = await renderPlanner();
-    expect(el.querySelector('.course .liwa-critical')!.textContent).toContain('Take on time');
-    expect(el.textContent).toContain('Take this soon: 5 other courses depend on it');
+    expect(el.querySelector('.credits-big .num')!.textContent).toBe('3');
+    expect(el.querySelector('.course .liwa-critical')!.textContent).toContain('Take this soon');
+    expect(el.querySelectorAll('.course .why-one')).toHaveLength(1);
+    expect(el.textContent).toContain('Take this soon: 5 other classes depend on it');
   });
 
-  it('shows actionable checks and a separate "not eligible" panel grouped by reason', async () => {
+  it('lists the classes you can\'t take yet, visible, each with code, title and a reason naming the course and its title', async () => {
     const el = await renderPlanner();
     expect(el.textContent).toContain('Add 9 more credits to reach the 12-credit minimum');
-    const blocked = el.querySelector('details.blocked')!;
-    expect(blocked.querySelector('summary')!.textContent).toContain('Not eligible this semester (2)');
-    expect(blocked.textContent).toContain('Need to pass another course first (1)');
-    expect(blocked.textContent).toContain('Not offered this semester (1)');
+    expect(el.querySelector('details')).toBeNull();
+    const cant = el.querySelector('.cant-take')!;
+    expect(cant.querySelector('h3')!.textContent).toContain("Classes you can't take yet (2)");
+    expect(cant.textContent).toContain('You need to pass another class first (1)');
+    expect(cant.textContent).toContain('Data Structures');
+    expect(cant.textContent).toContain('Programming II first');
+    expect(cant.textContent).toContain('Not offered this semester (1)');
   });
 
-  it('shows "Not available" when no AI assistant is configured', async () => {
+  it('hides the assistant when no AI provider is configured (no empty "Not available" box)', async () => {
     const el = await renderPlanner();
-    expect(el.querySelector('app-explainer-panel')!.textContent).toContain('Not available');
+    expect(el.querySelector('app-explainer-panel')!.textContent!.trim()).toBe('');
+  });
+
+  it('rebuilds the plan with one tap on "Evenings only"', async () => {
+    const el = await renderPlanner();
+    const chip = [...el.querySelectorAll<HTMLButtonElement>('.free-chip')].find((b) => b.textContent!.includes('Evenings only'))!;
+    expect(chip).toBeTruthy();
+    saved.length = 0;
+    chip.click();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(saved).toHaveLength(1);
+    expect(saved[0][0]).toBe('evenings');
   });
 
   it('renders in Arabic with Arabic titles and isolated course codes', async () => {

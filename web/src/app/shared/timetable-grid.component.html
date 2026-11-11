@@ -1,41 +1,41 @@
-@if (isNarrow() && !editable()) {
-  <div class="mode-toggle">
-    <button mat-button type="button" (click)="forceGrid.set(!forceGrid())" [attr.aria-pressed]="forceGrid()">
-      <mat-icon aria-hidden="true">{{ forceGrid() ? 'view_list' : 'calendar_view_week' }}</mat-icon>
-      {{ (forceGrid() ? 'timetable.showList' : 'timetable.showGrid') | transloco }}
-    </button>
-  </div>
-}
-
 @if (hasClash()) {
   <p class="clash-note" role="status"><mat-icon aria-hidden="true">warning</mat-icon> {{ 'timetable.clashNote' | transloco }}</p>
 }
 
 @if (listMode()) {
-  <ul class="day-list" [attr.aria-label]="caption() || ('timetable.caption' | transloco)">
+  <div class="day-list" role="list" [attr.aria-label]="caption() || ('timetable.caption' | transloco)">
     @for (d of byDay(); track d.day) {
-      @for (b of d.items; track b.key) {
-        <li [class.clash]="b.clash">
-          <span class="day">{{ 'daysShort.' + d.day | transloco }}</span> ·
-          <bdi class="code" dir="ltr">{{ b.code }}</bdi>
-          <span class="time">{{ b.time }}</span>
-          @if (b.clash) {
-            <span class="clash-tag">{{ 'timetable.clash' | transloco }}</span>
+      <section class="day-group" role="listitem">
+        <h4 class="day">{{ 'days.' + d.day | transloco }}</h4>
+        <ul>
+          @for (b of d.items; track b.key) {
+            <li [class.clash]="b.clash">
+              <span class="time">{{ b.time }}</span>
+              <span class="what">
+                <bdi class="code" dir="ltr">{{ b.code }}</bdi>
+                @if (b.label) {
+                  <span class="label">{{ b.label }}</span>
+                }
+              </span>
+              @if (b.clash) {
+                <span class="clash-tag">{{ 'timetable.clash' | transloco }}</span>
+              }
+            </li>
           }
-        </li>
-      }
+        </ul>
+      </section>
     }
     @if (placed().length === 0 && online().length === 0) {
-      <li class="liwa-muted">{{ 'timetable.noClasses' | transloco }}</li>
+      <p class="liwa-muted">{{ 'timetable.noClasses' | transloco }}</p>
     }
-  </ul>
+  </div>
 } @else {
   <div class="scroll">
     <div
       class="grid"
       [class.editable]="editable()"
       [style.grid-template-columns]="'3.75rem repeat(' + days().length + ', minmax(5.5rem, 1fr))'"
-      [style.grid-template-rows]="'2.25rem repeat(' + rowCount() + ', 0.7rem)'"
+      [style.grid-template-rows]="'2.25rem repeat(' + rowCount() + ', 0.3rem)'"
       [attr.role]="editable() ? 'group' : null"
       [attr.aria-label]="editable() ? (caption() || ('timetable.editCaption' | transloco)) : null"
       [attr.aria-hidden]="editable() ? null : 'true'"
@@ -52,7 +52,7 @@
       }
 
       @for (h of hours(); track h; let hi = $index) {
-        <div class="hour" style="grid-column: 1" [style.grid-row]="2 + hi * 4 + ' / span 4'">{{ hourLabel(h) }}</div>
+        <div class="hour" style="grid-column: 1" [style.grid-row]="2 + hi * slotsPerHour + ' / span ' + slotsPerHour">{{ hourLabel(h) }}</div>
         @for (d of days(); track d; let i = $index) {
           @if (editable()) {
             @if (cellAllowed(d, h)) {
@@ -61,14 +61,14 @@
                 class="cell"
                 [class.free]="isFree(d, h)"
                 [style.grid-column]="i + 2"
-                [style.grid-row]="2 + hi * 4 + ' / span 4'"
+                [style.grid-row]="2 + hi * slotsPerHour + ' / span ' + slotsPerHour"
                 [attr.aria-pressed]="isFree(d, h)"
                 [attr.aria-label]="('days.' + d | transloco) + ' ' + range(h + ':00', h + 1 + ':00')"
                 (click)="toggle(d, h)"
               ></button>
             }
           } @else {
-            <div class="cell" [style.grid-column]="i + 2" [style.grid-row]="2 + hi * 4 + ' / span 4'"></div>
+            <div class="cell" [style.grid-column]="i + 2" [style.grid-row]="2 + hi * slotsPerHour + ' / span ' + slotsPerHour"></div>
           }
         }
       }
@@ -93,6 +93,9 @@
           [style.margin-inline-start]="(100 / b.lanes) * b.lane + '%'"
         >
           <bdi class="code" dir="ltr">{{ b.code }}</bdi>
+          @if (b.label) {
+            <span class="label" [title]="b.label">{{ b.label }}</span>
+          }
           <span class="time">{{ b.time }}</span>
           @if (b.clash) {
             <mat-icon class="clash-icon" aria-hidden="true">warning</mat-icon>
@@ -107,7 +110,7 @@
     <ul class="visually-hidden" [attr.aria-label]="caption() || ('timetable.caption' | transloco)">
       @for (d of byDay(); track d.day) {
         @for (b of d.items; track b.key) {
-          <li>{{ 'days.' + d.day | transloco }}, <bdi dir="ltr">{{ b.code }}</bdi>, {{ b.time }}@if (b.clash) {, {{ 'timetable.clash' | transloco }}}</li>
+          <li>{{ 'days.' + d.day | transloco }}, <bdi dir="ltr">{{ b.code }}</bdi> {{ b.label }}, {{ b.time }}@if (b.clash) {, {{ 'timetable.clash' | transloco }}}</li>
         }
       }
     </ul>
@@ -119,7 +122,7 @@
     <mat-icon aria-hidden="true">laptop</mat-icon>
     {{ 'timetable.online' | transloco }}
     @for (o of online(); track o.code; let last = $last) {
-      <bdi dir="ltr">{{ o.code }}</bdi>{{ last ? '' : ', ' }}
+      <span><bdi dir="ltr">{{ o.code }}</bdi>@if (o.label) { {{ o.label }}}{{ last ? '' : ', ' }}</span>
     }
   </p>
 }

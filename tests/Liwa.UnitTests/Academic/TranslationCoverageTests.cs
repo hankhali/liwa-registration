@@ -41,6 +41,52 @@ public sealed class TranslationCoverageTests
         Assert.Empty(ar.Except(en));
     }
 
+    /// <summary>Translation sections a student reads (UX pass: words a 17-year-old uses).</summary>
+    private static readonly string[] StudentSections =
+        ["student", "home", "studentStatus", "plan", "planner.reasons", "planner.actions", "myPlan", "graduation", "availability", "walkthrough", "timetable", "historyStudent", "messages"];
+
+    private static IEnumerable<(string Key, string Value)> Strings(JsonElement e, string prefix) =>
+        e.ValueKind == JsonValueKind.Object
+            ? e.EnumerateObject().SelectMany(p => Strings(p.Value, prefix + "." + p.Name))
+            : e.ValueKind == JsonValueKind.String ? [(prefix, e.GetString()!)] : [];
+
+    private static IEnumerable<(string Key, string Value)> StudentStrings(string lang)
+    {
+        var root = Load(lang);
+        foreach (var section in StudentSections)
+        {
+            var node = root;
+            foreach (var part in section.Split('.')) node = node.GetProperty(part);
+            foreach (var s in Strings(node, section)) yield return s;
+        }
+    }
+
+    [Fact]
+    public void Student_text_has_no_jargon()
+    {
+        // The UX pass's banned words; use "you can take", "you need to pass X first", "class", "semester", "check" instead.
+        var banned = new System.Text.RegularExpressions.Regex(
+            @"\b(eligib\w*|prerequisites?|corequisites?|critical path|sections?|terms?|validat\w*|projections?)\b",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        var offenders = StudentStrings("en")
+            .Select(s => (s.Key, Text: System.Text.RegularExpressions.Regex.Replace(s.Value, @"\{\{[^}]*\}\}", "")))
+            .Where(s => banned.IsMatch(s.Text))
+            .Select(s => $"{s.Key}: \"{s.Text}\"")
+            .ToList();
+        Assert.True(offenders.Count == 0, "Jargon in student text:\n" + string.Join("\n", offenders));
+    }
+
+    [Fact]
+    public void Student_text_is_fully_arabic_in_arabic()
+    {
+        var notArabic = StudentStrings("ar")
+            .Where(s => System.Text.RegularExpressions.Regex.Replace(s.Value, @"\{\{[^}]*\}\}", "").Any(char.IsLetter))
+            .Where(s => !s.Value.Any(ch => ch is >= '؀' and <= 'ۿ'))
+            .Select(s => $"{s.Key}: \"{s.Value}\"")
+            .ToList();
+        Assert.True(notArabic.Count == 0, "Not translated:\n" + string.Join("\n", notArabic));
+    }
+
     [Fact]
     public void Arabic_strings_are_actually_arabic()
     {

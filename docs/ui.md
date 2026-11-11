@@ -25,13 +25,14 @@ everything. Status chips, the gold critical-path badge, the timetable and notice
 
 | Component | Use |
 |---|---|
-| `app-page-header` | Page title (h1), one-line subtitle, optional actions on the end side. |
+| `app-page-header` | Page title (h1), one-line subtitle (on student screens: what to do here), and the actions slot on the end side, where the screen's **one gold primary action** goes (top right; full width on phones). |
 | `app-stat-card` | A big number with a label, optionally a link (with query params). `attention` adds a warning edge when the number is above zero. |
-| `app-status-chip` | A plan status with a **fixed colour and icon per status**, the same on every screen for both roles: Draft, Waiting for review, Being reviewed, Approved, Sent back, Changes suggested, Needs another look. |
+| `app-status-chip` | A plan status with a **fixed colour and icon per status**, the same on every screen for both roles: Draft, Waiting for review, Being reviewed, Approved, Sent back, Changes suggested, Needs another look. With `[student]="true"` it uses the student names (Sent to advisor, Advisor is reviewing, Sent back with comments, Advisor suggested changes, …); `studentStatus.meaning.*` holds the one-line "what this means for you". |
 | `app-empty-state` | "Nothing here yet" with an icon, a sentence and an optional action. |
 | `ConfirmService` / `app-confirm-dialog` | A yes/no Material dialog (focus trapped and restored). `danger` makes the confirm button red. |
 | `app-timetable-grid` | The weekly grid (see below). |
-| `app-plan-history` | A plan's history, newest first, with "Version 1 → 2" and classes added/removed. Used by the student (My Plan), the advisor review page and the student record. |
+| `app-plan-editor` | The two-panel planner ("Change courses"): classes the student can take, grouped by requirement, with title, "Take this soon", one reason and a class-time picker, next to the week and a credit counter. Shared by the student planner and the advisor's **Suggest changes** (brief §10). It only edits a selection; the page checks and saves. |
+| `app-plan-history` | A plan's history, newest first, with "Version 1 → 2" and classes added/removed. Used by the student (My Plan), the advisor review page and the student record. `[student]="true"` drops version numbers and class codes and shows course titles. |
 | `bidi.ts` | `isolate(code)` wraps a course code in Unicode isolates (LRI … PDI). |
 
 ### Timetable grid
@@ -39,11 +40,11 @@ everything. Status chips, the gold critical-path badge, the timetable and notice
 `<app-timetable-grid [blocks] [online] [days] [free] [editable] [fridayCutoff] [startHour] [endHour]>`
 
 - Monday–Friday by default (Saturday when a term or the student's free time includes it; Sunday is never shown).
-- Classes are placed by time in 15-minute rows. Overlapping classes on the same day are marked as a **clash** (red outline and icon, plus a sentence above the grid). The clash rule is end-exclusive: 10:00–10:50 and 10:50–11:40 don't clash; a one-minute overlap does.
+- Classes are placed by time in **5-minute rows**. Class times such as 10:50 and 4:50 pm are multiples of 5; with 15-minute rows they got fractional row numbers and fell below the grid. Each block shows the code and the title. Overlapping classes on the same day are marked as a **clash** (red outline and icon, plus a sentence above the grid). The clash rule is end-exclusive: 10:00–10:50 and 10:50–11:40 don't clash; a one-minute overlap does.
 - Friday after 12:00 is shaded "No classes Friday afternoon" (Jumu'ah) unless the term allows it.
 - `free` windows are shaded green. With `editable`, every hour is a toggle button (`aria-pressed`) and day headers select the whole day: this is the free-time editor on the Availability page.
 - Online classes with no meetings are listed under the grid.
-- On phones the grid becomes a per-day list ("Tue · ITC201 5:00–6:15 pm") with a **Show week grid** toggle.
+- On phones there is no hour grid: a per-day list with a heading per day and lines like "5:00–6:15 pm · ITC201 Database Systems".
 - The visual grid is hidden from screen readers; they get the same classes as a list.
 
 ## Reason codes → sentences
@@ -53,7 +54,9 @@ The server never sends prose for planner decisions, only codes and parameters. `
 
 - `PrerequisiteNotMet [ITC304, ITC301]` → "You need to pass ITC304 or ITC301 first"
 - `WaitingForGrade [CSC201, CSC102]` → "Waiting for a grade: you can take CSC201 if you pass CSC102"
-- `UnlocksOtherCourses 5` → "Take this soon: 5 other courses depend on it"
+- `UnlocksOtherCourses 5` → "Take this soon: 5 other classes depend on it"
+- Every course in a sentence is shown as code **and** title ("ITC201 Database Systems"), from `CourseTitles`
+  (`core/planning/course-titles.ts`), which every planning view fills.
 - `TakeWithCorequisite`, `NotOfferedThisTerm`, `SectionFull`, `NoSectionFits`, … all have plain versions.
 
 `| reasonText: 'action' : { total }` gives the **actionable** version used in the Checks box, from `planner.actions.*`,

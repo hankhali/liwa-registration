@@ -3,7 +3,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { formatDateTime } from '../core/academic/academic.models';
 import { LanguageService } from '../core/i18n/language.service';
+import { CourseTitles, courseOnly } from '../core/planning/course-titles';
 import { PlanEvent } from '../core/planning/planning.models';
+import { isolate } from './bidi';
 
 /** One history line with the version step it made ("Version 1 → 2"), if any. */
 export interface HistoryLine extends PlanEvent {
@@ -29,18 +31,18 @@ export function withVersionSteps(events: PlanEvent[]): HistoryLine[] {
       @for (e of lines(); track $index) {
         <li>
           <span class="liwa-muted small">{{ when(e.at) }}</span>
-          <span>{{ 'history.' + e.action | transloco: { actor: e.actorName || ('history.system' | transloco), version: e.version ?? '' } }}</span>
-          @if (e.fromVersion !== null) {
+          <span>{{ (student() ? 'historyStudent.' : 'history.') + e.action | transloco: { actor: e.actorName || ('history.system' | transloco), version: e.version ?? '' } }}</span>
+          @if (e.fromVersion !== null && !student()) {
             <span class="step">{{ 'history.versionStep' | transloco: { from: e.fromVersion, to: e.version } }}</span>
           }
           @if (e.note && e.action !== 'needsReview') {
             <q>{{ e.note }}</q>
           }
           @if (e.added.length > 0) {
-            <span class="small added">+ {{ 'history.added' | transloco }} <bdi dir="ltr">{{ e.added.join(', ') }}</bdi></span>
+            <span class="small added">+ {{ 'history.added' | transloco }} {{ courses(e.added) }}</span>
           }
           @if (e.removed.length > 0) {
-            <span class="small removed">− {{ 'history.removed' | transloco }} <bdi dir="ltr">{{ e.removed.join(', ') }}</bdi></span>
+            <span class="small removed">− {{ 'history.removed' | transloco }} {{ courses(e.removed) }}</span>
           }
         </li>
       } @empty {
@@ -78,8 +80,23 @@ export function withVersionSteps(events: PlanEvent[]): HistoryLine[] {
 })
 export class PlanHistoryComponent {
   readonly events = input<PlanEvent[]>([]);
+  /** Student wording: no version numbers, no class codes like "(E1)", course titles instead. */
+  readonly student = input(false);
   private readonly language = inject(LanguageService);
+  private readonly titles = inject(CourseTitles);
   protected readonly lines = computed(() => withVersionSteps(this.events()).reverse());
+
+  /** "BUS220 (E1), FIN201 (01)" → staff: as stored; students: "BUS220 Business Statistics, FIN201 Principles of Finance". */
+  protected courses(entries: string[]): string {
+    if (!this.student()) return entries.map(isolate).join(', ');
+    return entries
+      .map((e) => {
+        const code = courseOnly(e);
+        const title = this.titles.title(code);
+        return title ? `${isolate(code)} ${title}` : isolate(code);
+      })
+      .join(', ');
+  }
 
   protected when(iso: string): string {
     return formatDateTime(iso, this.language.lang());

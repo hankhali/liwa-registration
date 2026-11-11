@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, inject, input, output, resource, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, inject, input, output, resource, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,17 +32,16 @@ export interface ExplainAnswer {
  * The AI explainer (brief §12): "Explain my plan", "Why not this course?" and a question box limited to the plan.
  * It only explains what the planner produced; for what-if questions the planner's own figures are shown under the
  * answer. Advisors also get "Draft a note to the student", which goes into their note box to edit — never sent.
- * With no AI provider configured it says "Not available" and nothing else changes.
+ * With no AI provider configured the panel is hidden and nothing else changes.
  */
 @Component({
   selector: 'app-explainer-panel',
   imports: [FormsModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe],
   template: `
+    @if (available()) {
     <section class="explainer liwa-card" aria-labelledby="ex-h" #panel>
       <h3 id="ex-h"><mat-icon aria-hidden="true">auto_awesome</mat-icon> {{ 'explainer.heading' | transloco }}</h3>
-      @if (status.hasValue() && !status.value().available) {
-        <p class="liwa-muted">{{ 'explainer.notAvailable' | transloco }}</p>
-      } @else if (status.hasValue()) {
+      @if (status.hasValue()) {
         <p class="liwa-muted small">{{ 'explainer.intro' | transloco }}</p>
         <div class="actions">
           <button mat-stroked-button type="button" [disabled]="busy()" (click)="ask('Plan')">{{ 'explainer.explainPlan' | transloco }}</button>
@@ -81,6 +80,7 @@ export interface ExplainAnswer {
         }
       }
     </section>
+    }
   `,
   styles: `
     .explainer {
@@ -155,6 +155,8 @@ export class ExplainerPanelComponent {
   private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
 
   protected readonly status = resource({ loader: () => firstValueFrom(this.http.get<{ available: boolean }>('/api/me/explainer')) });
+  /** With no AI provider the panel is not shown at all (an empty "Not available" box only confuses). */
+  readonly available = computed(() => this.status.hasValue() && this.status.value().available);
   protected readonly answer = signal<ExplainAnswer | null>(null);
   protected readonly busy = signal(false);
   protected readonly lastKind = signal<string | null>(null);

@@ -1,4 +1,4 @@
-﻿import { A11yModule } from '@angular/cdk/a11y';
+import { A11yModule } from '@angular/cdk/a11y';
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -8,7 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { termLabel } from '../planning/planning.models';
 import { filter, firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
@@ -52,6 +53,7 @@ export class ShellComponent {
   protected readonly language = inject(LanguageService);
   protected readonly theme = inject(ThemeService);
   private readonly http = inject(HttpClient);
+  private readonly transloco = inject(TranslocoService);
   private readonly titles = inject(TranslatedTitleStrategy);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
@@ -59,7 +61,13 @@ export class ShellComponent {
     const role = this.auth.role();
     return role ? NAV[role] : [];
   });
-  protected readonly bottomNav = computed(() => this.nav().slice(0, 4));
+  /** Items with a bottom-bar label (students), otherwise the first four. */
+  protected readonly bottomNav = computed(() => {
+    const marked = this.nav().filter((i) => i.bottom);
+    return marked.length > 0 ? marked : this.nav().slice(0, 4);
+  });
+  /** Students' bottom bar has exactly four items; other roles add "More" (the drawer). */
+  protected readonly bottomMore = computed(() => !this.nav().some((i) => i.bottom));
   protected readonly pageTitle = this.titles.pageKey;
   protected readonly collapsed = signal(this.readCollapsed());
   protected readonly drawerOpen = signal(false);
@@ -98,6 +106,11 @@ export class ShellComponent {
   protected initials(name: string): string {
     const parts = name.replace(/^Dr\.?\s+/i, '').split(/\s+/).filter(Boolean);
     return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+  }
+
+  /** The semester name in the reader's language ("Spring 2027" / "الربيع 2027"). */
+  protected termName(t: TermOption): string {
+    return termLabel(t.code, (k) => this.transloco.translate(k), this.language.lang()) || t.name;
   }
 
   protected toggleRail(): void {

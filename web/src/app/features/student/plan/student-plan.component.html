@@ -1,12 +1,25 @@
-<section class="liwa-card plan" aria-labelledby="plan-heading" [attr.aria-busy]="view.isLoading()">
-  <h2 id="plan-heading" class="card-title">
-    <mat-icon aria-hidden="true">event_note</mat-icon>
-    @if (view.hasValue()) {
-      {{ (sent() ? 'plan.headingSent' : 'plan.heading') | transloco: { term: termLabel(view.value().termCode) } }}
+@if (view.hasValue()) {
+  @let v = view.value();
+  <app-page-header [heading]="heading() | transloco: { term: termLabel(v.termCode) }" [subtitle]="firstLine() | transloco">
+    @if (!sent()) {
+      @if (reply()?.status === 'ChangesProposed') {
+        <button mat-flat-button type="button" class="primary" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
+      } @else if (rows().length > 0) {
+        <button mat-flat-button type="button" class="primary send" [disabled]="!canSend() || busy() || confirming()" (click)="startSend()">
+          <mat-icon aria-hidden="true">send</mat-icon>
+          {{ 'plan.send' | transloco }}
+        </button>
+      }
     } @else {
-      {{ 'student.home.planHeading' | transloco }}
+      <a mat-stroked-button routerLink="/student/plan">{{ 'plan.seeMyPlan' | transloco }}</a>
     }
-  </h2>
+  </app-page-header>
+} @else {
+  <app-page-header [heading]="'student.home.planHeading' | transloco" />
+}
+
+<section class="liwa-card plan" aria-labelledby="plan-heading" [attr.aria-busy]="view.isLoading()">
+  <h2 id="plan-heading" class="visually-hidden">{{ 'plan.listLabel' | transloco }}</h2>
 
   @if (view.error()) {
     <p class="liwa-muted">{{ 'plan.notReady' | transloco }}</p>
@@ -17,49 +30,123 @@
 
     @if (sent()) {
       <p class="status status-sent" role="status">
-        <mat-icon aria-hidden="true">mark_email_read</mat-icon>
+        <mat-icon aria-hidden="true">{{ v.saved!.status === 'Approved' ? 'verified' : 'mark_email_read' }}</mat-icon>
         <span>
           <strong>{{ 'plan.status.' + v.saved!.status | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}</strong>
-          <span class="liwa-muted">{{ 'plan.sentHint' | transloco }} <a routerLink="/student/plan">{{ 'plan.seeMyPlan' | transloco }}</a></span>
+          <span class="liwa-muted">{{ (v.saved!.status === 'Approved' ? 'plan.approvedHint' : 'plan.sentHint') | transloco }}</span>
         </span>
       </p>
-    } @else {
-      @if (reply(); as rp) {
-        <div class="reply" [class.reply-back]="rp.status !== 'ChangesProposed'" role="status">
-          <strong>{{ 'plan.reply.' + rp.status | transloco: { advisor: rp.advisor ?? ('plan.yourAdvisor' | transloco) } }}</strong>
-          @if (rp.note) {
-            <q>{{ rp.note }}</q>
-          }
-          <span class="liwa-muted">{{ 'plan.reply.' + rp.status + 'Hint' | transloco }}</span>
-          @if (rp.status === 'ChangesProposed') {
-            <div class="actions">
-              <button mat-flat-button type="button" [disabled]="busy()" (click)="accept()">{{ 'plan.reply.accept' | transloco }}</button>
-              <a mat-button routerLink="/student/plan">{{ 'plan.reply.seeChanges' | transloco }}</a>
-            </div>
-          }
-        </div>
-      } @else {
-        <p class="intro">{{ 'plan.intro' | transloco }}</p>
-      }
+    } @else if (reply(); as rp) {
+      <div class="reply" [class.reply-back]="rp.status !== 'ChangesProposed'" role="status">
+        <strong>{{ 'plan.reply.' + rp.status | transloco: { advisor: rp.advisor ?? ('plan.yourAdvisor' | transloco) } }}</strong>
+        @if (rp.note) {
+          <q>{{ rp.note }}</q>
+        }
+        <span class="liwa-muted">{{ 'plan.reply.' + rp.status + 'Hint' | transloco }}</span>
+        @if (rp.status === 'ChangesProposed') {
+          <a mat-button routerLink="/student/plan">{{ 'plan.reply.seeChanges' | transloco }}</a>
+        }
+      </div>
+    }
 
-      @if (needsFreeTime()) {
-        <p class="liwa-notice">
-          <mat-icon aria-hidden="true" class="inline-icon">schedule</mat-icon>
-          {{ 'plan.freeTimeFirst' | transloco }} <a routerLink="/student/availability">{{ 'plan.freeTimeLink' | transloco }}</a>
-        </p>
-      }
+    @if (message(); as m) {
+      <p class="message" [class.message-error]="m === 'error'" role="status">
+        {{ 'plan.messages.' + m | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}
+      </p>
+    }
+
+    <!-- Sending: one "I understand" per warning, right under the button that opened it -->
+    @if (confirming() && !sent()) {
+      <div class="confirm" role="dialog" aria-modal="false" aria-labelledby="confirm-heading">
+        <h3 id="confirm-heading">{{ 'plan.confirm.heading' | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}</h3>
+        @if (warnings().length > 0) {
+          <p>{{ 'plan.confirm.intro' | transloco }}</p>
+          <ul class="ack">
+            @for (w of warnings(); track key(w)) {
+              <li>
+                <p>{{ w | reasonText }}</p>
+                <mat-checkbox [checked]="!!acknowledged()[key(w)]" (change)="setAcknowledged(w, $event.checked)">
+                  {{ 'plan.confirm.understand' | transloco }}
+                </mat-checkbox>
+              </li>
+            }
+          </ul>
+        }
+        <div class="actions">
+          <button mat-flat-button type="button" [disabled]="!allConfirmed() || busy()" (click)="save(true)">{{ 'plan.confirm.send' | transloco }}</button>
+          <button mat-button type="button" (click)="confirming.set(false)">{{ 'plan.confirm.cancel' | transloco }}</button>
+        </div>
+      </div>
+    }
+
+    <!-- Free time: one tap rebuilds the plan for those times -->
+    @if (!sent()) {
+      <div class="free-time" role="group" aria-labelledby="free-label">
+        <span id="free-label" class="free-label">{{ 'plan.freeTimeQuestion' | transloco }}</span>
+        @for (p of quickPresets; track p) {
+          <button
+            mat-stroked-button
+            type="button"
+            class="free-chip"
+            [class.selected]="currentPreset() === p"
+            [attr.aria-pressed]="currentPreset() === p"
+            [disabled]="busy()"
+            (click)="usePreset(p)"
+          >
+            @if (currentPreset() === p) {
+              <mat-icon aria-hidden="true">check</mat-icon>
+            }
+            {{ 'plan.quickPresets.' + p | transloco }}
+          </button>
+        }
+        <a mat-button routerLink="/student/availability" class="free-custom" [class.selected]="currentPreset() === 'custom'">
+          {{ (currentPreset() === 'custom' ? 'plan.quickPresets.customOn' : 'plan.quickPresets.custom') | transloco }}
+        </a>
+      </div>
       @if (restoredDraft()) {
         <p class="liwa-notice ok" role="status">{{ 'plan.draftRestored' | transloco }}</p>
       }
     }
 
-    <!-- The plan -->
     @if (rows().length === 0) {
       <p class="empty-plan">{{ 'plan.empty' | transloco }}</p>
     } @else {
+      <!-- The number that matters, big -->
+      <p class="credits-big">
+        <span class="num">{{ digits(totalCredits()) }}</span>
+        <span class="unit">{{ (totalCredits() === 1 ? 'plan.creditsThisSemesterOne' : 'plan.creditsThisSemester') | transloco }}</span>
+        @if (limits(); as l) {
+          @if (l.min !== null) {
+            <span class="liwa-muted range">{{ 'plan.limits' | transloco: { min: l.min, max: l.max } }}</span>
+          }
+        }
+      </p>
+
+      <!-- Checks: what to fix before sending, as sentences the student can act on -->
+      @if (!sent() && errors().length > 0) {
+        <div class="liwa-notice error" role="alert">
+          <strong>{{ 'plan.fixFirst' | transloco }}</strong>
+          <ul>
+            @for (e of errors(); track $index) {
+              <li>{{ e | reasonText: 'action' : { total: totalCredits() } }}</li>
+            }
+          </ul>
+        </div>
+      }
+      @if (!sent() && warnings().length > 0 && !confirming()) {
+        <div class="liwa-notice warn">
+          <strong>{{ 'plan.goodToKnow' | transloco }}</strong>
+          <ul>
+            @for (w of warnings(); track $index) {
+              <li>{{ w | reasonText: 'action' : { total: totalCredits() } }}</li>
+            }
+          </ul>
+        </div>
+      }
+
       <ul class="courses" [attr.aria-label]="'plan.listLabel' | transloco">
         @for (r of rows(); track r.code) {
-          <li class="course">
+          <li class="course" [class.is-critical]="r.critical">
             <div class="course-head">
               <bdi class="code" dir="ltr">{{ r.code }}</bdi>
               <strong class="title">{{ r.title }}</strong>
@@ -81,81 +168,40 @@
                 }
               </div>
             }
-            @if (r.reasons.length > 0) {
-              <ul class="why">
-                @for (reason of r.reasons; track $index) {
-                  <li>{{ reason | reasonText }}</li>
-                }
-              </ul>
+            @if (r.reason; as reason) {
+              <p class="why-one">{{ reason | reasonText }}</p>
             }
-            <button mat-button type="button" class="details-link" (click)="toggle('details', r.code)" [attr.aria-expanded]="!!openDetails()[r.code]">
-              {{ 'plan.details' | transloco }}
-            </button>
-            @if (openDetails()[r.code]) {
-              <div class="details">
-                @if (r.rank !== null) {
-                  <p>{{ 'advisor.review.ranking' | transloco: { rank: r.rank, unlocks: r.unlocks, chain: r.chain } }}</p>
-                }
-                @if (r.alternatives.length > 0) {
-                  <p>{{ 'advisor.review.otherTimes' | transloco }}</p>
-                  <ul>
-                    @for (a of r.alternatives; track a.sectionCode) {
-                      <li>
-                        {{ 'advisor.review.section' | transloco: { s: a.sectionCode } }}:
-                        @for (reason of a.reasons; track $index; let last = $last) {
-                          {{ reason | reasonText }}{{ last ? '' : '; ' }}
-                        }
-                      </li>
-                    }
-                  </ul>
-                }
-              </div>
+            @if (r.alternatives.length > 0) {
+              <button mat-button type="button" class="details-link" (click)="toggle('details', r.code)" [attr.aria-expanded]="!!openDetails()[r.code]">
+                {{ 'plan.otherTimes' | transloco }}
+              </button>
+              @if (openDetails()[r.code]) {
+                <ul class="details">
+                  @for (a of r.alternatives; track a.sectionId) {
+                    <li>
+                      {{ a.label }}:
+                      @for (reason of a.reasons; track $index; let last = $last) {
+                        {{ reason | reasonText }}{{ last ? '' : '; ' }}
+                      }
+                    </li>
+                  }
+                </ul>
+              }
             }
           </li>
         }
       </ul>
 
-      <p class="total">
-        <strong>{{ 'plan.total' | transloco: { n: totalCredits() } }}</strong>
-        @if (limits(); as l) {
-          @if (l.min !== null) {
-            <span class="liwa-muted">{{ 'plan.limits' | transloco: { min: l.min, max: l.max } }}</span>
-          }
-        }
-      </p>
-
       <h3 class="week-title">{{ 'plan.week' | transloco }}</h3>
       <app-timetable-grid [blocks]="blocks()" [online]="online()" [days]="gridDays()" [free]="availability()" [caption]="'plan.week' | transloco" />
     }
 
-    <!-- Checks: what to fix before sending, as sentences the student can act on -->
-    @if (!sent() && errors().length > 0) {
-      <div class="liwa-notice error" role="alert">
-        <strong>{{ 'plan.fixFirst' | transloco }}</strong>
-        <ul>
-          @for (e of errors(); track $index) {
-            <li>{{ e | reasonText: 'action' : { total: totalCredits() } }}</li>
-          }
-        </ul>
-      </div>
-    }
-    @if (!sent() && warnings().length > 0 && !confirming()) {
-      <div class="liwa-notice warn">
-        <strong>{{ 'plan.goodToKnow' | transloco }}</strong>
-        <ul>
-          @for (w of warnings(); track $index) {
-            <li>{{ w | reasonText: 'action' : { total: totalCredits() } }}</li>
-          }
-        </ul>
-      </div>
-    }
-
     @if (graduation(); as g) {
-      @if (g.regular && termName(g.regular); as t) {
+      @if (g.regular) {
         <p class="graduation">
           <mat-icon aria-hidden="true">school</mat-icon>
           <span>
-            {{ 'plan.graduate' | transloco: { term: ('planner.season.' + t.season | transloco) + ' ' + t.year } }}
+            {{ 'plan.graduate' | transloco: { term: termLabel(g.regular) } }}
             <a routerLink="/student/graduation">{{ 'plan.seePath' | transloco }}</a>
           </span>
         </p>
@@ -163,142 +209,47 @@
     }
 
     @if (!sent()) {
-      @if (confirming()) {
-        <div class="confirm" role="dialog" aria-modal="false" aria-labelledby="confirm-heading">
-          <h3 id="confirm-heading">{{ 'plan.confirm.heading' | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}</h3>
-          @if (warnings().length > 0) {
-            <p>{{ 'plan.confirm.intro' | transloco }}</p>
-            <ul class="ack">
-              @for (w of warnings(); track key(w)) {
-                <li>
-                  <p>{{ w | reasonText }}</p>
-                  <mat-checkbox [checked]="!!acknowledged()[key(w)]" (change)="setAcknowledged(w, $event.checked)">
-                    {{ 'plan.confirm.understand' | transloco }}
-                  </mat-checkbox>
-                </li>
-              }
-            </ul>
-          }
-          <div class="actions">
-            <button mat-flat-button type="button" [disabled]="!allConfirmed() || busy()" (click)="save(true)">{{ 'plan.confirm.send' | transloco }}</button>
-            <button mat-button type="button" (click)="confirming.set(false)">{{ 'plan.confirm.cancel' | transloco }}</button>
-          </div>
-        </div>
-      } @else {
-        <div class="actions">
-          @if (rows().length > 0) {
-            <button mat-flat-button type="button" class="send" [disabled]="!canSend() || busy()" (click)="startSend()">
-              <mat-icon aria-hidden="true">send</mat-icon>
-              {{ 'plan.send' | transloco }}
-            </button>
-          }
-          <button mat-stroked-button type="button" class="change" (click)="editing.set(!editing())" [attr.aria-expanded]="editing()">
-            <mat-icon aria-hidden="true">edit</mat-icon>
-            {{ (editing() ? 'plan.doneChanging' : 'plan.change') | transloco }}
-          </button>
-          @if (edited()) {
-            <button mat-button type="button" (click)="save(false)" [disabled]="!canSend() || busy()">{{ 'plan.saveLater' | transloco }}</button>
-            <button mat-button type="button" (click)="useRecommendation()">{{ 'plan.useRecommendation' | transloco }}</button>
-            <span class="liwa-muted small autosaved">{{ 'plan.autosaved' | transloco }}</span>
-          }
-        </div>
-      }
-    }
-
-    @if (message(); as m) {
-      <p class="message" [class.message-error]="m === 'error'" role="status">
-        {{ 'plan.messages.' + m | transloco: { advisor: v.advisorName ?? ('plan.yourAdvisor' | transloco) } }}
-      </p>
-    }
-
-    <!-- Change courses: two panels -->
-    @if (editing() && !sent()) {
-      <div class="editor">
-        <div class="editor-left">
-          <h3>{{ 'plan.editor.canTake' | transloco }}</h3>
-          @for (g of candidateGroups(); track g.key) {
-            <section class="group" [attr.aria-labelledby]="'grp-' + g.key">
-              <h4 [id]="'grp-' + g.key">{{ g.name }}</h4>
-              <ul class="candidates">
-                @for (c of g.courses; track c.courseCode) {
-                  <li>
-                    <div class="cand-head">
-                      <mat-checkbox [checked]="!!selection()[c.courseCode]" (change)="toggleCourse(c.courseCode, $event.checked)">
-                        <bdi class="code" dir="ltr">{{ c.courseCode }}</bdi> {{ title(c.courseCode) }}
-                        <span class="liwa-muted">· {{ (c.credits === 1 ? 'plan.credit1' : 'plan.credits') | transloco: { n: c.credits } }}</span>
-                      </mat-checkbox>
-                      @if (isCritical(c.courseCode)) {
-                        <span class="liwa-critical"><mat-icon aria-hidden="true" class="inline-icon">star</mat-icon>{{ 'plan.critical' | transloco }}</span>
-                      }
-                      <button mat-button type="button" class="why-button" (click)="toggle('why', c.courseCode)" [attr.aria-expanded]="!!openWhy()[c.courseCode]">
-                        {{ 'plan.why' | transloco }}
-                      </button>
-                    </div>
-                    @if (openWhy()[c.courseCode]) {
-                      <ul class="why">
-                        @for (reason of c.reasons; track $index) {
-                          <li>{{ reason | reasonText }}</li>
-                        } @empty {
-                          <li>{{ 'planner.reasons.RequiredForDegree' | transloco }}</li>
-                        }
-                      </ul>
-                    }
-                    @if (selection()[c.courseCode]) {
-                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="section-pick">
-                        <mat-label>{{ 'plan.editor.classTime' | transloco }}</mat-label>
-                        <mat-select [value]="selection()[c.courseCode]" (valueChange)="chooseSection(c.courseCode, $event)">
-                          @for (s of sectionsFor(c.courseCode); track s.id) {
-                            <mat-option [value]="s.id" [disabled]="s.seatsLeft <= 0">
-                              {{ sectionLabel(s) }}@if (s.seatsLeft <= 0) { · {{ 'plan.editor.full' | transloco }}}
-                            </mat-option>
-                          }
-                        </mat-select>
-                      </mat-form-field>
-                    }
-                  </li>
-                }
-              </ul>
-            </section>
-          }
-        </div>
-        <div class="editor-right">
-          <div class="counter" [class.over]="limits() && totalCredits() > limits()!.max" aria-live="polite">
-            <strong>{{ 'plan.editor.counter' | transloco: { n: totalCredits() } }}</strong>
-            @if (limits(); as l) {
-              <span>{{ 'plan.editor.counterLimits' | transloco: { min: l.min ?? 0, max: l.max } }}</span>
-            }
-          </div>
-          <app-timetable-grid [blocks]="blocks()" [online]="online()" [days]="gridDays()" [free]="availability()" />
-        </div>
+      <div class="actions secondary-actions">
+        <button mat-stroked-button type="button" class="change" (click)="editing.set(!editing())" [attr.aria-expanded]="editing()">
+          <mat-icon aria-hidden="true">edit</mat-icon>
+          {{ (editing() ? 'plan.doneChanging' : 'plan.change') | transloco }}
+        </button>
+        @if (edited()) {
+          <button mat-button type="button" (click)="save(false)" [disabled]="!canSend() || busy()">{{ 'plan.saveLater' | transloco }}</button>
+          <button mat-button type="button" (click)="useRecommendation()">{{ 'plan.useRecommendation' | transloco }}</button>
+          <span class="liwa-muted small autosaved">{{ 'plan.autosaved' | transloco }}</span>
+        }
       </div>
     }
 
-    <!-- Not eligible this semester: its own panel, grouped by reason with counts -->
-    @if (!sent() && blocked().length > 0) {
-      <details class="blocked">
-        <summary>
-          <mat-icon aria-hidden="true">expand_more</mat-icon>
-          {{ 'plan.editor.notAvailable' | transloco: { n: blockedCount() } }}
-        </summary>
-        @for (g of blocked(); track g.group) {
-          <details class="blocked-group">
-            <summary>{{ 'plan.editor.groups.' + g.group | transloco: { n: g.courses.length } }}</summary>
-            <ul>
-              @for (c of g.courses; track c.courseCode) {
-                <li>
-                  <bdi class="code" dir="ltr">{{ c.courseCode }}</bdi> {{ title(c.courseCode) }}
-                  @if (c.reasons[0]) {
-                    <span class="liwa-muted">— {{ c.reasons[0] | reasonText }}</span>
-                  }
-                  <button mat-button type="button" class="why-button" (click)="explainer.whyNot(c.courseCode)">{{ 'explainer.whyNot' | transloco }}</button>
-                </li>
-              }
-            </ul>
-          </details>
-        }
-      </details>
+    <!-- Change courses: the two-panel planner (the same one the advisor uses to suggest changes) -->
+    @if (editing() && !sent()) {
+      <div class="editor-wrap">
+        <app-plan-editor [view]="v" [selection]="selection()" (selectionChange)="onEditorChange($event)" [availability]="availability()" [limits]="limits()" />
+      </div>
     }
-
-    <app-explainer-panel #explainer [sectionIds]="selectedIds()" />
+    <!-- Classes you can't take yet: always visible, each with code, title and one plain reason (no expanding) -->
+    @if (blocked().length > 0) {
+      <section class="cant-take" aria-labelledby="cant-heading">
+        <h3 id="cant-heading">{{ 'plan.cantTake.heading' | transloco: { n: blockedCount() } }}</h3>
+        <p class="liwa-muted">{{ 'plan.cantTake.intro' | transloco }}</p>
+        @for (g of blocked(); track g.group) {
+          <h4>{{ 'plan.editor.groups.' + g.group | transloco: { n: g.courses.length } }}</h4>
+          <ul>
+            @for (c of g.courses; track c.courseCode) {
+              <li [id]="'cant-' + c.courseCode">
+                <span class="cant-course"><bdi class="code" dir="ltr">{{ c.courseCode }}</bdi> <strong>{{ title(c.courseCode) }}</strong></span>
+                <span class="cant-why">{{ blockingReason(c.reasons) | reasonText }}</span>
+                @if (explainer.available()) {
+                  <button mat-button type="button" class="why-button" (click)="explainer.whyNot(c.courseCode)">{{ 'explainer.whyNot' | transloco }}</button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
   }
 </section>
+
+<app-explainer-panel #explainer [sectionIds]="selectedIds()" />

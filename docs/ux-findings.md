@@ -38,7 +38,7 @@ Each finding has an ID. The **What changed** column records the fix. "Not fixed"
 
 | ID | Finding | What changed |
 |---|---|---|
-| A1 | Picking "Evenings only" just reveals an hour grid and a second button, "Save and see my plan", at the bottom. The plan doesn't change until the student finds that button: four clicks and a scroll for "show me only classes I can attend". | Picking Full-time daytime, Evenings only, or Weekends + evenings saves at once and opens the plan, rebuilt for those times. Custom opens the grid as before. The same three choices sit at the top of the Planner as one-tap buttons, so the plan updates in place. |
+| A1 | Picking "Evenings only" just reveals an hour grid and a second button, "Save and see my plan", at the bottom. The plan doesn't change until the student finds that button: four clicks and a scroll for "show me only classes I can attend". | Picking Full-time daytime, Evenings only, or Weekends + evenings saves at once and opens the plan, rebuilt for those times. Custom opens the grid as before. The Planner has the same choices (plus "Any time" and "Choose my own hours") as one-tap buttons at the top, so the plan updates in place. |
 | A2 | "Go to my plan" link under the cards duplicates the cards' purpose. | Removed. "Skip this and show me every class" stays. |
 
 ## Planner
@@ -80,6 +80,27 @@ Each finding has an ID. The **What changed** column records the fix. "Not fixed"
 |---|---|---|
 | S1 | Works. Each message links to the right page. In Arabic the semester name is English (X7). | Fixed by X7. Empty state already says what will appear; it now has a "See my plan" button. |
 
+## The five student tasks, after the changes
+
+Clicks counted from Home. Checked on the "after" captures and by hand on the running app.
+
+| Task | Path | Clicks |
+|---|---|---|
+| a. "I'm new. What do I take this semester?" (`student.evening`) | Home: "Spring 2027: your plan is ready to look at" → gold **See my plan** → the recommended plan is already built, with the week → gold **Send to my advisor** (top right) → **Send now** | 3 |
+| b. "I work evenings. Only classes I can attend." | Home → **Plan** (rail / bottom bar) → **Evenings only** at the top of the plan → the plan is rebuilt for Mon–Thu 5–8 pm. (Or Free time → the **Evenings only** card, which saves and opens the rebuilt plan.) | 2 |
+| c. "Why can't I take ITC301?" | Home → **Plan** → "Classes you can't take yet": **ITC301 Systems Analysis and Design**: "You need to pass ITC201 Database Systems first". Visible without expanding anything | 1 |
+| d. "When will I graduate? What if I skip summer?" | Home already shows the graduation date as a big number. → **Graduation**: "You could graduate in **Spring 2030**", "Semesters left: **7**", one toggle "Include summer classes" with the other answer under it | 1–2 |
+| e. "My advisor sent it back. What now?" (`student.mid1`) | Home: "your plan is **Sent back with comments**" → gold **See what my advisor said** → My Plan opens with the advisor's note first → gold **Fix my plan** → the planner, with the note at the top and **Send to my advisor** | 2 |
+
+## Advisor review page (brief §10)
+
+| ID | Finding | What changed |
+|---|---|---|
+| R1 | Two columns (plan + a side panel with decision, checks, student and graduation stacked). The brief asks for left = student, centre = plan, right = graduation, with the decision at the bottom. | Three columns: **left** = student (credits, GPA, year, credit limit, probation, hold, free-time mini-grid, link to the full record); **centre** = the week, every class with the planner's reasons (open), today's checks and the student's acknowledged warnings, history; **right** = graduation for this plan in big type, delay vs the recommendation, and the with/without-summer table. **Bottom**: a bar with the note, Approve, Suggest changes and Send back, which stays at the bottom of the window. Two columns below 1280 px, one below 900 px. |
+| R2 | "Suggest changes" opened a checkbox list with section codes and no timetable. | It opens **the same two-panel planner the student uses** (`shared/plan-editor.component.ts`, also used by the student's "Change courses"), run on the student's record: classes grouped by requirement with title, "Take this soon", one reason and a class-time picker, and the week with clashes and a credit counter. Checked live on the server, and plans with errors can't be sent. |
+
+Captures: `docs/screenshots/ux-pass-after/advisor.it__{en,ar}__desktop__{review,suggest-changes}.png`.
+
 ## Not fixed (and why)
 
 - **Instructor names and advisor notes stay in English on Arabic screens.** Names are proper nouns from the
@@ -89,3 +110,15 @@ Each finding has an ID. The **What changed** column records the fix. "Not fixed"
   all 3 programs, but real data may not.
 - The term selector in the top bar remains (with one open semester it is a label in practice). It is needed once two
   semesters overlap.
+- **The rail still says "Availability" and "Graduation Path"**, as the brief (§9) names them.
+  The page headings use the plainer "When are you free?" and "Graduation", and the phone bottom bar says
+  "Graduation".
+- When an advisor has suggested changes, **"Your classes" on My Plan lists the suggested version** (that is what is
+  saved as the current plan). The diff above it shows what changed. A side-by-side "yours / suggested" view would
+  be clearer, but needs the previous version's classes from the API.
+- **Graduation for students in a summer-only course** (e.g. `student.transfer`'s BUS410 internship): the "without
+  summer" path still shows that one summer, because the course is only offered then. The planner is right, but the
+  toggle can look as if it does nothing for these students. A one-line note there would help.
+- **Advisor-side jargon is unchanged** on purpose: advisors keep "section 02", ranking details and version numbers.
+- Full-page screenshots show the advisor's sticky decision bar and the phone bottom bar part-way down the image. In
+  a real window they sit at the bottom of the screen.

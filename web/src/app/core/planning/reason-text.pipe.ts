@@ -2,6 +2,7 @@ import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { isolate } from '../../shared/bidi';
 import { LanguageService } from '../i18n/language.service';
+import { CourseTitles } from './course-titles';
 import { Reason } from './planning.models';
 
 /** Reasons whose course list means "any one of these" rather than "all of these". */
@@ -25,10 +26,11 @@ export interface ReasonContext {
 export class ReasonTextPipe implements PipeTransform {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
+  private readonly titles = inject(CourseTitles);
 
   transform(r: Reason, mode: 'plain' | 'action' = 'plain', ctx: ReasonContext = {}): string {
     this.language.lang(); // re-render on language change
-    return reasonSentence(r, (key, params) => this.transloco.translate(key, params), mode, ctx, (key) => this.has(key));
+    return reasonSentence(r, (key, params) => this.transloco.translate(key, params), mode, ctx, (key) => this.has(key), (code) => this.titles.title(code));
   }
 
   private has(key: string): boolean {
@@ -40,8 +42,19 @@ export class ReasonTextPipe implements PipeTransform {
 type Translate = (key: string, params?: Record<string, unknown>) => string;
 
 /** Pure version of the pipe (used by tests and by components that need a string). */
-export function reasonSentence(r: Reason, t: Translate, mode: 'plain' | 'action', ctx: ReasonContext, has: (key: string) => boolean): string {
-  const codes = r.courses.map(isolate);
+export function reasonSentence(
+  r: Reason,
+  t: Translate,
+  mode: 'plain' | 'action',
+  ctx: ReasonContext,
+  has: (key: string) => boolean,
+  title: (code: string) => string = () => '',
+): string {
+  // Code AND title, always (only the code is isolated, so Arabic never reorders it).
+  const codes = r.courses.map((c) => {
+    const name = title(c);
+    return name ? `${isolate(c)} ${name}` : isolate(c);
+  });
   const joiner = t(OR_LISTS.has(r.code) ? 'planner.join.or' : 'planner.join.and');
   const courses = codes.length <= 1 ? (codes[0] ?? '') : `${codes.slice(0, -1).join(', ')} ${joiner} ${codes.at(-1)}`;
   let value = r.value ?? '';

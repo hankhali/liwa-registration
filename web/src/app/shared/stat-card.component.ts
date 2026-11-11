@@ -2,19 +2,19 @@ import { Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
-/** A big number with a label, optionally linking somewhere (e.g. "3 plans waiting for review"). */
+/** A big number (or short value such as a semester) with a label, optionally linking somewhere (e.g. "3 plans waiting for review"). */
 @Component({
   selector: 'app-stat-card',
   imports: [MatIconModule, RouterLink],
   template: `
     @if (link(); as l) {
-      <a class="stat liwa-card" [routerLink]="l" [queryParams]="query()" [class.attention]="attention() && value() > 0">
+      <a class="stat liwa-card" [routerLink]="l" [queryParams]="query()" [class.attention]="hot()">
         <mat-icon aria-hidden="true">{{ icon() }}</mat-icon>
         <span class="value">{{ value() }}</span>
         <span class="label">{{ label() }}</span>
       </a>
     } @else {
-      <div class="stat liwa-card" [class.attention]="attention() && value() > 0">
+      <div class="stat liwa-card" [class.attention]="hot()">
         <mat-icon aria-hidden="true">{{ icon() }}</mat-icon>
         <span class="value">{{ value() }}</span>
         <span class="label">{{ label() }}</span>
@@ -57,10 +57,14 @@ import { RouterLink } from '@angular/router';
 })
 export class StatCardComponent {
   readonly label = input.required<string>();
-  readonly value = input.required<number>();
+  readonly value = input.required<number | string>();
   readonly icon = input('insights');
   readonly link = input<string | null>(null);
   readonly query = input<Record<string, string> | null>(null);
   /** Highlight when the number is above zero (something needs doing). */
   readonly attention = input(false);
+  protected hot(): boolean {
+    const v = this.value();
+    return this.attention() && typeof v === 'number' && v > 0;
+  }
 }

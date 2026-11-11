@@ -10,7 +10,7 @@ import { PlanHistoryComponent, withVersionSteps } from './plan-history.component
 import { StatCardComponent } from './stat-card.component';
 import { StatusChipComponent } from './status-chip.component';
 import { setupI18n } from './testing';
-import { TimetableGridComponent, hoursFromWindows, overlaps, windowsFromHours } from './timetable-grid.component';
+import { TimetableGridComponent, gridRow, hoursFromWindows, overlaps, windowsFromHours } from './timetable-grid.component';
 
 async function render<T>(type: Type<T>, inputs: Record<string, unknown>) {
   const f = TestBed.createComponent(type);
@@ -85,6 +85,18 @@ describe('timetable grid', () => {
     expect(el.textContent).toContain('Two classes are at the same time');
   });
 
+  it('puts 50-minute, half-past and 2:00–4:50 classes on whole grid rows at their real time (UX pass X1)', async () => {
+    // Before: 15-minute rows made 10:50 row 13.33, which CSS ignores, so the block fell below 8 pm.
+    for (const t of ['08:50', '10:50', '12:30', '13:20', '16:50', '18:15']) expect(Number.isInteger(gridRow(t, 8, 21))).toBe(true);
+    expect(gridRow('10:00', 8, 21)).toBe(2 + 24);
+    expect(gridRow('10:50:00', 8, 21)).toBe(2 + 34);
+    setupI18n('en');
+    const el = await render(TimetableGridComponent, { blocks: [{ key: 'e', code: 'ENG102', label: 'English Composition II', day: 'Monday', start: '10:00', end: '10:50' }] });
+    const block = el.querySelector<HTMLElement>('.block')!;
+    expect(block.style.gridRow).toBe('26 / 36');
+    expect(block.textContent).toContain('English Composition II');
+  });
+
   it("shades Friday afternoon (Jumu'ah) and lists online classes", async () => {
     setupI18n('en');
     const el = await render(TimetableGridComponent, { blocks: [], online: [{ code: 'BUS201' }] });
@@ -156,6 +168,18 @@ describe('plan history', () => {
     setupI18n('en');
     const el = await render(PlanHistoryComponent, { events });
     expect(el.textContent).toContain('Version 1 → 2');
-    expect(el.querySelector('.added bdi')!.getAttribute('dir')).toBe('ltr');
+    // Course codes are wrapped in Unicode isolates so Arabic text never reorders them.
+    const added = [...el.querySelectorAll('.added')].map((a) => a.textContent).join(' ');
+    expect(added).toContain('⁦ITC201 (01)⁩');
+  });
+
+  it('student wording: no version numbers and no class codes like "(02)"', async () => {
+    const events = [ev('submitted', 1, ['ITC201 (01)']), ev('reviewing', 1), ev('proposed', 2, ['CSC102 (02)'])];
+    setupI18n('en');
+    const el = await render(PlanHistoryComponent, { events, student: true });
+    expect(el.textContent).not.toContain('Version');
+    expect(el.textContent).not.toContain('version');
+    expect(el.textContent).not.toContain('(02)');
+    expect(el.textContent).toContain('CSC102');
   });
 });

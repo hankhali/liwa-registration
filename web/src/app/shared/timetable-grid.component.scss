@@ -113,6 +113,18 @@ button.cell {
     font-weight: 700;
   }
 
+  // The title, cut to one line in short blocks (the full title is in the tooltip and the list for screen readers).
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .time {
+    color: var(--liwa-text-muted);
+    white-space: nowrap;
+  }
+
   &.clash {
     background: var(--liwa-clash);
     border-inline-start-color: var(--liwa-danger);
@@ -125,11 +137,6 @@ button.cell {
   width: 14px;
   height: 14px;
   color: var(--liwa-danger);
-}
-
-.mode-toggle {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .clash-note,
@@ -148,30 +155,49 @@ button.cell {
 }
 
 .day-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    padding: 0.5rem 0.25rem;
-    border-bottom: 1px solid var(--liwa-border);
-  }
+  display: grid;
+  gap: 0.75rem;
 
   .day {
+    margin: 0 0 0.25rem;
+    font-size: 0.9375rem;
+    color: var(--liwa-primary);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.125rem 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-inline-start: 4px solid var(--liwa-accent);
+    background: var(--liwa-block);
+    border-radius: 6px;
+    margin-bottom: 0.375rem;
+  }
+
+  .time {
     font-weight: 600;
+    white-space: nowrap;
   }
 
   .code {
     font-weight: 700;
-    margin-inline: 0.25rem;
+    margin-inline-end: 0.375rem;
   }
 
   .clash {
-    color: var(--liwa-danger);
+    background: var(--liwa-clash);
+    border-inline-start-color: var(--liwa-danger);
   }
 
   .clash-tag {
-    margin-inline-start: 0.5rem;
+    color: var(--liwa-danger);
     font-weight: 600;
   }
 }

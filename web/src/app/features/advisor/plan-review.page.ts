@@ -25,7 +25,9 @@ import {
   timeRange,
 } from '../../core/planning/planning.models';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
+import { CourseTitles } from '../../core/planning/course-titles';
 import { ExplainerPanelComponent } from '../../shared/explainer-panel.component';
+import { PlanEditorComponent } from '../../shared/plan-editor.component';
 import { PlanHistoryComponent } from '../../shared/plan-history.component';
 import { StatusChipComponent } from '../../shared/status-chip.component';
 import { TimetableBlock, TimetableGridComponent } from '../../shared/timetable-grid.component';
@@ -34,10 +36,12 @@ import { semesterDelay } from '../../core/planning/planning.models';
 type Mode = 'none' | 'reject' | 'propose';
 
 /**
- * One-page review (brief §10): student summary, free time, timetable, each course with the planner's
- * reasons (open by default), confirmed warnings, live checks, graduation for this plan vs the recommendation,
- * history, and the decision: approve (optional note; disabled while checks show errors), send back (comment
- * required) or propose changes (same course choices as the student; note required).
+ * One-page review, no tabs (brief §10), in three columns: left = the student (credits, GPA, standing, limits,
+ * probation, hold, free-time mini-grid); centre = the submitted classes on the timetable, each with the planner's
+ * reasons (open by default), today's checks and the student's acknowledged warnings, and the history; right =
+ * graduation for this plan vs the recommendation, with the delay. Bottom: approve (optional note; disabled while
+ * checks show errors), send back (comment required) or suggest changes, which opens the same two-panel planner the
+ * student uses, run on the student's record (note required; plans with errors can't be sent).
  */
 @Component({
   selector: 'app-plan-review',
@@ -55,6 +59,7 @@ type Mode = 'none' | 'reject' | 'propose';
     StatusChipComponent,
     TimetableGridComponent,
     ExplainerPanelComponent,
+    PlanEditorComponent,
   ],
   templateUrl: './plan-review.page.html',
   styleUrls: ['../../shared/page.scss', './plan-review.page.scss'],
@@ -62,13 +67,18 @@ type Mode = 'none' | 'reject' | 'propose';
 export class PlanReviewPage {
   private readonly http = inject(HttpClient);
   private readonly transloco = inject(TranslocoService);
+  private readonly titles = inject(CourseTitles);
   protected readonly language = inject(LanguageService);
 
   readonly planId = input.required<string>();
 
   protected readonly review = resource({
     params: () => this.planId(),
-    loader: ({ params }) => firstValueFrom(this.http.get<PlanReview>(`/api/advisor/plans/${params}`)),
+    loader: async ({ params }) => {
+      const r = await firstValueFrom(this.http.get<PlanReview>(`/api/advisor/plans/${params}`));
+      this.titles.register(r.planning.courses ?? []);
+      return r;
+    },
   });
 
   protected readonly mode = signal<Mode>('none');
@@ -145,12 +155,6 @@ export class PlanReviewPage {
     return r ? semesterDelay(r.planning.recommendation.projection.withoutSummer.graduationTerm, r.thisPlan.withoutSummer.graduationTerm, false) : 0;
   });
 
-  protected readonly candidates = computed(() => {
-    const r = this.review.value();
-    if (!r) return [];
-    return r.planning.recommendation.courses.filter((c) => c.status !== 'NotEligible' && r.planning.sections.some((s) => s.courseCode === c.courseCode));
-  });
-
   // ---------------------------------------------------------------- actions
 
   protected startPropose(): void {
@@ -161,21 +165,16 @@ export class PlanReviewPage {
     void this.checkProposal();
   }
 
-  protected toggle(code: string, on: boolean): void {
-    this.proposal.update((p) => {
-      const next = { ...p };
-      if (!on) delete next[code];
-      else next[code] = this.sectionsFor(code).sort((a, b) => b.seatsLeft - a.seatsLeft)[0]?.id;
-      return next;
-    });
+  /** A change in the planner while suggesting changes: keep it and re-check it on the student's record. */
+  protected setProposal(next: Record<string, string>): void {
+    this.proposal.set(next);
     void this.checkProposal();
   }
 
-  protected pick(code: string, id: string): void {
-    this.proposal.update((p) => ({ ...p, [code]: id }));
-    void this.checkProposal();
-  }
-
+  protected readonly proposalLimits = computed(() => {
+    const pc = this.proposalCheck() ?? this.review.value()?.liveCheck;
+    return pc ? { min: pc.limits?.minCredits ?? null, max: pc.maxCredits } : null;
+  });
   protected async checkProposal(): Promise<void> {
     this.proposalCheck.set(
       await firstValueFrom(this.http.post<PlanCheck>(`/api/advisor/plans/${this.planId()}/check`, { sectionIds: Object.values(this.proposal()) })),

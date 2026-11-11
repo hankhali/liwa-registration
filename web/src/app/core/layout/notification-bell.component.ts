@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { localizeParams } from '../planning/planning.models';
 import { firstValueFrom } from 'rxjs';
 import { formatDateTime } from '../academic/academic.models';
 import { LanguageService } from '../i18n/language.service';
@@ -68,6 +69,7 @@ export class NotificationBellComponent {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly language = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   protected readonly list = signal<NotificationList>({ unread: 0, items: [] });
 
   constructor() {
@@ -92,7 +94,8 @@ export class NotificationBellComponent {
 
   protected params(n: NotificationItem): Record<string, unknown> {
     try {
-      return n.parameters ? (JSON.parse(n.parameters) as Record<string, unknown>) : {};
+      const p = n.parameters ? (JSON.parse(n.parameters) as Record<string, unknown>) : {};
+      return localizeParams(p, (k) => this.transloco.translate(k), this.language.lang());
     } catch {
       return {};
     }

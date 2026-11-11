@@ -17,7 +17,7 @@ export const STATUS_ICONS: Record<PlanStatus, string> = {
 @Component({
   selector: 'app-status-chip',
   imports: [TranslocoPipe],
-  template: `<span class="chip" [class]="'chip status-' + status()"><span class="material-icons" aria-hidden="true">{{ icons[status()] }}</span>{{ 'planStatus.' + status() | transloco }}</span>`,
+  template: `<span class="chip" [class]="'chip status-' + status()"><span class="material-icons" aria-hidden="true">{{ icons[status()] }}</span>{{ (student() ? 'studentStatus.' : 'planStatus.') + status() | transloco }}</span>`,
   styles: `
     .chip {
       display: inline-flex;
@@ -44,5 +44,7 @@ export const STATUS_ICONS: Record<PlanStatus, string> = {
 })
 export class StatusChipComponent {
   readonly status = input.required<PlanStatus>();
+  /** Student wording ("Sent to advisor", "Sent back with comments"); staff keep "Waiting for review" etc. */
+  readonly student = input(false);
   protected readonly icons = STATUS_ICONS;
 }

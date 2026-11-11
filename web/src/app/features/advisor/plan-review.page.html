@@ -17,217 +17,175 @@
     <p class="banner ok" role="status">{{ 'advisor.review.done.' + d | transloco: { student: r.studentName } }}</p>
   }
 
-  <div class="layout">
-    <div class="main">
-      <!-- Courses -->
-      <section aria-labelledby="courses-h">
-        <h2 id="courses-h">{{ 'advisor.review.courses' | transloco: { n: totalCredits() } }}</h2>
-        @for (c of courses(); track c.code) {
-          <details class="course" open>
-            <summary>
-              <span class="code" dir="ltr">{{ c.code }}</span>
-              <span class="title">{{ c.title }}</span>
-              <span class="credits">{{ 'plan.credits' | transloco: { n: c.credits } }}</span>
-            </summary>
-            <div class="course-body">
-              <p class="when">
-                @if (c.section.meetings.length === 0) {
-                  {{ 'plan.onlineAnyTime' | transloco }}
-                } @else {
-                  @for (p of patterns(c.section); track $index) {
-                    <span>@for (d of p.days; track d; let last = $last) {{{ 'daysShort.' + d | transloco }}{{ last ? '' : ('plan.dayJoin' | transloco) }}} {{ range(p.start, p.end) }}</span>
-                  }
-                }
-                <span class="muted">· {{ 'advisor.review.section' | transloco: { s: c.section.sectionCode } }} · {{ 'advisor.review.seats' | transloco: { n: c.section.seatsLeft } }}</span>
-              </p>
-              @if (c.rank !== null) {
-                <p class="muted small">{{ 'advisor.review.ranking' | transloco: { rank: c.rank, unlocks: c.unlocks, chain: c.chain } }}</p>
-              }
-              @if (!c.recommended) {
-                <p class="note-line">{{ 'advisor.review.studentAdded' | transloco }}</p>
-              } @else if (!c.sameSectionAsRecommended) {
-                <p class="note-line">{{ 'advisor.review.studentChangedTime' | transloco }}</p>
-              }
-              @if (c.reasons.length > 0) {
-                <ul class="reasons">
-                  @for (x of c.reasons; track $index) {
-                    <li>{{ x | reasonText }}</li>
-                  }
-                </ul>
-              }
-              @if (c.alternatives.length > 0 && c.sameSectionAsRecommended) {
-                <p class="small muted alt-h">{{ 'advisor.review.otherTimes' | transloco }}</p>
-                <ul class="alts">
-                  @for (a of c.alternatives; track a.sectionId) {
-                    <li><span dir="ltr">{{ a.sectionCode }}</span>: @for (x of a.reasons; track $index; let last = $last) {{{ x | reasonText }}{{ last ? '' : '; ' }}}</li>
-                  }
-                </ul>
-              }
-            </div>
-          </details>
-        }
-        @if (notInPlan().length > 0) {
-          <p class="muted small">{{ 'advisor.review.recommendedNotChosen' | transloco }} <span dir="ltr">{{ notInPlan().join(', ') }}</span></p>
-        }
-      </section>
-
-      <!-- Week -->
-      @if (blocks().length > 0 || onlineBlocks().length > 0) {
-        <section aria-labelledby="week-h">
-          <h2 id="week-h">{{ 'plan.week' | transloco }}</h2>
-          <app-timetable-grid [blocks]="blocks()" [online]="onlineBlocks()" [free]="r.planning.saved?.availability ?? []" [caption]="'plan.week' | transloco" />
+  @if (mode() !== 'propose') {
+    <!-- One page, no tabs (brief §10): left = the student, centre = the plan, right = graduation -->
+    <div class="layout">
+      <aside class="col-left" aria-labelledby="student-h">
+        <section>
+          <h2 id="student-h">{{ 'advisor.review.student' | transloco }}</h2>
+          <dl class="facts">
+            <div><dt>{{ 'advisor.review.creditsDone' | transloco }}</dt><dd>{{ r.student.creditsEarned }} / {{ r.student.creditsRequired }}</dd></div>
+            <div><dt>{{ 'student.home.studies.gpa' | transloco }}</dt><dd dir="ltr">{{ gpa(r.student.gpa) }}</dd></div>
+            <div><dt>{{ 'advisor.review.standing' | transloco }}</dt><dd>{{ 'student.home.studies.standing.' + r.student.standing | transloco }}</dd></div>
+            <div><dt>{{ 'advisor.review.limit' | transloco }}</dt><dd>{{ r.liveCheck.limits?.minCredits }}–{{ r.liveCheck.maxCredits }}</dd></div>
+          </dl>
+          @if (r.student.onProbation) {
+            <p class="flag err">{{ 'advisor.home.students.probation' | transloco }}</p>
+          }
+          @if (r.planning.hold; as h) {
+            <p class="flag err">{{ 'advisor.review.hold' | transloco: { hold: h } }}</p>
+          }
+          <h3>{{ 'advisor.review.freeTime' | transloco }}</h3>
+          @if (!r.planning.saved?.availability?.length) {
+            <p class="small">{{ 'advisor.review.anyTime' | transloco }}</p>
+          } @else {
+            <div class="mini-grid"><app-timetable-grid [free]="r.planning.saved!.availability!" [startHour]="8" [endHour]="20" [caption]="'advisor.review.freeTime' | transloco" /></div>
+          }
+          <a class="small" [routerLink]="['/advisor/students', r.studentUserId]">{{ 'advisor.review.fullRecord' | transloco }}</a>
         </section>
-      }
+      </aside>
 
-      <!-- History -->
-      <section aria-labelledby="history-h">
-        <h2 id="history-h">{{ 'history.heading' | transloco }}</h2>
-        <app-plan-history [events]="r.history" />
-      </section>
-    </div>
-
-    <aside class="side">
-      <!-- Decision -->
-      <section class="decide" aria-labelledby="decide-h">
-        <h2 id="decide-h">{{ 'advisor.review.decision' | transloco }}</h2>
-        @if (!decidable()) {
-          <p class="muted">{{ 'advisor.review.notDecidable' | transloco }}</p>
-        } @else {
-          @if (r.liveCheck.errors.length > 0) {
-            <p class="small err">{{ 'advisor.review.approveBlocked' | transloco }}</p>
-          }
-          <mat-form-field appearance="outline" class="note" subscriptSizing="dynamic">
-            <mat-label>{{ (mode() === 'none' ? 'advisor.review.noteOptional' : 'advisor.review.noteRequired') | transloco }}</mat-label>
-            <textarea matInput rows="3" [ngModel]="note()" (ngModelChange)="note.set($event)" maxlength="2000"></textarea>
-          </mat-form-field>
-
-          @if (mode() === 'none') {
-            <div class="buttons">
-              <button mat-flat-button type="button" [disabled]="!canApprove()" (click)="decide('Approve')">{{ 'advisor.review.approve' | transloco }}</button>
-              <button mat-stroked-button type="button" (click)="startPropose()">{{ 'advisor.review.propose' | transloco }}</button>
-              <button mat-button type="button" class="danger" (click)="mode.set('reject')">{{ 'advisor.review.reject' | transloco }}</button>
-            </div>
-          } @else if (mode() === 'reject') {
-            <p class="small">{{ 'advisor.review.rejectHint' | transloco }}</p>
-            <div class="buttons">
-              <button mat-flat-button type="button" class="danger-fill" [disabled]="!note().trim() || busy()" (click)="decide('Reject')">{{ 'advisor.review.sendBack' | transloco }}</button>
-              <button mat-button type="button" (click)="mode.set('none')">{{ 'plan.confirm.cancel' | transloco }}</button>
-            </div>
-          }
-          @if (error(); as e) {
-            <p class="small err" role="alert">{{ 'advisor.review.failed' | transloco }}</p>
-          }
+      <div class="col-centre">
+        <!-- Week -->
+        @if (blocks().length > 0 || onlineBlocks().length > 0) {
+          <section aria-labelledby="week-h">
+            <h2 id="week-h">{{ 'plan.week' | transloco }}</h2>
+            <app-timetable-grid [blocks]="blocks()" [online]="onlineBlocks()" [free]="r.planning.saved?.availability ?? []" [caption]="'plan.week' | transloco" />
+          </section>
         }
-      </section>
 
-      <!-- Checks -->
-      <section aria-labelledby="checks-h">
-        <h2 id="checks-h">{{ 'advisor.review.checks' | transloco }}</h2>
-        @if (r.liveCheck.errors.length === 0 && r.liveCheck.warnings.length === 0) {
-          <p class="ok-line">{{ 'advisor.review.allChecksPass' | transloco }}</p>
-        }
-        <ul class="checks">
-          @for (x of r.liveCheck.errors; track $index) {
-            <li class="err">{{ x | reasonText }}</li>
+        <!-- Courses with the planner's reasons (open by default for advisors) -->
+        <section aria-labelledby="courses-h">
+          <h2 id="courses-h">{{ 'advisor.review.courses' | transloco: { n: totalCredits() } }}</h2>
+          @for (c of courses(); track c.code) {
+            <details class="course" open>
+              <summary>
+                <span class="code" dir="ltr">{{ c.code }}</span>
+                <span class="title">{{ c.title }}</span>
+                <span class="credits">{{ 'plan.credits' | transloco: { n: c.credits } }}</span>
+              </summary>
+              <div class="course-body">
+                <p class="when">
+                  @if (c.section.meetings.length === 0) {
+                    {{ 'plan.onlineAnyTime' | transloco }}
+                  } @else {
+                    @for (p of patterns(c.section); track $index) {
+                      <span>@for (d of p.days; track d; let last = $last) {{{ 'daysShort.' + d | transloco }}{{ last ? '' : ('plan.dayJoin' | transloco) }}} {{ range(p.start, p.end) }}</span>
+                    }
+                  }
+                  <span class="muted">· {{ 'advisor.review.section' | transloco: { s: c.section.sectionCode } }} · {{ 'advisor.review.seats' | transloco: { n: c.section.seatsLeft } }}</span>
+                </p>
+                @if (c.rank !== null) {
+                  <p class="muted small">{{ 'advisor.review.ranking' | transloco: { rank: c.rank, unlocks: c.unlocks, chain: c.chain } }}</p>
+                }
+                @if (!c.recommended) {
+                  <p class="note-line">{{ 'advisor.review.studentAdded' | transloco }}</p>
+                } @else if (!c.sameSectionAsRecommended) {
+                  <p class="note-line">{{ 'advisor.review.studentChangedTime' | transloco }}</p>
+                }
+                @if (c.reasons.length > 0) {
+                  <ul class="reasons">
+                    @for (x of c.reasons; track $index) {
+                      <li>{{ x | reasonText }}</li>
+                    }
+                  </ul>
+                }
+                @if (c.alternatives.length > 0 && c.sameSectionAsRecommended) {
+                  <p class="small muted alt-h">{{ 'advisor.review.otherTimes' | transloco }}</p>
+                  <ul class="alts">
+                    @for (a of c.alternatives; track a.sectionId) {
+                      <li><span dir="ltr">{{ a.sectionCode }}</span>: @for (x of a.reasons; track $index; let last = $last) {{{ x | reasonText }}{{ last ? '' : '; ' }}}</li>
+                    }
+                  </ul>
+                }
+              </div>
+            </details>
           }
-          @for (x of r.liveCheck.warnings; track $index) {
-            <li class="warn">{{ x | reasonText }}</li>
+          @if (notInPlan().length > 0) {
+            <p class="muted small">{{ 'advisor.review.recommendedNotChosen' | transloco }} <span dir="ltr">{{ notInPlan().join(', ') }}</span></p>
           }
-        </ul>
-        @if (r.confirmedWarnings.length > 0) {
-          <h3>{{ 'advisor.review.confirmed' | transloco }}</h3>
+        </section>
+
+        <!-- The student's acknowledged warnings and today's checks -->
+        <section aria-labelledby="checks-h">
+          <h2 id="checks-h">{{ 'advisor.review.checks' | transloco }}</h2>
+          @if (r.liveCheck.errors.length === 0 && r.liveCheck.warnings.length === 0) {
+            <p class="ok-line">{{ 'advisor.review.allChecksPass' | transloco }}</p>
+          }
           <ul class="checks">
-            @for (x of r.confirmedWarnings; track x.key) {
-              <li>{{ x | reasonText }}</li>
+            @for (x of r.liveCheck.errors; track $index) {
+              <li class="err">{{ x | reasonText }}</li>
+            }
+            @for (x of r.liveCheck.warnings; track $index) {
+              <li class="warn">{{ x | reasonText }}</li>
             }
           </ul>
-        }
-      </section>
-
-      <!-- Student -->
-      <section aria-labelledby="student-h">
-        <h2 id="student-h">{{ 'advisor.review.student' | transloco }}</h2>
-        <dl class="facts">
-          <div><dt>{{ 'advisor.review.creditsDone' | transloco }}</dt><dd>{{ r.student.creditsEarned }} / {{ r.student.creditsRequired }}</dd></div>
-          <div><dt>{{ 'student.home.studies.gpa' | transloco }}</dt><dd dir="ltr">{{ gpa(r.student.gpa) }}</dd></div>
-          @if (r.student.onProbation) {
-            <div><dt>{{ 'advisor.review.standing' | transloco }}</dt><dd class="err">{{ 'advisor.home.students.probation' | transloco }}</dd></div>
+          @if (r.confirmedWarnings.length > 0) {
+            <h3>{{ 'advisor.review.confirmed' | transloco }}</h3>
+            <ul class="checks">
+              @for (x of r.confirmedWarnings; track x.key) {
+                <li>{{ x | reasonText }}</li>
+              }
+            </ul>
           }
-          <div><dt>{{ 'advisor.review.limit' | transloco }}</dt><dd>{{ r.liveCheck.limits?.minCredits }}–{{ r.liveCheck.maxCredits }}</dd></div>
-        </dl>
-        <h3>{{ 'advisor.review.freeTime' | transloco }}</h3>
-        @if (!r.planning.saved?.availability?.length) {
-          <p class="small">{{ 'advisor.review.anyTime' | transloco }}</p>
-        } @else {
-          <div class="mini-grid"><app-timetable-grid [free]="r.planning.saved!.availability!" [startHour]="8" [endHour]="20" [caption]="'advisor.review.freeTime' | transloco" /></div>
-        }
-        <a class="small" [routerLink]="['/advisor/students', r.studentUserId]">{{ 'advisor.review.fullRecord' | transloco }}</a>
-      </section>
+        </section>
 
-      <!-- Graduation -->
-      <section aria-labelledby="grad-h">
-        <h2 id="grad-h">{{ 'advisor.review.graduation' | transloco }}</h2>
-        <table class="grad">
-          <thead>
-            <tr><th></th><th scope="col">{{ 'advisor.review.noSummer' | transloco }}</th><th scope="col">{{ 'advisor.review.withSummer' | transloco }}</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">{{ 'advisor.review.thisPlan' | transloco }}</th>
-              <td>{{ term(r.thisPlan.withoutSummer.graduationTerm) }}</td>
-              <td>{{ term(r.thisPlan.withSummer.graduationTerm) }}</td>
-            </tr>
-            <tr>
-              <th scope="row">{{ 'advisor.review.recommended' | transloco }}</th>
-              <td>{{ term(r.planning.recommendation.projection.withoutSummer.graduationTerm) }}</td>
-              <td>{{ term(r.planning.recommendation.projection.withSummer.graduationTerm) }}</td>
-            </tr>
-          </tbody>
-        </table>
-        @if (delta() > 0) {
-          <p class="small err delta" role="status">{{ (delta() === 1 ? 'advisor.review.delayOne' : 'advisor.review.delay') | transloco: { n: delta() } }}</p>
-        } @else {
-          <p class="small ok-line">{{ 'advisor.review.noDelay' | transloco }}</p>
-        }
-      </section>
-    </aside>
-  </div>
+        <!-- History -->
+        <section aria-labelledby="history-h">
+          <h2 id="history-h">{{ 'history.heading' | transloco }}</h2>
+          <app-plan-history [events]="r.history" />
+        </section>
+      </div>
 
-  <!-- AI explainer on the submitted plan; the draft note goes into the note box to edit, never sent automatically. -->
-  <app-explainer-panel [planId]="r.planId" (useNote)="note.set($event)" />
-
-  <!-- Propose changes -->
-  @if (mode() === 'propose') {
+      <aside class="col-right" aria-labelledby="grad-h">
+        <section>
+          <h2 id="grad-h">{{ 'advisor.review.graduation' | transloco }}</h2>
+          <p class="grad-big">
+            <span class="muted small">{{ 'advisor.review.thisPlan' | transloco }}</span>
+            <strong>{{ term(r.thisPlan.withoutSummer.graduationTerm) }}</strong>
+          </p>
+          @if (delta() > 0) {
+            <p class="small err delta" role="status">{{ (delta() === 1 ? 'advisor.review.delayOne' : 'advisor.review.delay') | transloco: { n: delta() } }}</p>
+          } @else {
+            <p class="small ok-line">{{ 'advisor.review.noDelay' | transloco }}</p>
+          }
+          <table class="grad">
+            <thead>
+              <tr><th></th><th scope="col">{{ 'advisor.review.noSummer' | transloco }}</th><th scope="col">{{ 'advisor.review.withSummer' | transloco }}</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">{{ 'advisor.review.thisPlan' | transloco }}</th>
+                <td>{{ term(r.thisPlan.withoutSummer.graduationTerm) }}</td>
+                <td>{{ term(r.thisPlan.withSummer.graduationTerm) }}</td>
+              </tr>
+              <tr>
+                <th scope="row">{{ 'advisor.review.recommended' | transloco }}</th>
+                <td>{{ term(r.planning.recommendation.projection.withoutSummer.graduationTerm) }}</td>
+                <td>{{ term(r.planning.recommendation.projection.withSummer.graduationTerm) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <!-- AI explainer on the submitted plan; the draft note goes into the note box to edit, never sent automatically. -->
+        <app-explainer-panel [planId]="r.planId" (useNote)="note.set($event)" />
+      </aside>
+    </div>
+  } @else {
+    <!-- Suggest changes: the same planner the student uses, run on the student's record (brief §10) -->
     <section class="proposal" aria-labelledby="proposal-h">
       <h2 id="proposal-h">{{ 'advisor.review.proposeHeading' | transloco: { student: r.studentName } }}</h2>
-      <ul class="candidates">
-        @for (c of candidates(); track c.courseCode) {
-          <li>
-            <mat-checkbox [checked]="!!proposal()[c.courseCode]" (change)="toggle(c.courseCode, $event.checked)">
-              <span class="code" dir="ltr">{{ c.courseCode }}</span> {{ title(c.courseCode) }}
-            </mat-checkbox>
-            @if (proposal()[c.courseCode]) {
-              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="pick">
-                <mat-label>{{ 'plan.editor.classTime' | transloco }}</mat-label>
-                <mat-select [value]="proposal()[c.courseCode]" (valueChange)="pick(c.courseCode, $event)">
-                  @for (s of sectionsFor(c.courseCode); track s.id) {
-                    <mat-option [value]="s.id" [disabled]="s.seatsLeft <= 0">
-                      {{ s.sectionCode }} ·
-                      @if (s.meetings.length === 0) { {{ 'plan.onlineAnyTime' | transloco }} } @else {
-                        @for (p of patterns(s); track $index) {@for (d of p.days; track d; let last = $last) {{{ 'daysShort.' + d | transloco }}{{ last ? '' : ('plan.dayJoin' | transloco) }}} {{ range(p.start, p.end) }} }
-                      }
-                      · {{ 'advisor.review.seats' | transloco: { n: s.seatsLeft } }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            }
-          </li>
-        }
-      </ul>
+      <p class="small muted">{{ 'advisor.review.proposeHint' | transloco }}</p>
+      <app-plan-editor
+        idPrefix="adv-"
+        [view]="r.planning"
+        [selection]="proposal()"
+        (selectionChange)="setProposal($event)"
+        [availability]="r.planning.saved?.availability ?? []"
+        [limits]="proposalLimits()"
+      />
       @if (proposalCheck(); as pc) {
-        <p class="small">{{ 'plan.total' | transloco: { n: pc.totalCredits } }}</p>
-        <ul class="checks">
+        <ul class="checks proposal-checks">
           @for (x of pc.errors; track $index) {
             <li class="err">{{ x | reasonText }}</li>
           }
@@ -236,20 +194,48 @@
           }
         </ul>
       }
-      <div class="buttons">
-        <button
-          mat-flat-button
-          type="button"
-          [disabled]="!note().trim() || busy() || (proposalCheck()?.errors?.length ?? 1) > 0"
-          (click)="decide('ProposeChanges')"
-        >
-          {{ 'advisor.review.sendProposal' | transloco }}
-        </button>
-        <button mat-button type="button" (click)="mode.set('none')">{{ 'plan.confirm.cancel' | transloco }}</button>
-      </div>
-      <p class="small muted">{{ 'advisor.review.proposeHint' | transloco }}</p>
     </section>
   }
+
+  <!-- Bottom: the decision (brief §10) -->
+  <section class="decide" aria-labelledby="decide-h">
+    <h2 id="decide-h" class="visually-hidden">{{ 'advisor.review.decision' | transloco }}</h2>
+    @if (!decidable()) {
+      <p class="muted">{{ 'advisor.review.notDecidable' | transloco }}</p>
+    } @else {
+      <mat-form-field appearance="outline" class="note" subscriptSizing="dynamic">
+        <mat-label>{{ (mode() === 'none' ? 'advisor.review.noteOptional' : 'advisor.review.noteRequired') | transloco }}</mat-label>
+        <textarea matInput rows="2" [ngModel]="note()" (ngModelChange)="note.set($event)" maxlength="2000"></textarea>
+      </mat-form-field>
+      <div class="buttons">
+        @if (mode() === 'none') {
+          <button mat-flat-button type="button" [disabled]="!canApprove()" (click)="decide('Approve')">{{ 'advisor.review.approve' | transloco }}</button>
+          <button mat-stroked-button type="button" (click)="startPropose()">{{ 'advisor.review.propose' | transloco }}</button>
+          <button mat-button type="button" class="danger" (click)="mode.set('reject')">{{ 'advisor.review.reject' | transloco }}</button>
+          @if (r.liveCheck.errors.length > 0) {
+            <span class="small err">{{ 'advisor.review.approveBlocked' | transloco }}</span>
+          }
+        } @else if (mode() === 'reject') {
+          <span class="small">{{ 'advisor.review.rejectHint' | transloco }}</span>
+          <button mat-flat-button type="button" class="danger-fill" [disabled]="!note().trim() || busy()" (click)="decide('Reject')">{{ 'advisor.review.sendBack' | transloco }}</button>
+          <button mat-button type="button" (click)="mode.set('none')">{{ 'plan.confirm.cancel' | transloco }}</button>
+        } @else {
+          <button
+            mat-flat-button
+            type="button"
+            [disabled]="!note().trim() || busy() || (proposalCheck()?.errors?.length ?? 1) > 0"
+            (click)="decide('ProposeChanges')"
+          >
+            {{ 'advisor.review.sendProposal' | transloco }}
+          </button>
+          <button mat-button type="button" (click)="mode.set('none')">{{ 'plan.confirm.cancel' | transloco }}</button>
+        }
+      </div>
+      @if (error(); as e) {
+        <p class="small err" role="alert">{{ 'advisor.review.failed' | transloco }}</p>
+      }
+    }
+  </section>
 } @else if (review.error()) {
   <p class="muted">{{ 'advisor.review.notFound' | transloco }}</p>
 } @else {

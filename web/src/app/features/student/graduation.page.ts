@@ -1,53 +1,57 @@
 import { Component, computed, inject, resource, signal } from '@angular/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../core/i18n/language.service';
-import { GraduationProjection, Reason, courseTitle, criticalCodes, parseTermCode, semesterDelay } from '../../core/planning/planning.models';
+import { localDigits } from '../../core/i18n/digits';
+import { GraduationProjection, Reason, courseTitle, criticalCodes, semesterDelay, termLabel } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
 import { PageHeaderComponent } from '../../shared/page-header.component';
 
 /**
- * Graduation Path (brief §9): semesters as columns, courses as cards, gold = critical path with the legend as a
- * sentence; a Summer toggle; "My selection / Recommended" with both graduation dates when they differ; a banner
- * when the selection delays graduation; and a "Why some courses wait" list.
+ * Graduation Path (brief §9, UX pass): the answer as a headline (graduation date and semesters left) with one
+ * toggle, "Include summer classes"; the student's own plan when they have one, with our recommended date in one line
+ * when it differs; a banner when their choice delays graduation; semesters as columns (stacked on phones), gold =
+ * take on time; and "Why some classes wait", collapsed.
  */
 @Component({
   selector: 'app-graduation-page',
-  imports: [MatButtonToggleModule, MatIconModule, MatSlideToggleModule, RouterLink, TranslocoPipe, ReasonTextPipe, PageHeaderComponent],
+  imports: [MatButtonModule, MatIconModule, MatSlideToggleModule, RouterLink, TranslocoPipe, ReasonTextPipe, PageHeaderComponent],
   template: `
-    <app-page-header [heading]="'graduation.heading' | transloco" [subtitle]="'graduation.subtitle' | transloco" />
+    <app-page-header [heading]="'graduation.heading' | transloco" [subtitle]="'graduation.subtitle' | transloco">
+      @if (delay() > 0) {
+        <a mat-flat-button routerLink="/student/planner">{{ 'graduation.fix' | transloco }}</a>
+      }
+    </app-page-header>
 
     @if (data.hasValue()) {
       @let d = data.value();
-      <section class="liwa-card controls">
-        <mat-slide-toggle [checked]="summer()" (change)="summer.set($event.checked)">{{ 'graduation.summer' | transloco }}</mat-slide-toggle>
-        @if (d.selection) {
-          <mat-button-toggle-group [value]="mode()" (change)="mode.set($event.value)" [attr.aria-label]="'graduation.compare' | transloco">
-            <mat-button-toggle value="selection">{{ 'graduation.mySelection' | transloco }}</mat-button-toggle>
-            <mat-button-toggle value="recommended">{{ 'graduation.recommended' | transloco }}</mat-button-toggle>
-          </mat-button-toggle-group>
+      <!-- The answer in a headline, and the one toggle that changes it -->
+      <section class="liwa-card headline" aria-labelledby="grad-date">
+        <div class="big">
+          <span class="big-label">{{ 'graduation.dateLabel' | transloco }}</span>
+          <span id="grad-date" class="big-value" aria-live="polite">{{ label(shownTerm()) }}</span>
+        </div>
+        <div class="big">
+          <span class="big-label">{{ 'graduation.leftLabel' | transloco }}</span>
+          <span class="big-value">{{ digits(terms().length) }}</span>
+        </div>
+        <div class="toggle">
+          <mat-slide-toggle [checked]="summer()" (change)="summer.set($event.checked)">{{ 'graduation.summer' | transloco }}</mat-slide-toggle>
+          <span class="liwa-muted small">{{ (summer() ? 'graduation.summerOn' : 'graduation.summerOff') | transloco: { term: label(otherTerm()) } }}</span>
+        </div>
+        @if (d.selection && selectionTerm() !== recommendedTerm()) {
+          <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: label(recommendedTerm()) } }}</p>
         }
-        <p class="dates">
-          <mat-icon aria-hidden="true">school</mat-icon>
-          @if (d.selection && selectionTerm() !== recommendedTerm()) {
-            <span>
-              {{ 'graduation.both' | transloco: { mine: label(selectionTerm()), rec: label(recommendedTerm()) } }}
-            </span>
-          } @else {
-            <span>{{ 'graduation.date' | transloco: { term: label(shownTerm()) } }}</span>
-          }
-        </p>
       </section>
 
       @if (delay() > 0) {
         <p class="liwa-notice warn banner" role="status">
           <mat-icon aria-hidden="true">warning</mat-icon>
           {{ (delay() === 1 ? 'graduation.delayOne' : 'graduation.delay') | transloco: { n: delay() } }}
-          <a routerLink="/student/planner">{{ 'graduation.fix' | transloco }}</a>
         </p>
       }
 
@@ -69,7 +73,7 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
                 </li>
               }
               @if (t.electiveCredits > 0) {
-                <li class="card elective">{{ 'graduation.electives' | transloco: { n: t.electiveCredits } }}</li>
+                <li class="card elective">{{ (t.electiveCredits === 1 ? 'graduation.electivesOne' : 'graduation.electives') | transloco: { n: t.electiveCredits } }}</li>
               }
             </ul>
           </section>
@@ -79,8 +83,8 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
       </div>
 
       @if (waiting().length > 0) {
-        <section class="liwa-card wait" aria-labelledby="wait-heading">
-          <h2 id="wait-heading">{{ 'graduation.whyWait' | transloco }}</h2>
+        <details class="liwa-card wait">
+          <summary><h2>{{ 'graduation.whyWait' | transloco: { n: waiting().length } }}</h2></summary>
           <ul>
             @for (w of waiting(); track w.code) {
               <li>
@@ -93,28 +97,44 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
               </li>
             }
           </ul>
-        </section>
+        </details>
       }
     } @else if (data.error()) {
       <p class="liwa-muted">{{ 'plan.notReady' | transloco }}</p>
     } @else {
       <p class="liwa-muted">{{ 'common.loading' | transloco }}</p>
     }
-  `,
-  styles: `
-    .controls {
+  `,  styles: `
+    .headline {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 1rem 1.5rem;
+      gap: 1rem 2.5rem;
       margin-bottom: 1rem;
+      border-top: 4px solid var(--liwa-gold);
     }
-    .dates {
+    .big {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-direction: column;
+    }
+    .big-label {
+      color: var(--liwa-text-muted);
+      font-size: 0.875rem;
+    }
+    .big-value {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--liwa-primary);
+    }
+    .toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .compare {
+      flex-basis: 100%;
       margin: 0;
-      font-weight: 600;
     }
     .banner {
       display: flex;
@@ -186,6 +206,27 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
     .wait {
       margin-top: 1rem;
     }
+    .wait summary {
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .wait summary h2 {
+      display: inline;
+      margin: 0;
+      font-size: 1.0625rem;
+    }
+    @media (max-width: 600px) {
+      .columns {
+        grid-auto-flow: row;
+        grid-auto-columns: auto;
+        overflow-x: visible;
+      }
+      .big-value {
+        font-size: 1.75rem;
+      }
+    }
     .wait ul {
       display: block;
       padding-inline-start: 1.25rem;
@@ -202,7 +243,6 @@ export class GraduationPage {
   private readonly language = inject(LanguageService);
 
   protected readonly summer = signal(false);
-  protected readonly mode = signal<'selection' | 'recommended'>('selection');
 
   protected readonly data = resource({
     loader: async () => {
@@ -219,7 +259,7 @@ export class GraduationPage {
   private readonly proj = computed(() => {
     if (!this.data.hasValue()) return null;
     const d = this.data.value();
-    const p = this.mode() === 'selection' && d.selection ? d.selection : d.view.recommendation.projection;
+    const p = d.selection ?? d.view.recommendation.projection;
     return this.summer() ? p.withSummer : p.withoutSummer;
   });
 
@@ -232,6 +272,13 @@ export class GraduationPage {
   protected readonly selectionTerm = computed(() => {
     const p = this.data.value()?.selection;
     return (this.summer() ? p?.withSummer : p?.withoutSummer)?.graduationTerm ?? null;
+  });
+  /** The date with the toggle the other way ("with summer you could finish in …"). */
+  protected readonly otherTerm = computed(() => {
+    const d = this.data.value();
+    if (!d) return null;
+    const p = d.selection ?? d.view.recommendation.projection;
+    return (this.summer() ? p.withoutSummer : p.withSummer).graduationTerm;
   });
   protected readonly delay = computed(() => (this.data.value()?.selection ? semesterDelay(this.recommendedTerm(), this.selectionTerm(), this.summer()) : 0));
   protected readonly critical = computed(() => criticalCodes(this.data.value()?.view.recommendation.courses ?? []));
@@ -252,9 +299,11 @@ export class GraduationPage {
   });
 
   protected label(code: string | null): string {
-    this.language.lang();
-    const t = code ? parseTermCode(code) : null;
-    return t ? `${this.transloco.translate('planner.season.' + t.season)} ${t.year}` : this.transloco.translate('advisor.review.unknownTerm');
+    return code ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+  }
+
+  protected digits(n: number): string {
+    return localDigits(String(n), this.language.lang());
   }
 
   protected title(code: string): string {

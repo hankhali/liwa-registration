@@ -2,7 +2,7 @@ import { Component, inject, resource, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   AvailabilityPreset,
@@ -22,7 +22,7 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
  */
 @Component({
   selector: 'app-availability-page',
-  imports: [MatButtonModule, MatIconModule, MatSelectModule, RouterLink, TranslocoPipe, PageHeaderComponent, TimetableGridComponent],
+  imports: [MatButtonModule, MatIconModule, MatSelectModule, TranslocoPipe, PageHeaderComponent, TimetableGridComponent],
   template: `
     <app-page-header [heading]="'availability.heading' | transloco" [subtitle]="'availability.intro' | transloco" />
 
@@ -31,7 +31,7 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
         <h2 id="presets-heading" class="visually-hidden">{{ 'availability.presetsHeading' | transloco }}</h2>
         <div class="presets" role="radiogroup" [attr.aria-label]="'availability.presetsHeading' | transloco">
           @for (p of cards; track p) {
-            <button type="button" class="preset" role="radio" [class.selected]="preset() === p" [attr.aria-checked]="preset() === p" (click)="choose(p)">
+            <button type="button" class="preset" role="radio" [class.selected]="preset() === p" [attr.aria-checked]="preset() === p" [disabled]="busy()" (click)="choose(p)">
               <mat-icon aria-hidden="true">{{ icons[p] }}</mat-icon>
               <span class="preset-title">{{ 'availability.presets.' + p + '.title' | transloco }}</span>
               <span class="preset-body">{{ 'availability.presets.' + p + '.body' | transloco }}</span>
@@ -43,7 +43,7 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
         </p>
       </section>
 
-      @if (preset() && preset() !== 'any') {
+      @if (preset() === 'custom') {
         <section class="liwa-card grid-card" aria-labelledby="grid-heading">
           <h2 id="grid-heading">{{ 'availability.gridHeading' | transloco }}</h2>
           <p class="liwa-muted">{{ 'availability.gridHint' | transloco }}</p>
@@ -88,7 +88,6 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
     } @else {
       <p class="liwa-muted">{{ 'common.loading' | transloco }}</p>
     }
-    <p class="next"><a routerLink="/student/planner">{{ 'availability.toPlanner' | transloco }}</a></p>
   `,
   styles: `
     .presets {
@@ -147,9 +146,6 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
       gap: 1rem;
       flex-wrap: wrap;
     }
-    .next {
-      margin-top: 1rem;
-    }
   `,
 })
 export class AvailabilityPage {
@@ -184,9 +180,15 @@ export class AvailabilityPage {
       : TEACHING_DAYS;
   }
 
-  protected choose(p: AvailabilityPreset): void {
+  /** A ready-made choice saves at once and opens the plan rebuilt for those times; Custom opens the grid. */
+  protected async choose(p: AvailabilityPreset): Promise<void> {
     this.preset.set(p);
-    this.windows.set(p === 'custom' ? [] : PRESETS[p as Exclude<AvailabilityPreset, 'custom'>].map((w) => ({ ...w })));
+    if (p === 'custom') {
+      this.windows.set(this.windows().length > 0 ? this.windows() : []);
+      return;
+    }
+    this.windows.set(PRESETS[p as Exclude<AvailabilityPreset, 'custom'>].map((w) => ({ ...w })));
+    await this.persist();
   }
 
   /** "Skip this to see every class." */

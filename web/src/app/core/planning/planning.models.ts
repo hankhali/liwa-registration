@@ -226,6 +226,24 @@ export function parseTermCode(code: string): { season: 'Spring' | 'Summer' | 'Fa
   return { year: Number(m[1]), season: m[2] === 'SP' ? 'Spring' : m[2] === 'SU' ? 'Summer' : 'Fall' };
 }
 
+/** "2027SP" → "Spring 2027" / "الربيع 2027" (the server's own term names are English only). */
+export function termLabel(code: string | null, t: (key: string) => string, lang: string): string {
+  const p = code ? parseTermCode(code) : null;
+  return p ? `${t('planner.season.' + p.season)} ${localDigits(String(p.year), lang)}` : (code ?? '');
+}
+
+/** Replaces English term names inside text from the server ("Spring 2027") with the reader's language. */
+export function localizeTermNames(text: string, t: (key: string) => string, lang: string): string {
+  return text.replace(/\b(Spring|Summer|Fall) (\d{4})\b/g, (_, season: string, year: string) => `${t('planner.season.' + season)} ${localDigits(year, lang)}`);
+}
+
+/** Notification parameters with any term names translated. */
+export function localizeParams(params: Record<string, unknown>, t: (key: string) => string, lang: string): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(params)) out[k] = typeof v === 'string' ? localizeTermNames(v, t, lang) : v;
+  return out;
+}
+
 /** Term code → an ordinal for comparing (Spring < Summer < Fall within a year). */
 export function termOrdinal(code: string | null): number | null {
   const t = code ? parseTermCode(code) : null;

@@ -2,24 +2,86 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
-import { StudentSummary, formatGpa, percentOf, programName } from '../../core/academic/academic.models';
+import { StudentSummary, formatGpa, programName } from '../../core/academic/academic.models';
 import { AuthService } from '../../core/auth/auth.service';
+import { localDigits } from '../../core/i18n/digits';
 import { LanguageService } from '../../core/i18n/language.service';
+import { PlanStatus, termLabel } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { greetingName } from '../../shared/first-name';
-import { PageHeaderComponent } from '../../shared/page-header.component';
+import { StatCardComponent } from '../../shared/stat-card.component';
 import { StatusChipComponent } from '../../shared/status-chip.component';
 
-/** Student landing page: studies at a glance, the next step, and the first-login walkthrough (brief §9). */
+/** The one next step per plan status: the label of the gold button and where it goes. */
+export const HOME_ACTIONS: Record<PlanStatus | 'none', { label: string; link: string }> = {
+  none: { label: 'home.action.none', link: '/student/planner' },
+  Draft: { label: 'home.action.Draft', link: '/student/planner' },
+  Submitted: { label: 'home.action.Submitted', link: '/student/plan' },
+  AdvisorReviewing: { label: 'home.action.Submitted', link: '/student/plan' },
+  Approved: { label: 'home.action.Approved', link: '/student/plan' },
+  Rejected: { label: 'home.action.Rejected', link: '/student/plan' },
+  ChangesProposed: { label: 'home.action.ChangesProposed', link: '/student/plan' },
+  NeedsReview: { label: 'home.action.NeedsReview', link: '/student/plan' },
+};
+
+/**
+ * Student Home (UX pass): a single answer — "Spring 2027: your plan is Sent back with comments." — with what that
+ * means and one gold button for the next step, then three big numbers (credits done, GPA, graduation date).
+ * Anything else (hold, probation, the first-visit steps, program and advisor) sits below.
+ */
 @Component({
   selector: 'app-student-home',
-  imports: [MatButtonModule, MatIconModule, MatProgressBarModule, RouterLink, TranslocoPipe, PageHeaderComponent, StatusChipComponent],
+  imports: [MatButtonModule, MatIconModule, RouterLink, TranslocoPipe, StatCardComponent, StatusChipComponent],
   template: `
-    <app-page-header [heading]="'student.home.welcome' | transloco: { name: name() }" [subtitle]="'student.home.subtitle' | transloco" />
+    <p class="hello liwa-muted">{{ 'home.hello' | transloco: { name: name() } }}</p>
+
+    @if (plan.hasValue()) {
+      @let v = plan.value();
+      @let status = v.saved?.status ?? 'none';
+      <section class="answer liwa-card" aria-labelledby="answer-heading">
+        <div class="answer-text">
+          <h1 id="answer-heading">
+            @if (v.saved) {
+              {{ 'home.answer' | transloco: { term: term() } }}
+              <app-status-chip [status]="v.saved.status" [student]="true" />
+            } @else {
+              {{ 'home.answerNone' | transloco: { term: term() } }}
+            }
+          </h1>
+          <p class="meaning">
+            @if (v.saved) {
+              {{ 'studentStatus.meaning.' + v.saved.status | transloco }}
+            } @else {
+              {{ 'home.meaningNone' | transloco: { n: v.recommendation.totalCredits } }}
+            }
+          </p>
+        </div>
+        <a mat-flat-button class="primary" [routerLink]="actions[status].link">{{ actions[status].label | transloco }}</a>
+      </section>
+    } @else if (plan.error()) {
+      <section class="answer liwa-card">
+        <h1>{{ 'home.notReady' | transloco }}</h1>
+        <p class="meaning">{{ 'plan.notReady' | transloco }}</p>
+      </section>
+    } @else {
+      <section class="answer liwa-card" aria-busy="true"><p class="liwa-muted">{{ 'common.loading' | transloco }}</p></section>
+    }
+
+    <div class="numbers">
+      <app-stat-card icon="task_alt" [value]="creditsValue()" [label]="'home.numbers.credits' | transloco" />
+      <app-stat-card icon="grade" [value]="gpaValue()" [label]="'home.numbers.gpa' | transloco" />
+      <app-stat-card icon="school" [value]="graduation()" [label]="'home.numbers.graduation' | transloco" link="/student/graduation" />
+    </div>
+
+    @if (plan.value()?.hold) {
+      <p class="liwa-notice warn">{{ 'student.home.hold' | transloco }}</p>
+    }
+    @if (summary.value()?.onProbation) {
+      <p class="liwa-notice"><mat-icon aria-hidden="true" class="inline-icon">support</mat-icon> {{ 'student.home.studies.probation' | transloco }}</p>
+    }
 
     @if (showWalkthrough()) {
       <section class="liwa-card walkthrough" aria-labelledby="walk-heading">
@@ -41,74 +103,18 @@ import { StatusChipComponent } from '../../shared/status-chip.component';
       </section>
     }
 
-    <div class="grid-2">
-      <section class="liwa-card studies-card" aria-labelledby="studies-heading" [attr.aria-busy]="summary.isLoading()">
-        <h2 id="studies-heading" class="card-title">
-          <mat-icon aria-hidden="true">school</mat-icon>
-          {{ 'student.home.studies.heading' | transloco }}
-        </h2>
-
-        @if (summary.hasValue()) {
-          @let s = summary.value();
-          <p class="program">{{ program() }}</p>
-          <p class="progress-text">
-            <strong>{{ 'student.home.studies.progress' | transloco: { earned: s.creditsEarned, required: s.creditsRequired } }}</strong>
-          </p>
-          <mat-progress-bar mode="determinate" [value]="percent()" [attr.aria-label]="'student.home.studies.progressLabel' | transloco" />
-          <p class="liwa-muted small">
-            {{ 'student.home.studies.percent' | transloco: { percent: percent() } }}
-            @if (s.inProgressCredits > 0) {
-              {{ 'student.home.studies.inProgress' | transloco: { credits: s.inProgressCredits } }}
-            }
-          </p>
-          <dl class="facts">
-            <div>
-              <dt>{{ 'student.home.studies.year' | transloco }}</dt>
-              <dd>{{ 'student.home.studies.standing.' + s.standing | transloco }}</dd>
-            </div>
-            <div>
-              <dt>{{ 'student.home.studies.gpa' | transloco }}</dt>
-              <dd dir="ltr">{{ s.gpa === null ? ('student.home.studies.noGpa' | transloco) : gpa(s.gpa) }}</dd>
-            </div>
-            @if (s.advisorName) {
-              <div>
-                <dt>{{ 'student.home.studies.advisor' | transloco }}</dt>
-                <dd>{{ s.advisorName }}</dd>
-              </div>
-            }
-          </dl>
-          @if (s.onProbation) {
-            <p class="probation"><mat-icon aria-hidden="true">support</mat-icon> {{ 'student.home.studies.probation' | transloco }}</p>
-          }
-        } @else if (summary.error()) {
-          <p class="liwa-muted">{{ (notLoadedYet() ? 'student.home.studies.noRecord' : 'student.home.studies.error') | transloco }}</p>
-        } @else {
-          <p class="liwa-muted">{{ 'common.loading' | transloco }}</p>
+    @if (summary.hasValue()) {
+      @let s = summary.value();
+      <dl class="facts liwa-muted">
+        <div><dt>{{ 'home.facts.program' | transloco }}</dt><dd>{{ program() }}</dd></div>
+        <div><dt>{{ 'student.home.studies.year' | transloco }}</dt><dd>{{ 'student.home.studies.standing.' + s.standing | transloco }}</dd></div>
+        @if (s.advisorName) {
+          <div><dt>{{ 'student.home.studies.advisor' | transloco }}</dt><dd>{{ s.advisorName }}</dd></div>
         }
-      </section>
-
-      <section class="liwa-card next-card" aria-labelledby="next-heading">
-        <h2 id="next-heading" class="card-title"><mat-icon aria-hidden="true">event_note</mat-icon> {{ 'student.home.next' | transloco }}</h2>
-        @if (plan.hasValue()) {
-          @let v = plan.value();
-          @if (v.saved; as saved) {
-            <p><app-status-chip [status]="saved.status" /></p>
-            <p>{{ 'student.home.nextBy.' + saved.status | transloco }}</p>
-            <a mat-flat-button routerLink="/student/plan">{{ 'nav.myPlan' | transloco }}</a>
-          } @else {
-            <p>{{ 'student.home.nextBy.none' | transloco: { n: v.recommendation.totalCredits } }}</p>
-            <a mat-flat-button routerLink="/student/planner">{{ 'student.home.seePlan' | transloco }}</a>
-          }
-          @if (v.hold) {
-            <p class="liwa-notice warn">{{ 'student.home.hold' | transloco }}</p>
-          }
-        } @else if (plan.error()) {
-          <p class="liwa-muted">{{ 'plan.notReady' | transloco }}</p>
-        } @else {
-          <p class="liwa-muted">{{ 'common.loading' | transloco }}</p>
-        }
-      </section>
-    </div>
+      </dl>
+    } @else if (summary.error()) {
+      <p class="liwa-muted">{{ (notLoadedYet() ? 'student.home.studies.noRecord' : 'student.home.studies.error') | transloco }}</p>
+    }
   `,
   styleUrls: ['../../shared/page.scss', './student-home.page.scss'],
 })
@@ -117,7 +123,9 @@ export class StudentHomePage {
   private readonly http = inject(HttpClient);
   private readonly language = inject(LanguageService);
   private readonly planning = inject(PlanningService);
+  private readonly transloco = inject(TranslocoService);
 
+  protected readonly actions = HOME_ACTIONS;
   protected readonly walkSteps = [
     { key: 'availability', link: '/student/availability' },
     { key: 'review', link: '/student/planner' },
@@ -126,28 +134,43 @@ export class StudentHomePage {
 
   protected readonly name = computed(() => greetingName(this.auth.user()?.displayName ?? ''));
   protected readonly summary = resource({ loader: () => firstValueFrom(this.http.get<StudentSummary>('/api/students/me/summary')) });
-  protected readonly plan = resource({
-    loader: async () => {
-      const p = await this.planning.preferences();
-      return this.planning.view(p.availability, p.delivery, p.maxCredits);
-    },
-  });
+  protected readonly plan = resource({ loader: async () => (await this.planning.currentView()).view });
   private readonly settings = resource({
     loader: () => firstValueFrom(this.http.get<{ preferredLanguage: string; walkthroughDismissed: boolean }>('/api/me/settings')),
   });
   private readonly dismissed = signal(false);
-  protected readonly showWalkthrough = computed(() => this.settings.hasValue() && !this.settings.value().walkthroughDismissed && !this.dismissed());
-
-  protected readonly program = computed(() => (this.summary.hasValue() ? programName(this.summary.value(), this.language.lang()) : ''));
-  protected readonly percent = computed(() =>
-    this.summary.hasValue() ? percentOf(this.summary.value().creditsEarned, this.summary.value().creditsRequired) : 0,
+  /** The three first-visit steps only matter before the first plan is saved. */
+  protected readonly showWalkthrough = computed(
+    () => this.settings.hasValue() && !this.settings.value().walkthroughDismissed && !this.dismissed() && this.plan.hasValue() && !this.plan.value().saved,
   );
+
+  protected readonly term = computed(() => {
+    const v = this.plan.value();
+    return v ? termLabel(v.termCode, (k) => this.transloco.translate(k), this.language.lang()) : '';
+  });
+  protected readonly program = computed(() => (this.summary.hasValue() ? programName(this.summary.value(), this.language.lang()) : ''));
+  protected readonly creditsValue = computed(() => {
+    const s = this.summary.value();
+    return s ? this.transloco.translate('home.numbers.creditsValue', { earned: localDigits(String(s.creditsEarned), this.language.lang()), required: localDigits(String(s.creditsRequired), this.language.lang()) }) : '–';
+  });
+  protected readonly gpaValue = computed(() => {
+    const s = this.summary.value();
+    if (!s) return '–';
+    return s.gpa === null ? this.transloco.translate('student.home.studies.noGpa') : formatGpa(s.gpa);
+  });
+  /** Graduation date of the student's own plan when there is one, otherwise of the recommended plan (no summer). */
+  protected readonly graduation = computed(() => {
+    const v = this.plan.value();
+    if (!v) return '–';
+    const p = (v.saved && v.savedProjection) || v.recommendation.projection;
+    const code = p.withoutSummer.graduationTerm;
+    return code ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+  });
   /** 404 = the registrar hasn't sent this student's record yet (not an error the student can fix). */
   protected readonly notLoadedYet = computed(() => {
     const e = this.summary.error();
     return e instanceof HttpErrorResponse && e.status === 404;
   });
-  protected readonly gpa = formatGpa;
 
   protected async dismiss(): Promise<void> {
     this.dismissed.set(true);

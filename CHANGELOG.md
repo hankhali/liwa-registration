@@ -2,6 +2,40 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: UX pass for first-year students (2026-11-11)
+
+Based on screenshots of every student screen (EN/AR, desktop/phone). Findings and what changed for each are in
+[docs/ux-findings.md](docs/ux-findings.md); before/after captures are in `docs/screenshots/` (contact sheet:
+`docs/screenshots/ux-pass/index.html`).
+
+- **Brand:** the brief's indigo `#3d3d5f` and gold `#f7bf0a` replace charcoal/sage everywhere. The official lu.ac.ae
+  white wordmark (on indigo only) and indigo shield (favicon) replace the Blackboard-derived logos.
+- **Fixed: the week grid put every 50-minute class, 12:30 class and 2:00–4:50 lab below 8 pm.** Rows are now
+  5 minutes. Blocks show code and title. Phones get a per-day list with no hour grid.
+- **Home** is one answer, "Spring 2027: your plan is *Sent back with comments*", with what it means, one gold button
+  for the next step, and three big numbers: credits done, GPA, graduation date.
+- **Every student screen** has one gold primary action, top right, and a first sentence saying what to do. There is
+  no jargon: a test fails on "eligible", "prerequisite", "corequisite", "critical path", "section", "term",
+  "validation" or "projection" in student text, or on any untranslated Arabic student string. Every course shows
+  code and title, reasons included. Students see new status names (Sent to advisor, Advisor is reviewing, Sent back
+  with comments, Advisor suggested changes, …), each with "what this means for you".
+- **Planner:** one-tap free-time buttons (Any time / Daytime / Evenings only / Weekends + evenings) rebuild the plan
+  in place; credits as a big number; one plain reason per class; "Classes you can't take yet" always visible, each
+  with a one-sentence reason; the AI box is hidden when no provider is set. **Free time:** picking a preset saves and
+  opens the rebuilt plan.
+- **Graduation:** the date and semesters left as headline numbers, with one toggle (summer). Semesters stack on
+  phones. "Why some classes wait" is collapsed.
+- **My Plan:** the advisor's note first, with one button for the next step (Fix my plan / Accept the changes /
+  Check my plan again); the classes in the plan; history with titles, no class codes or version numbers.
+- **Phone bottom bar** for students: Home / Plan / Graduation / Messages.
+- **Arabic:** semester names in Arabic everywhere (top bar, headings, messages).
+- **Advisor review:** three columns (student | plan | graduation) with the decision bar at the bottom. **Suggest
+  changes** opens the same two-panel planner the student uses (`shared/plan-editor.component.ts`).
+- Dev: `playwright` devDependency driving the installed Chrome (`channel: 'chrome'`, no browser download);
+  `web/scripts/ux-screenshots.mjs` and `web/scripts/advisor-review-shot.mjs`.
+- Tests: 220 unit (+2: student-text jargon, Arabic completeness), 95 integration, 67 frontend (+4: grid rows, plan
+  editor, student history wording, one-tap free time).
+
 ## v0.1.0 — first release (2026-11-10)
 
 The first complete version of Smart Registration: students get a valid, graduation-optimised plan and send it to their

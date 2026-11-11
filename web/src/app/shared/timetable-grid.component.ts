@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, computed, inject, input, model, signal } from '@angular/core';
+import { Component, computed, inject, input, model } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +20,12 @@ export interface TimetableBlock {
   clash?: boolean;
 }
 
-const SLOT_MINUTES = 15;
+/**
+ * One grid row = 5 minutes. Class times are multiples of 5 (10:50, 12:15, 4:50 pm). With 15-minute rows a class
+ * ending at 10:50 got a fractional row number, which CSS ignores, and the block was auto-placed below the grid.
+ */
+export const SLOT_MINUTES = 5;
+export const SLOTS_PER_HOUR = 60 / SLOT_MINUTES;
 
 export function toMinutes(t: string): number {
   const [h, m] = t.split(':').map(Number);
@@ -29,6 +34,12 @@ export function toMinutes(t: string): number {
 
 function hhmm(minutes: number): string {
   return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+}
+
+/** CSS grid row line for a time (row 1 is the day header). Always a whole number. */
+export function gridRow(t: string, startHour: number, endHour: number): number {
+  const minutes = Math.min(Math.max(toMinutes(t), startHour * 60), endHour * 60);
+  return 2 + Math.round((minutes - startHour * 60) / SLOT_MINUTES);
 }
 
 /** End-exclusive overlap (brief §7): 10:00–10:50 and 10:50–11:40 do not clash. */
@@ -67,7 +78,7 @@ export function hoursFromWindows(windows: TimeWindow[], startHour: number, endHo
  * The weekly timetable (brief §9). Shows classes Monday–Friday (Saturday when a term teaches then), marks
  * clashes, lists online classes with no fixed time, shades Friday afternoon (no teaching, Jumu'ah) and the
  * student's free time. With `editable`, the same grid is the free-time editor: each hour is a toggle button.
- * On phones it becomes a per-day list ("Tue · ITC201 5:00–6:15 pm") with a toggle to see the week grid.
+ * On phones it becomes a per-day list (a "Tuesday" heading, then "5:00–6:15 pm · ITC201 Database Systems").
  */
 @Component({
   selector: 'app-timetable-grid',
@@ -90,9 +101,9 @@ export class TimetableGridComponent {
 
   protected readonly language = inject(LanguageService);
   private readonly narrow = toSignal(inject(BreakpointObserver).observe('(max-width: 600px)').pipe(map((r) => r.matches)), { initialValue: false });
-  protected readonly forceGrid = signal(false);
-  protected readonly listMode = computed(() => !this.editable() && this.narrow() && !this.forceGrid());
-  protected readonly isNarrow = this.narrow;
+  /** Phones never get the hour grid (UX pass): a per-day list instead. The editor stays a grid. */
+  protected readonly listMode = computed(() => !this.editable() && this.narrow());
+  protected readonly slotsPerHour = SLOTS_PER_HOUR;
 
   protected readonly hours = computed(() => Array.from({ length: this.endHour() - this.startHour() }, (_, i) => this.startHour() + i));
   protected readonly rowCount = computed(() => ((this.endHour() - this.startHour()) * 60) / SLOT_MINUTES);
@@ -134,19 +145,20 @@ export class TimetableGridComponent {
 
   /** Per-day list for phones and screen readers, in time order. */
   protected readonly byDay = computed(() =>
-    this.days().map((day) => ({
-      day,
-      items: this.placed()
-        .filter((b) => b.day === day)
-        .sort((a, b) => toMinutes(a.start) - toMinutes(b.start)),
-    })),
+    this.days()
+      .map((day) => ({
+        day,
+        items: this.placed()
+          .filter((b) => b.day === day)
+          .sort((a, b) => toMinutes(a.start) - toMinutes(b.start)),
+      }))
+      .filter((d) => d.items.length > 0),
   );
 
   protected readonly hasClash = computed(() => this.placed().some((b) => b.clash));
 
   protected row(t: string): number {
-    const minutes = Math.min(Math.max(toMinutes(t), this.startHour() * 60), this.endHour() * 60);
-    return 2 + (minutes - this.startHour() * 60) / SLOT_MINUTES;
+    return gridRow(t, this.startHour(), this.endHour());
   }
 
   protected range(start: string, end: string): string {

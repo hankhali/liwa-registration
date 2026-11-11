@@ -6,10 +6,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { localDigits } from '../../../core/i18n/digits';
+import { CourseTitles } from '../../../core/planning/course-titles';
 import { LanguageService } from '../../../core/i18n/language.service';
 import {
+  AvailabilityPreset,
   BlockedGroup,
   CourseAssessment,
+  PRESETS,
   Preferences,
   Reason,
   SENT_STATUSES,
@@ -21,12 +25,15 @@ import {
   criticalCodes,
   meetingPatterns,
   parseTermCode,
+  termLabel,
   timeRange,
   warningKey,
 } from '../../../core/planning/planning.models';
 import { PlanningService } from '../../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../../core/planning/reason-text.pipe';
 import { ExplainerPanelComponent } from '../../../shared/explainer-panel.component';
+import { PageHeaderComponent } from '../../../shared/page-header.component';
+import { PlanEditorComponent } from '../../../shared/plan-editor.component';
 import { TimetableBlock, TimetableGridComponent } from '../../../shared/timetable-grid.component';
 
 interface PlannedRow {
@@ -34,13 +41,35 @@ interface PlannedRow {
   title: string;
   credits: number;
   section: SectionInfo | undefined;
-  reasons: Reason[];
+  /** The one most useful plain reason for this class (UX pass: one line, not a list). */
+  reason: Reason | null;
   critical: boolean;
   rank: number | null;
-  chain: number;
-  unlocks: number;
-  alternatives: { sectionCode: string; reasons: Reason[] }[];
+  /** Other class times and why they weren't picked (labelled by day and time, never by section code). */
+  alternatives: { sectionId: string; label: string; reasons: Reason[] }[];
 }
+
+/** Reasons that say why a class is in the plan; the first useful one is shown (RequiredForDegree only as a fallback). */
+const PLAN_REASON_ORDER = ['TakeWithCorequisite', 'WaitingForGrade', 'OnlyOfferedIn', 'UnlocksOtherCourses', 'CountsTowardElectives', 'RequiredForDegree'];
+
+/** Pick the reason a student most needs to read: why it's here, or why it has to wait. */
+export function mainReason(reasons: Reason[]): Reason {
+  for (const code of PLAN_REASON_ORDER) {
+    const r = reasons.find((x) => x.code === code);
+    if (r) return r;
+  }
+  return reasons[0] ?? { code: 'RequiredForDegree', courses: [], value: null };
+}
+
+const POSITIVE = new Set(['RequiredForDegree', 'CountsTowardElectives', 'SuggestedForThisSemester', 'UnlocksOtherCourses']);
+
+/** The reason a class can't be taken now (skips "needed for your degree"-type reasons). */
+export function blockingReason(reasons: Reason[]): Reason {
+  return reasons.find((r) => !POSITIVE.has(r.code)) ?? reasons[0] ?? { code: 'NotEligibleNow', courses: [], value: null };
+}
+
+/** The free-time choices offered as one-tap buttons on the planner. */
+export const QUICK_PRESETS: Exclude<AvailabilityPreset, 'custom'>[] = ['any', 'daytime', 'evenings', 'weekends'];
 
 const AUTOSAVE_MS = 1200;
 
@@ -63,6 +92,8 @@ const AUTOSAVE_MS = 1200;
     ReasonTextPipe,
     TimetableGridComponent,
     ExplainerPanelComponent,
+    PageHeaderComponent,
+    PlanEditorComponent,
   ],
   templateUrl: './student-plan.component.html',
   styleUrls: ['../../../shared/page.scss', './student-plan.component.scss'],
@@ -71,6 +102,7 @@ export class StudentPlanComponent {
   private readonly planning = inject(PlanningService);
   protected readonly language = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
+  private readonly titles = inject(CourseTitles);
 
   protected readonly blockedOrder: BlockedGroup[] = ['prerequisite', 'notOffered', 'moreCredits', 'permission', 'other'];
 
@@ -125,6 +157,7 @@ export class StudentPlanComponent {
       if (!this.view.hasValue()) return;
       const v = this.view.value();
       untracked(() => {
+        this.titles.register(v.courses);
         const saved = v.saved;
         const draft = this.prefs.value()?.draftSectionIds ?? [];
         const sentNow = !!saved && SENT_STATUSES.includes(saved.status);
@@ -172,17 +205,19 @@ export class StudentPlanComponent {
         const course = this.courseByCode().get(code);
         const recommended = v.recommendation.plan.find((p) => p.courseCode === code);
         const assessed = v.recommendation.courses.find((c) => c.courseCode === code);
+        const reasons = (recommended?.reasons ?? assessed?.reasons ?? []).filter((r) => STUDENT_PLAN_REASONS.includes(r.code));
         return {
           code,
           title: courseTitle(course, lang),
           credits: course?.credits ?? 0,
           section: this.sectionById().get(sectionId),
-          reasons: (recommended?.reasons ?? assessed?.reasons ?? []).filter((r) => STUDENT_PLAN_REASONS.includes(r.code)),
+          reason: reasons.length > 0 ? mainReason(reasons) : null,
           critical: this.critical().has(code),
           rank: assessed?.priorityRank ?? null,
-          chain: assessed?.chainLength ?? 0,
-          unlocks: assessed?.unlocks ?? 0,
-          alternatives: recommended?.alternatives.map((a) => ({ sectionCode: a.sectionCode, reasons: a.reasons })) ?? [],
+          alternatives:
+            recommended?.alternatives
+              .filter((a) => this.sectionById().has(a.sectionId))
+              .map((a) => ({ sectionId: a.sectionId, label: this.sectionLabel(this.sectionById().get(a.sectionId)!), reasons: a.reasons })) ?? [],
         };
       })
       .sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999) || a.code.localeCompare(b.code));
@@ -197,24 +232,6 @@ export class StudentPlanComponent {
   );
   protected readonly online = computed(() => this.rows().filter((r) => r.section && r.section.meetings.length === 0).map((r) => ({ code: r.code, label: r.title })));
   protected readonly gridDays = computed(() => (this.blocks().some((b) => b.day === 'Saturday') ? [...TEACHING_DAYS, 'Saturday' as const] : TEACHING_DAYS));
-
-  /** Courses the student could add (eligible now or with a condition), grouped by requirement group. */
-  protected readonly candidateGroups = computed(() => {
-    if (!this.view.hasValue()) return [];
-    const v = this.view.value();
-    const candidates = v.recommendation.courses.filter((c) => c.status !== 'NotEligible' && this.sectionsFor(c.courseCode).length > 0);
-    const groups = v.groups ?? [];
-    const order = (k: string) => {
-      const i = groups.findIndex((g) => g.key === k);
-      return i < 0 ? 999 : i;
-    };
-    const keys = [...new Set(candidates.map((c) => c.groupKey))].sort((a, b) => order(a) - order(b));
-    return keys.map((k) => ({
-      key: k,
-      name: groups.find((g) => g.key === k)?.name ?? k,
-      courses: candidates.filter((c) => c.groupKey === k).sort((a, b) => a.priorityRank - b.priorityRank),
-    }));
-  });
 
   protected readonly blocked = computed(() => {
     if (!this.view.hasValue()) return [];
@@ -232,6 +249,17 @@ export class StudentPlanComponent {
   protected readonly allConfirmed = computed(() => this.warnings().every((w) => this.acknowledged()[warningKey(w)]));
   protected readonly canSend = computed(() => this.rows().length > 0 && this.check.hasValue() && this.errors().length === 0 && !this.check.isLoading());
   protected readonly limits = computed(() => (this.check.hasValue() ? { min: this.check.value().limits?.minCredits ?? null, max: this.check.value().maxCredits } : null));
+
+  protected readonly quickPresets = QUICK_PRESETS;
+  protected readonly currentPreset = computed(() => this.prefs.value()?.preset ?? null);
+
+  /** Page heading and first sentence (what to do here) for each state of the plan. */
+  protected readonly heading = computed(() => (this.sent() ? 'plan.headingSent' : 'plan.heading'));
+  protected readonly firstLine = computed(() => {
+    const status = this.view.value()?.saved?.status;
+    if (status && status !== 'Draft') return 'studentStatus.meaning.' + status;
+    return 'plan.intro';
+  });
 
   protected readonly graduation = computed(() => {
     if (!this.view.hasValue()) return null;
@@ -254,23 +282,29 @@ export class StudentPlanComponent {
     }
   }
 
-  protected toggleCourse(code: string, checked: boolean): void {
-    this.selection.update((sel) => {
-      const next = { ...sel };
-      if (!checked) delete next[code];
-      else {
-        const recommended = this.view.value()?.recommendation.plan.find((p) => p.courseCode === code)?.sectionId;
-        const options = this.sectionsFor(code).filter((s) => s.seatsLeft > 0);
-        next[code] = recommended ?? [...options].sort((a, b) => b.seatsLeft - a.seatsLeft)[0]?.id;
-      }
-      return next;
-    });
-    this.edited.set(true);
-    this.confirming.set(false);
+  /** One tap on a free-time choice: save it and rebuild the plan for those times (drops any unsent changes). */
+  protected async usePreset(p: Exclude<AvailabilityPreset, 'custom'>): Promise<void> {
+    if (this.currentPreset() === p) return;
+    this.busy.set(true);
+    try {
+      const prefs = this.prefsOrDefault();
+      await this.planning.savePreferences(p, PRESETS[p].map((w) => ({ ...w })), prefs.delivery, prefs.maxCredits);
+      await this.planning.saveDraft([]).catch(() => undefined);
+      this.edited.set(false);
+      this.restoredDraft.set(false);
+      this.editing.set(false);
+      this.confirming.set(false);
+      this.prefs.reload();
+    } catch {
+      this.message.set('error');
+    } finally {
+      this.busy.set(false);
+    }
   }
 
-  protected chooseSection(code: string, sectionId: string): void {
-    this.selection.update((sel) => ({ ...sel, [code]: sectionId }));
+  /** A change in the two-panel planner: keep it (autosaved as a draft) and re-check. */
+  protected onEditorChange(next: Record<string, string>): void {
+    this.selection.set(next);
     this.edited.set(true);
     this.confirming.set(false);
   }
@@ -352,17 +386,19 @@ export class StudentPlanComponent {
     return timeRange({ day: 'Monday', start, end }, this.language.lang());
   }
 
-  protected termName(code: string | null): { season: string; year: number } | null {
-    return code ? parseTermCode(code) : null;
-  }
-
   /** "2027SP" → "Spring 2027" / "الربيع 2027". */
   protected termLabel(code: string): string {
-    const t = parseTermCode(code);
-    return t ? `${this.transloco.translate('planner.season.' + t.season)} ${t.year}` : code;
+    return termLabel(code, (k) => this.transloco.translate(k), this.language.lang());
   }
 
   protected key(r: Reason): string {
     return warningKey(r);
+  }
+
+  protected readonly mainReason = mainReason;
+  protected readonly blockingReason = blockingReason;
+
+  protected digits(n: number): string {
+    return localDigits(String(n), this.language.lang());
   }
 }

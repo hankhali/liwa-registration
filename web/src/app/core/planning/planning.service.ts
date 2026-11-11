@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { CourseTitles } from './course-titles';
 import {
   AvailabilityPreset,
   DeliveryPreference,
@@ -21,9 +22,18 @@ export interface SaveResponse {
 @Injectable({ providedIn: 'root' })
 export class PlanningService {
   private readonly http = inject(HttpClient);
+  private readonly titles = inject(CourseTitles);
 
-  view(availability: TimeWindow[], delivery: DeliveryPreference, maxCredits: number | null): Promise<PlanningView> {
-    return firstValueFrom(this.http.post<PlanningView>('/api/students/me/planning', { availability, delivery, maxCredits }));
+  async view(availability: TimeWindow[], delivery: DeliveryPreference, maxCredits: number | null): Promise<PlanningView> {
+    const v = await firstValueFrom(this.http.post<PlanningView>('/api/students/me/planning', { availability, delivery, maxCredits }));
+    this.titles.register(v.courses ?? []);
+    return v;
+  }
+
+  /** The student's saved preferences, then the plan built with them. */
+  async currentView(): Promise<{ prefs: Preferences; view: PlanningView }> {
+    const prefs = await this.preferences();
+    return { prefs, view: await this.view(prefs.availability, prefs.delivery, prefs.maxCredits) };
   }
 
   check(sectionIds: string[], availability: TimeWindow[]): Promise<PlanCheck> {

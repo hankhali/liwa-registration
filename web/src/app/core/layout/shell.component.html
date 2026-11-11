@@ -25,7 +25,7 @@
       >
         @for (t of terms(); track t.code) {
           <mat-option [value]="t.code" [disabled]="!t.isCurrent">
-            {{ t.name }}@if (!t.isCurrent) { · {{ 'shell.termClosed' | transloco }}}
+            {{ termName(t) }}@if (!t.isCurrent) { · {{ 'shell.termClosed' | transloco }}}
           </mat-option>
         }
       </mat-select>
@@ -108,13 +108,15 @@
   @for (item of bottomNav(); track item.key) {
     <a [routerLink]="item.link" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: !!item.exact }">
       <mat-icon aria-hidden="true" [matBadge]="item.badge ? badges()[item.badge] || null : null" matBadgeSize="small" matBadgeColor="warn">{{ item.icon }}</mat-icon>
-      <span>{{ 'nav.' + item.key | transloco }}</span>
+      <span>{{ 'nav.' + (item.bottom ?? item.key) | transloco }}</span>
     </a>
   }
-  <button type="button" (click)="drawerOpen.set(true)">
-    <mat-icon aria-hidden="true">more_horiz</mat-icon>
-    <span>{{ 'shell.more' | transloco }}</span>
-  </button>
+  @if (bottomMore()) {
+    <button type="button" (click)="drawerOpen.set(true)">
+      <mat-icon aria-hidden="true">more_horiz</mat-icon>
+      <span>{{ 'shell.more' | transloco }}</span>
+    </button>
+  }
 </nav>
 
 @if (drawerOpen()) {

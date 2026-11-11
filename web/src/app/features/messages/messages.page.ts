@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, resource } from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
+import { AuthService } from '../../core/auth/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -8,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { formatDateTime } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
 import { NotificationItem, NotificationList } from '../../core/planning/advisor.models';
+import { localizeParams } from '../../core/planning/planning.models';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { PageHeaderComponent } from '../../shared/page-header.component';
 
@@ -24,7 +26,11 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
 
     @if (list.hasValue()) {
       @if (list.value().items.length === 0) {
-        <app-empty-state icon="mail" [heading]="'messages.empty' | transloco" [body]="'messages.emptyBody' | transloco" />
+        <app-empty-state icon="mail" [heading]="'messages.empty' | transloco" [body]="'messages.emptyBody' | transloco">
+          @if (home(); as h) {
+            <a mat-flat-button [routerLink]="h.link">{{ h.label | transloco }}</a>
+          }
+        </app-empty-state>
       } @else {
         <ul class="messages liwa-card">
           @for (n of list.value().items; track n.id) {
@@ -82,6 +88,10 @@ export class MessagesPage {
   private readonly transloco = inject(TranslocoService);
   private readonly language = inject(LanguageService);
 
+  private readonly auth = inject(AuthService);
+  /** Empty state: what to do next, with the button to do it (students: their plan). */
+  protected readonly home = computed(() => (this.auth.role() === 'Student' ? { link: '/student/planner', label: 'messages.toPlan' } : null));
+
   protected readonly list = resource({ loader: () => firstValueFrom(this.http.get<NotificationList>('/api/notifications')) });
 
   protected text(n: NotificationItem): string {
@@ -92,7 +102,7 @@ export class MessagesPage {
     } catch {
       /* show without names */
     }
-    return this.transloco.translate(n.messageKey, params);
+    return this.transloco.translate(n.messageKey, localizeParams(params, (k) => this.transloco.translate(k), this.language.lang()));
   }
 
   protected when(iso: string): string {

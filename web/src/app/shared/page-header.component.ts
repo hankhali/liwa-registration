@@ -1,6 +1,9 @@
 import { Component, input } from '@angular/core';
 
-/** Page title + one-line subtitle, with an optional actions slot on the end side. */
+/**
+ * Page title + one-line subtitle (on student screens: what to do here), with an actions slot on the end side —
+ * where the screen's one gold primary action goes (top right; full width on phones).
+ */
 @Component({
   selector: 'app-page-header',
   template: `
@@ -18,7 +21,7 @@ import { Component, input } from '@angular/core';
     .page-header {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       gap: 0.75rem 1rem;
       margin-bottom: 1.5rem;
@@ -36,6 +39,11 @@ import { Component, input } from '@angular/core';
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
+    }
+    @media (max-width: 600px) {
+      .actions {
+        width: 100%;
+      }
     }
   `,
 })
