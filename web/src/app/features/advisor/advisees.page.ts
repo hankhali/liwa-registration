@@ -5,7 +5,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { AdviseeSummary, formatDateTime, formatGpa, programName } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
-import { parseTermCode, termLabel } from '../../core/planning/planning.models';
+import { graduationDate, parseTermCode, termLabel } from '../../core/planning/planning.models';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { PageHeaderComponent } from '../../shared/page-header.component';
 import { StatusChipComponent } from '../../shared/status-chip.component';
@@ -148,6 +148,6 @@ export class AdviseesPage {
   }
 
   protected term(code: string | null | undefined): string {
-    return code && parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : '—';
+    return code && parseTermCode(code) ? graduationDate(code, (k) => this.transloco.translate(k), this.language.lang()) : '—';
   }
 }

@@ -138,7 +138,7 @@ describe('Graduation: summer-only class (follow-up 3)', () => {
     prefs.preset = 'evenings';
     const el = await render(GraduationPage, view);
     prefs.preset = 'any';
-    expect(el.querySelector('.keep')!.textContent).toContain('If you keep evenings only: Fall 2030-2031. With a full-time schedule: Spring 2028-2029.');
+    expect(el.querySelector('.keep')!.textContent).toContain('If you keep evenings only: December 2030. With a full-time schedule: May 2029.');
     expect(el.querySelector('.assumes')!.textContent).toContain('This assumes about 1 online class a semester, like this semester.');
   });
 
@@ -152,6 +152,8 @@ describe('Graduation: summer-only class (follow-up 3)', () => {
     };
     const el = await render(GraduationPage, view);
     expect(el.querySelector('.summer-note')).toBeNull();
-    expect(el.textContent).toContain('With summer classes: Fall 2028');
+    expect(el.querySelector('.summer-line')!.textContent).toContain('Taking summer classes brings your graduation forward by 1 semester: May 2029 → December 2028.');
+    expect(el.querySelector('#grad-date')!.textContent).toContain('May 2029');
+    expect(el.querySelector('.term-small')!.textContent).toContain('Spring 2028-2029');
   });
 });

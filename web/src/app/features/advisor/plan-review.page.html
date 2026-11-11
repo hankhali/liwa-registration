@@ -1,4 +1,4 @@
-﻿<a class="back" routerLink="/advisor/plans">← {{ 'advisor.review.back' | transloco }}</a>
+<a class="back" routerLink="/advisor/plans">← {{ 'advisor.review.back' | transloco }}</a>
 
 @if (review.hasValue()) {
   @let r = review.value();
@@ -143,6 +143,7 @@
           <p class="grad-big">
             <span class="muted small">{{ 'advisor.review.thisPlan' | transloco }}</span>
             <strong>{{ term(r.thisPlan.withoutSummer.graduationTerm) }}</strong>
+            <span class="muted small">{{ academic(r.thisPlan.withoutSummer.graduationTerm) }}</span>
           </p>
           @if (delta() > 0) {
             <p class="small err delta" role="status">{{ (delta() === 1 ? 'advisor.review.delayOne' : 'advisor.review.delay') | transloco: { n: delta() } }}</p>

@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 112 · UI strings: 853
+- Programs: 3 · Courses: 112 · UI strings: 871
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -557,15 +557,21 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `graduation.freeTime.weekends` | weekends and evenings | عطلة نهاية الأسبوع والمساء |
 | [ ] | `graduation.heading` | Graduation | التخرج |
 | [ ] | `graduation.keepFreeTime` | If you keep {{ freeTime }}: {{ term }}. With a full-time schedule: {{ fullTime }}. | إذا بقيت على {{ freeTime }}: {{ term }}. مع جدول دوام كامل: {{ fullTime }}. |
+| [ ] | `graduation.keepSame` | With {{ freeTime }} or a full-time schedule, you graduate in {{ term }} either way. | مع {{ freeTime }} أو جدول دوام كامل، تتخرج في {{ term }} في الحالتين. |
 | [ ] | `graduation.leftLabel` | Semesters left, counting this one | الفصول المتبقية، مع هذا الفصل |
 | [ ] | `graduation.legend` | Gold classes must be taken on time, or you graduate later. | المواد الذهبية يجب أن تُسجَّل في وقتها، وإلا تأخر تخرجك. |
 | [ ] | `graduation.mySelection` | My selection | اختياري |
 | [ ] | `graduation.none` | We couldn't work out your path yet. Your advisor will help. | لم نتمكن من تحديد مسارك بعد. سيساعدك مرشدك. |
 | [ ] | `graduation.now` | this semester | هذا الفصل |
+| [ ] | `graduation.plusSummerOne` | + 1 summer | + فصل صيفي واحد |
+| [ ] | `graduation.plusSummers` | + {{ n }} summers | + {{ n }} فصول صيفية |
 | [ ] | `graduation.recommended` | Recommended | المقترحة |
 | [ ] | `graduation.recommendedLine` | With the plan we recommend, you could graduate in {{ term }}. | مع الخطة التي نقترحها، يمكنك التخرج في {{ term }}. |
 | [ ] | `graduation.subtitle` | When you could graduate. Turn summer classes on or off to compare. | متى يمكنك أن تتخرج. شغّل مواد الصيف أو أوقفها للمقارنة. |
 | [ ] | `graduation.summer` | Include summer classes | تضمين الفصل الصيفي |
+| [ ] | `graduation.summerForward` | Taking summer classes brings your graduation forward by {{ n }} semesters: {{ without }} → {{ with }}. | تسجيل مواد صيفية يقدّم موعد تخرجك {{ n }} فصول: {{ without }} ← {{ with }}. |
+| [ ] | `graduation.summerForwardOne` | Taking summer classes brings your graduation forward by 1 semester: {{ without }} → {{ with }}. | تسجيل مواد صيفية يقدّم موعد تخرجك فصلًا واحدًا: {{ without }} ← {{ with }}. |
+| [ ] | `graduation.summerNoChange` | Summer classes wouldn't change your graduation date. | مواد الصيف لن تغيّر موعد تخرجك. |
 | [ ] | `graduation.summerOff` | With summer classes: {{ term }} | مع مواد الصيف: {{ term }} |
 | [ ] | `graduation.summerOn` | Without summer classes: {{ term }} | بدون مواد الصيف: {{ term }} |
 | [ ] | `graduation.summerOnly` | Summer classes don't change your date: {{ courses }} are only offered in summer, so your path includes a summer either way. | مواد الصيف لا تغيّر موعد تخرجك: {{ courses }} لا تُطرح إلا في الصيف، لذلك يتضمن مسارك فصلًا صيفيًا في كل الأحوال. |
@@ -649,6 +655,18 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `messages.new` | new | جديدة |
 | [ ] | `messages.subtitle` | Updates about your plans, newest first. | تحديثات خططك، الأحدث أولًا. |
 | [ ] | `messages.toPlan` | See my plan | اعرض خطتي |
+| [ ] | `months.1` | January | يناير |
+| [ ] | `months.10` | October | أكتوبر |
+| [ ] | `months.11` | November | نوفمبر |
+| [ ] | `months.12` | December | ديسمبر |
+| [ ] | `months.2` | February | فبراير |
+| [ ] | `months.3` | March | مارس |
+| [ ] | `months.4` | April | أبريل |
+| [ ] | `months.5` | May | مايو |
+| [ ] | `months.6` | June | يونيو |
+| [ ] | `months.7` | July | يوليو |
+| [ ] | `months.8` | August | أغسطس |
+| [ ] | `months.9` | September | سبتمبر |
 | [ ] | `myPlan.action.Draft` | Send my plan | أرسل خطتي |
 | [ ] | `myPlan.action.NeedsReview` | Check my plan again | راجع خطتي مرة أخرى |
 | [ ] | `myPlan.action.Rejected` | Fix my plan | عدّل خطتي |

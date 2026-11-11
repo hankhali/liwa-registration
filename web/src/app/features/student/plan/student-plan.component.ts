@@ -27,6 +27,7 @@ import {
   meetingPatterns,
   parseTermCode,
   termLabel,
+  graduationDate,
   timeRange,
   warningKey,
 } from '../../../core/planning/planning.models';
@@ -424,7 +425,12 @@ export class StudentPlanComponent {
     return timeRange({ day: 'Monday', start, end }, this.language.lang());
   }
 
-  /** "2027SP" → "Spring 2027" / "الربيع 2027". */
+  /** "May 2030": graduation dates are month-first everywhere. */
+  protected gradDate(code: string): string {
+    return graduationDate(code, (k) => this.transloco.translate(k), this.language.lang());
+  }
+
+  /** "2027SP" → "Spring 2026-2027" / "الربيع 2026-2027". */
   protected termLabel(code: string): string {
     return termLabel(code, (k) => this.transloco.translate(k), this.language.lang());
   }

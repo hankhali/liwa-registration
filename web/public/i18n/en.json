@@ -960,7 +960,13 @@
       "any": "your free time"
     },
     "assumesOnline": "This assumes about {{ n }} online classes a semester, like this semester.",
-    "assumesOnlineOne": "This assumes about 1 online class a semester, like this semester."
+    "assumesOnlineOne": "This assumes about 1 online class a semester, like this semester.",
+    "plusSummers": "+ {{ n }} summers",
+    "plusSummerOne": "+ 1 summer",
+    "summerForward": "Taking summer classes brings your graduation forward by {{ n }} semesters: {{ without }} → {{ with }}.",
+    "summerForwardOne": "Taking summer classes brings your graduation forward by 1 semester: {{ without }} → {{ with }}.",
+    "summerNoChange": "Summer classes wouldn't change your graduation date.",
+    "keepSame": "With {{ freeTime }} or a full-time schedule, you graduate in {{ term }} either way."
   },
   "myPlan": {
     "heading": "Where my plan is",
@@ -1077,5 +1083,19 @@
     "proposed": "{{ actor }} suggested changes",
     "accepted": "{{ actor }} accepted the suggested changes",
     "needsReview": "New grades came in: the plan needs another look"
+  },
+  "months": {
+    "1": "January",
+    "2": "February",
+    "3": "March",
+    "4": "April",
+    "5": "May",
+    "6": "June",
+    "7": "July",
+    "8": "August",
+    "9": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December"
   }
 }

@@ -21,7 +21,7 @@ import {
   courseTitle,
   formatTime,
   meetingPatterns,
-  parseTermCode, termLabel,
+  graduationDate, parseTermCode, termLabel,
   timeRange,
 } from '../../core/planning/planning.models';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
@@ -223,7 +223,12 @@ export class PlanReviewPage {
   }
 
   protected term(code: string | null): string {
-    return code && parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+    return code && parseTermCode(code) ? graduationDate(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+  }
+
+  /** "Spring 2029-2030", under the month-first date. */
+  protected academic(code: string | null): string {
+    return code && parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : '';
   }
 
   protected when(iso: string): string {

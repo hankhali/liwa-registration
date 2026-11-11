@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { setArabicDigits } from '../i18n/digits';
 import {
+  graduationDate,
+  graduationMonth,
+  semestersAndSummers,
+  summerSentence,
   localizeTermNames,
   termLabel,
   CourseAssessment,
@@ -111,5 +115,46 @@ describe('Liwa term names (academic year)', () => {
     expect(localizeTermNames('Your plan for Spring 2026-2027', t, 'en')).toBe('Your plan for Spring 2026-2027');
     expect(localizeTermNames('Summer 2 2025-2026 opens', t, 'en')).toBe('Summer 2 2025-2026 opens');
     expect(localizeTermNames('You sent your plan for Spring 2027.', t, 'en')).toBe('You sent your plan for Spring 2026-2027.');
+  });
+});
+describe('graduation dates, month first', () => {
+  const months: Record<string, string> = { 'months.5': 'May', 'months.7': 'July', 'months.8': 'August', 'months.12': 'December' };
+  const strings: Record<string, string> = {
+    'graduation.summerForward': 'Taking summer classes brings your graduation forward by {{ n }} semesters: {{ without }} → {{ with }}.',
+    'graduation.summerForwardOne': 'Taking summer classes brings your graduation forward by 1 semester: {{ without }} → {{ with }}.',
+    'graduation.summerNoChange': "Summer classes wouldn't change your graduation date.",
+  };
+  const t = (k: string, p?: Record<string, unknown>) =>
+    (months[k] ?? strings[k] ?? k).replace(/\{\{ (\w+) \}\}/g, (_, name: string) => String(p?.[name] ?? ''));
+
+  it('maps each term to the month it ends: Fall → December, Spring → May, Summer 1 → July', () => {
+    expect(graduationMonth('2029FA')).toEqual({ month: 12, year: 2029 });
+    expect(graduationMonth('2030SP')).toEqual({ month: 5, year: 2030 });
+    expect(graduationMonth('2029SU')).toEqual({ month: 7, year: 2029 });
+    expect(graduationDate('2030SP', t, 'en')).toBe('May 2030');
+    expect(graduationDate('2029FA', t, 'en')).toBe('December 2029');
+    expect(graduationDate('2029SU', t, 'en')).toBe('July 2029');
+  });
+
+  it('says how far summer classes bring graduation forward', () => {
+    expect(summerSentence('2029SP', '2030SP', t, 'en')).toBe('Taking summer classes brings your graduation forward by 2 semesters: May 2030 → May 2029.');
+    expect(summerSentence('2029FA', '2030SP', t, 'en')).toBe('Taking summer classes brings your graduation forward by 1 semester: May 2030 → December 2029.');
+    // Graduating in a summer still counts the regular semesters saved.
+    expect(summerSentence('2029SU', '2029FA', t, 'en')).toBe('Taking summer classes brings your graduation forward by 1 semester: December 2029 → July 2029.');
+  });
+
+  it('says when summer classes would not change the date', () => {
+    expect(summerSentence('2030SP', '2030SP', t, 'en')).toBe("Summer classes wouldn't change your graduation date.");
+    expect(summerSentence(null, '2030SP', t, 'en')).toBe("Summer classes wouldn't change your graduation date.");
+  });
+
+  it('keeps the academic year left-to-right in Arabic (no "2027-2026")', () => {
+    const ar = (k: string) => ({ 'planner.termSeason.Spring': 'الربيع' })[k] ?? k;
+    expect(termLabel('2027SP', ar, 'ar')).toBe('الربيع ⁦2026-2027⁩');
+  });
+
+  it('counts semesters left (Fall and Spring) separately from summers', () => {
+    expect(semestersAndSummers([{ termCode: '2027SP' }, { termCode: '2027SU' }, { termCode: '2027FA' }, { termCode: '2028SP' }, { termCode: '2028SU' }]))
+      .toEqual({ semesters: 3, summers: 2 });
   });
 });

@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../core/i18n/language.service';
 import { localDigits } from '../../core/i18n/digits';
-import { GraduationProjection, Reason, courseTitle, criticalCodes, parseTermCode, semesterDelay, termLabel } from '../../core/planning/planning.models';
+import { GraduationProjection, Reason, courseTitle, criticalCodes, graduationDate, parseTermCode, semesterDelay, semestersAndSummers, summerSentence, termLabel } from '../../core/planning/planning.models';
 import { isolate } from '../../shared/bidi';
 import { PlanningService } from '../../core/planning/planning.service';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
@@ -34,32 +34,43 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
       <section class="liwa-card headline" aria-labelledby="grad-date">
         <div class="big">
           <span class="big-label">{{ 'graduation.dateLabel' | transloco }}</span>
-          <span id="grad-date" class="big-value" aria-live="polite">{{ label(shownTerm()) }}</span>
+          <!-- Month first ("May 2030"), the academic term beneath ("Spring 2029-2030") -->
+          <span id="grad-date" class="big-value" aria-live="polite">{{ month(shownTerm()) }}</span>
+          <span class="term-small">{{ label(shownTerm()) }}</span>
         </div>
         <div class="big">
           <span class="big-label">{{ 'graduation.leftLabel' | transloco }}</span>
-          <span class="big-value">{{ digits(terms().length) }}</span>
+          <span class="big-value">
+            {{ digits(left().semesters) }}
+            @if (summer() && left().summers > 0) {
+              <span class="plus">{{ (left().summers === 1 ? 'graduation.plusSummerOne' : 'graduation.plusSummers') | transloco: { n: digits(left().summers) } }}</span>
+            }
+          </span>
         </div>
         <div class="toggle">
           <mat-slide-toggle [checked]="summer()" (change)="summer.set($event.checked)">{{ 'graduation.summer' | transloco }}</mat-slide-toggle>
-          @if (summerOnly(); as courses) {
-            <!-- The toggle changes nothing: a required class only runs in summer, so the path has that summer anyway -->
-            <span class="summer-note" role="note">{{ (courses.count === 1 ? 'graduation.summerOnlyOne' : 'graduation.summerOnly') | transloco: { courses: courses.text } }}</span>
-          } @else {
-            <span class="liwa-muted small">{{ (summer() ? 'graduation.summerOn' : 'graduation.summerOff') | transloco: { term: label(otherTerm()) } }}</span>
-          }
         </div>
+        <!-- One sentence on what summer classes do to the date -->
+        @if (summerOnly(); as courses) {
+          <p class="compare summer-line summer-note" role="note">{{ (courses.count === 1 ? 'graduation.summerOnlyOne' : 'graduation.summerOnly') | transloco: { courses: courses.text } }}</p>
+        } @else {
+          <p class="compare summer-line" role="note">{{ summerLine() }}</p>
+        }
         @if (fullTimeTerm() !== undefined) {
-          <!-- Free time is limited: the date if it continues, next to a full-time schedule -->
+          <!-- Free time is limited: the date if it continues, next to a full-time schedule (one line when equal) -->
           <p class="compare keep" role="note">
-            {{ 'graduation.keepFreeTime' | transloco: { freeTime: ('graduation.freeTime.' + (d.preset ?? 'custom') | transloco), term: label(shownTerm()), fullTime: label(fullTimeTerm() ?? null) } }}
+            @if (fullTimeTerm() === shownTerm()) {
+              {{ 'graduation.keepSame' | transloco: { freeTime: ('graduation.freeTime.' + (d.preset ?? 'custom') | transloco), term: month(shownTerm()) } }}
+            } @else {
+              {{ 'graduation.keepFreeTime' | transloco: { freeTime: ('graduation.freeTime.' + (d.preset ?? 'custom') | transloco), term: month(shownTerm()), fullTime: month(fullTimeTerm() ?? null) } }}
+            }
           </p>
           @if (d.view.recommendation.freeTime; as ft) {
             <p class="compare liwa-muted small assumes">{{ (ft.onlinePerTerm === 1 ? 'graduation.assumesOnlineOne' : 'graduation.assumesOnline') | transloco: { n: ft.onlinePerTerm } }}</p>
           }
         }
         @if (d.selection && selectionTerm() !== recommendedTerm()) {
-          <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: label(recommendedTerm()) } }}</p>
+          <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: month(recommendedTerm()) } }}</p>
         }
       </section>
 
@@ -153,6 +164,17 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
     }
     .keep {
       font-weight: 600;
+    }
+    .term-small {
+      color: var(--liwa-text-muted);
+      font-size: 0.9375rem;
+    }
+    .plus {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .summer-line {
+      font-size: 1rem;
     }
     .summer-note {
       max-width: 34rem;
@@ -302,6 +324,17 @@ export class GraduationPage {
     return (this.summer() ? f.withSummer : f.withoutSummer).graduationTerm;
   });
 
+  /** Semesters left (Fall and Spring, counting this one) and summers on the path shown. */
+  protected readonly left = computed(() => semestersAndSummers(this.terms()));
+
+  /** "Taking summer classes brings your graduation forward by N semester(s): May 2030 → May 2029." or "…wouldn't change…". */
+  protected readonly summerLine = computed(() => {
+    const d = this.data.value();
+    if (!d) return '';
+    const p = d.selection ?? d.view.recommendation.projection;
+    return summerSentence(p.withSummer.graduationTerm, p.withoutSummer.graduationTerm, (k, params) => this.transloco.translate(k, params), this.language.lang());
+  });
+
   /** The date with the toggle the other way ("with summer you could finish in …"). */
   protected readonly otherTerm = computed(() => {
     const d = this.data.value();
@@ -346,6 +379,11 @@ export class GraduationPage {
 
   protected label(code: string | null): string {
     return code ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+  }
+
+  /** "May 2030". */
+  protected month(code: string | null): string {
+    return code ? graduationDate(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
   }
 
   protected digits(n: number): string {

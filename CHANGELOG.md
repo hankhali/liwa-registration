@@ -2,6 +2,21 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: unambiguous graduation dates (2026-11-11)
+
+- **Month-first graduation dates** everywhere a graduation date appears (Graduation, Home, the planner, the advisor's
+  review and student list, the assistant's figures): "May 2030", with the academic term beneath on Graduation
+  ("Spring 2029-2030"). Term end months: Fall = December, Spring = May, Summer 1 = July, Summer 2 = August (registrar
+  question K19). Notifications and emails don't contain graduation dates.
+- "Semesters left" counts Fall and Spring only; with the summer toggle on it adds "+ N summers".
+- One sentence under the headline: "Taking summer classes brings your graduation forward by N semester(s): May 2030
+  → May 2029", or "Summer classes wouldn't change your graduation date" (the summer-only-course explanation stays
+  when that is the reason).
+- Evenings-only vs full-time is month-first too, and a single line when both dates are equal.
+- **The evenings-only projection** now counts the evening slots plus about as many online classes as this term offers
+  (K18), with "This assumes about N online classes a semester, like this semester" on Graduation.
+- Fixed: in Arabic, academic years showed reversed ("2027-2026"); the range is now kept left-to-right.
+
 ## Unreleased: normal load, free-time-aware projection, "Take this first" (2026-11-11)
 
 - **Normal load.** `CreditPolicy.NormalLoad` (default 15, in `appsettings.json`) can be set per credit rule (e.g. per

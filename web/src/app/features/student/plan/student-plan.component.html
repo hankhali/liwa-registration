@@ -222,7 +222,7 @@
         <p class="graduation">
           <mat-icon aria-hidden="true">school</mat-icon>
           <span>
-            {{ 'plan.graduate' | transloco: { term: termLabel(g.regular) } }}
+            {{ 'plan.graduate' | transloco: { term: gradDate(g.regular) } }}
             <a routerLink="/student/graduation">{{ 'plan.seePath' | transloco }}</a>
           </span>
         </p>

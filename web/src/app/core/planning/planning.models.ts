@@ -245,6 +245,66 @@ export function parseTermCode(code: string): { season: 'Spring' | 'Summer' | 'Fa
   return { year: Number(m[1]), season: m[2] === 'SP' ? 'Spring' : m[2] === 'SU' ? 'Summer' : 'Fall' };
 }
 
+/**
+ * The month each kind of term ends (docs/assumptions.md K19; from the demo term dates, a registrar question):
+ * Fall → December, Spring → May, Summer 1 → July, Summer 2 → August.
+ */
+export const TERM_END_MONTH = { Fall: 12, Spring: 5, Summer: 7, Summer2: 8 } as const;
+
+/** "2030SP" → { month: 5, year: 2030 }; the calendar year of the code is the year the term ends. */
+export function graduationMonth(code: string | null | undefined): { month: number; year: number } | null {
+  const p = code ? parseTermCode(code) : null;
+  return p ? { month: TERM_END_MONTH[p.season], year: p.year } : null;
+}
+
+/** "2030SP" → "May 2030" / "مايو 2030": the month-first form used wherever a graduation date appears. */
+export function graduationDate(code: string | null | undefined, t: (key: string) => string, lang: string): string {
+  const m = graduationMonth(code);
+  return m ? `${t('months.' + m.month)} ${localDigits(String(m.year), lang)}` : '';
+}
+
+/** Fall and Spring semesters strictly after `earlier` up to and including `later` (summers don't count). */
+export function regularSemestersBetween(earlier: string | null, later: string | null): number {
+  const a = termOrdinal(earlier);
+  const b = termOrdinal(later);
+  if (a === null || b === null || b <= a) return 0;
+  let n = 0;
+  for (let o = a + 1; o <= b; o++) if (o % 3 !== 1) n++; // ordinal % 3 === 1 is Summer
+  return n;
+}
+
+/** Semesters left (Fall and Spring) and summers in a projection's terms. */
+export function semestersAndSummers(terms: { termCode: string }[]): { semesters: number; summers: number } {
+  let semesters = 0;
+  let summers = 0;
+  for (const term of terms) {
+    if (parseTermCode(term.termCode)?.season === 'Summer') summers++;
+    else semesters++;
+  }
+  return { semesters, summers };
+}
+
+/**
+ * The sentence under the graduation headline about summer classes, in both directions:
+ * "Taking summer classes brings your graduation forward by 1 semester: May 2030 → December 2029." or
+ * "Summer classes wouldn't change your graduation date."
+ */
+export function summerSentence(withSummer: string | null, withoutSummer: string | null, t: (key: string, params?: Record<string, unknown>) => string, lang: string): string {
+  const n = regularSemestersBetween(withSummer, withoutSummer);
+  if (!withSummer || !withoutSummer || n === 0) return t('graduation.summerNoChange');
+  return t(n === 1 ? 'graduation.summerForwardOne' : 'graduation.summerForward', {
+    n: localDigits(String(n), lang),
+    without: graduationDate(withoutSummer, t, lang),
+    with: graduationDate(withSummer, t, lang),
+  });
+}
+
+/** "2026-2027" kept left-to-right inside Arabic text (otherwise the bidi algorithm shows "2027-2026"). */
+function yearRange(years: string, lang: string): string {
+  const text = localDigits(years, lang);
+  return lang === 'ar' ? `⁦${text}⁩` : text;
+}
+
 /** The academic year a term belongs to: Fall 2026 → 2026-2027; Spring and Summer 2027 → 2026-2027. */
 function academicYear(season: 'Spring' | 'Summer' | 'Fall', year: number): string {
   const start = season === 'Fall' ? year : year - 1;
@@ -257,7 +317,7 @@ function academicYear(season: 'Spring' | 'Summer' | 'Fall', year: number): strin
  */
 export function termLabel(code: string | null, t: (key: string) => string, lang: string): string {
   const p = code ? parseTermCode(code) : null;
-  return p ? `${t('planner.termSeason.' + p.season)} ${localDigits(academicYear(p.season, p.year), lang)}` : (code ?? '');
+  return p ? `${t('planner.termSeason.' + p.season)} ${yearRange(academicYear(p.season, p.year), lang)}` : (code ?? '');
 }
 
 /**
@@ -270,7 +330,7 @@ export function localizeTermNames(text: string, t: (key: string) => string, lang
     (_, season: 'Spring' | 'Summer' | 'Fall', n: string | undefined, year: string, end: string | undefined) => {
       const name = season === 'Summer' && n === '2' ? t('planner.summer2') : t('planner.termSeason.' + season);
       const years = end ? `${year}-${end}` : academicYear(season, Number(year));
-      return `${name} ${localDigits(years, lang)}`;
+      return `${name} ${yearRange(years, lang)}`;
     },
   );
 }

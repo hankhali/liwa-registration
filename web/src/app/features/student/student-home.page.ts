@@ -9,7 +9,7 @@ import { StudentSummary, formatGpa, programName } from '../../core/academic/acad
 import { AuthService } from '../../core/auth/auth.service';
 import { localDigits } from '../../core/i18n/digits';
 import { LanguageService } from '../../core/i18n/language.service';
-import { PlanStatus, termLabel } from '../../core/planning/planning.models';
+import { PlanStatus, graduationDate, termLabel } from '../../core/planning/planning.models';
 import { PlanningService } from '../../core/planning/planning.service';
 import { greetingName } from '../../shared/first-name';
 import { StatCardComponent } from '../../shared/stat-card.component';
@@ -164,7 +164,7 @@ export class StudentHomePage {
     if (!v) return '–';
     const p = (v.saved && v.savedProjection) || v.recommendation.projection;
     const code = p.withoutSummer.graduationTerm;
-    return code ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
+    return code ? graduationDate(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
   });
   /** 404 = the registrar hasn't sent this student's record yet (not an error the student can fix). */
   protected readonly notLoadedYet = computed(() => {
