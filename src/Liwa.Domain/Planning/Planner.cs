@@ -135,6 +135,7 @@ public static partial class Planner
         var limits = policy.LimitsFor(input.Term.Season, standing, student.Gpa, student.OnProbation, creditsLeft);
         if (limits is null) warnings.Add(PlannerReason.Of(ReasonCode.NoCreditRule));
         var maxCredits = Math.Min(limits?.MaxCredits ?? 0, input.Preferences.MaxCredits ?? int.MaxValue);
+        var target = TargetFor(input, limits, maxCredits);
 
         // 5. Greedy packing ----------------------------------------------------------------------
         var chosen = new List<(Need Need, PlannerSection Section, List<string> Partners)>();
@@ -166,9 +167,9 @@ public static partial class Planner
 
             var group = new[] { n.Code }.Concat(partners).ToList();
             var credits = group.Sum(c => catalog[c].Credits);
-            if (total + credits > maxCredits)
+            if (total + credits > target)
             {
-                r.Add(PlannerReason.Of(ReasonCode.CreditLimitReached, maxCredits.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                r.Add(PlannerReason.Of(ReasonCode.CreditLimitReached, target.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 continue;
             }
 
@@ -235,6 +236,11 @@ public static partial class Planner
             total += credits;
         }
 
+        // Limited free time: fill what fits and say so ("only 12 credits fit your free time").
+        if (total < target && input.Availability is { Windows.Count: > 0 }
+            && ordered.Any(n => !chosenCodes.Contains(n.Code) && reasons[n.Code].Any(x => x.Code == ReasonCode.NoSectionFits)))
+            warnings.Add(PlannerReason.Of(ReasonCode.OnlyCreditsFit, total.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+
         var minCredits = limits?.MinCredits ?? 0;
         if (limits is not null && total < minCredits)
             warnings.Add(PlannerReason.Of(ReasonCode.BelowMinimumCredits, minCredits.ToString(System.Globalization.CultureInfo.InvariantCulture)));
@@ -258,8 +264,12 @@ public static partial class Planner
             if (c.Partners.Count > 0) why.Add(PlannerReason.Of(ReasonCode.TakeWithCorequisite, c.Partners));
             if (evals.TryGetValue(c.Need.Code, out var e) && e.Result == Sat.Conditional) why.Add(PlannerReason.Of(ReasonCode.WaitingForGrade, e.WaitingFor.Prepend(c.Need.Code)));
             return new PlannedCourse(c.Need.Code, c.Need.Credits, c.Section.Id, c.Section.SectionCode, rank.GetValueOrDefault(c.Need.Code), why,
-                alternatives.GetValueOrDefault(c.Need.Code) ?? []);
+                alternatives.GetValueOrDefault(c.Need.Code) ?? [], ChainFrom(c.Need.Code, chain, dependents));
         }).OrderBy(p => p.PriorityRank == 0 ? int.MaxValue : p.PriorityRank).ThenBy(p => p.CourseCode, StringComparer.Ordinal).ToList();
+
+        // "Take this first": the two highest-ranked planned courses that start a chain of at least two courses.
+        var first = plan.Where(p => p.Chain is { Count: >= 2 }).Take(2).Select(p => p.CourseCode).ToHashSet(StringComparer.Ordinal);
+        plan = plan.Select(p => first.Contains(p.CourseCode) ? p with { TakeFirst = true } : p).ToList();
 
         var assessments = ordered.Select(n => new CourseAssessment(
             n.Code, n.Credits, n.GroupKey,
@@ -268,8 +278,14 @@ public static partial class Planner
             chosenCodes.Contains(n.Code) ? plan.First(p => p.CourseCode == n.Code).Reasons : reasons[n.Code].Distinct().ToList())).ToList();
 
         // 6. Graduation projection ------------------------------------------------------------
-        var withSummer = Project(input, catalog, ordered, chosen.Select(c => c.Need.Code).ToList(), total, quota, freeRemaining, includeSummer: true);
-        var withoutSummer = Project(input, catalog, ordered, chosen.Select(c => c.Need.Code).ToList(), total, quota, freeRemaining, includeSummer: false);
+        // Future semesters assume the current free time continues (at most as many classes as it has weekly slots).
+        var slots = WeeklySlots(input);
+        var plannedCodes = chosen.Select(c => c.Need.Code).ToList();
+        var withSummer = Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: true, slots);
+        var withoutSummer = Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: false, slots);
+        var fullTime = slots is null ? null : new GraduationProjection(
+            Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: true),
+            Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: false));
         if (withSummer.GraduationTerm is null || withoutSummer.GraduationTerm is null) warnings.Add(PlannerReason.Of(ReasonCode.GraduationNotReachable));
 
         // Courses offered in only one season, eligible now, but not in the plan: skipping them waits a year.
@@ -287,7 +303,54 @@ public static partial class Planner
             .Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList();
         if (assumed.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.PermissionAssumed, assumed));
 
-        return new PlannerResult(input.Term.Code, limits, maxCredits, plan, total, assessments, warnings, new GraduationProjection(withSummer, withoutSummer));
+        return new PlannerResult(input.Term.Code, limits, maxCredits, plan, total, assessments, warnings, new GraduationProjection(withSummer, withoutSummer),
+            target, fullTime);
+    }
+
+    /// <summary>
+    /// Credits to aim for this term: the student's "max credits" when set, otherwise the normal load (term, then credit
+    /// rule, then policy), never above the hard cap.
+    /// </summary>
+    internal static int TargetFor(PlannerInput input, CreditLimits? limits, int hardCap) =>
+        input.Preferences.MaxCredits is not null
+            ? hardCap
+            : Math.Min(input.Term.NormalLoad ?? limits?.NormalLoad ?? CreditPolicy.DefaultNormalLoad, hardCap);
+
+    /// <summary>
+    /// How many classes a week fit the student's free time: the largest set of non-overlapping meeting patterns among
+    /// this term's on-campus sections that fit it (Liwa evenings: Mon/Wed and Tue/Thu × two blocks = 4). Null when the
+    /// free time isn't limited, or when no pattern fits (nothing to go on until real timetables exist).
+    /// </summary>
+    internal static int? WeeklySlots(PlannerInput input)
+    {
+        if (input.Availability is not { Windows.Count: > 0 } free) return null;
+        var patterns = input.Sections
+            .Where(s => s.Meetings.Count > 0 && free.Fits(s.Meetings))
+            .Select(s => s.Meetings.OrderBy(m => m.Day).ThenBy(m => m.Start).ToList())
+            .DistinctBy(p => string.Join(';', p.Select(m => $"{m.Day}{m.Start:HHmm}{m.End:HHmm}")))
+            .OrderBy(p => p.Max(m => m.End)).ThenBy(p => p.Count).ThenBy(p => (int)p[0].Day)
+            .ToList();
+        var taken = new List<List<MeetingTime>>();
+        foreach (var p in patterns)
+            if (!p.Any(m => taken.Any(t => t.Any(m.Overlaps)))) taken.Add(p);
+        return taken.Count == 0 ? null : taken.Count;
+    }
+
+    /// <summary>The longest chain of remaining courses starting at <paramref name="code"/>, level by level.</summary>
+    private static List<IReadOnlyList<string>> ChainFrom(string code, Dictionary<string, int> chain, Dictionary<string, SortedSet<string>> dependents)
+    {
+        if (chain.GetValueOrDefault(code) < 2) return [];
+        var levels = new List<IReadOnlyList<string>> { new[] { code } };
+        var current = code;
+        while (chain.GetValueOrDefault(current) > 1 && levels.Count < 12)
+        {
+            var next = dependents.GetValueOrDefault(current)?.Where(d => chain.GetValueOrDefault(d) == chain[current] - 1).ToList() ?? [];
+            if (next.Count == 0) break;
+            levels.Add(next);
+            current = next[0];
+        }
+
+        return levels;
     }
 
     internal static bool IsNearlyFull(PlannerSection s) => s.Capacity > 0 && s.SeatsLeft > 0 && s.Capacity - s.SeatsLeft >= s.Capacity * NearlyFullShare;
@@ -550,8 +613,10 @@ public static partial class Planner
 
     // ------------------------------------------------------------------------------ step 6
 
+    /// <param name="maxCoursesPerTerm">At most this many classes a semester (the student's weekly slots); null = no limit.</param>
     private static TermProjection Project(PlannerInput input, Dictionary<string, PlannerCourse> catalog, List<Need> ordered,
-        List<string> plannedNow, int plannedCredits, Dictionary<string, int> quotaAfterPlan, int freeRemaining, bool includeSummer)
+        List<string> plannedNow, int plannedCredits, Dictionary<string, int> quotaAfterPlan, int freeRemaining, bool includeSummer,
+        int? maxCoursesPerTerm = null)
     {
         var s = input.Student;
         var grades = new Dictionary<string, string>(s.Passed, StringComparer.OrdinalIgnoreCase);
@@ -582,7 +647,12 @@ public static partial class Planner
             var gpaAssumed = s.Gpa;
             var left = remaining.Where(n => n.Kind == RequirementKind.AllOf).Sum(n => n.Credits) + quota.Values.Where(q => q > 0).Sum() + Math.Max(0, free);
             var limits = input.Policy.LimitsFor(season, AcademicSummary.StandingFor(earned), gpaAssumed, s.OnProbation, left);
-            var max = Math.Min(limits?.MaxCredits ?? 0, input.Preferences.MaxCredits ?? int.MaxValue);
+            var hard = Math.Min(limits?.MaxCredits ?? 0, input.Preferences.MaxCredits ?? int.MaxValue);
+            // Each future semester plans the normal load (or the student's own "max credits"). A semester that can
+            // finish the degree may go up to the maximum (the catalogs' final semesters run to 18 credits).
+            var max = input.Preferences.MaxCredits is null && left <= hard
+                ? hard
+                : input.Preferences.MaxCredits is not null ? hard : Math.Min(limits?.NormalLoad ?? CreditPolicy.DefaultNormalLoad, hard);
 
             var state = new State(grades, new HashSet<string>(), new HashSet<string>(), earned, new HashSet<string>(), false, AssumePermission: true);
             var taken = new List<string>();
@@ -600,6 +670,7 @@ public static partial class Planner
                                       || Evaluate(pc.Prerequisite, p, state) is { Result: Sat.No })) continue;
                 var groupCredits = n.Credits + partners.Sum(p => catalog[p].Credits);
                 if (credits + groupCredits > max) continue;
+                if (maxCoursesPerTerm is { } cap && taken.Count + 1 + partners.Count > cap) continue;
 
                 foreach (var code in new[] { n.Code }.Concat(partners))
                 {
@@ -612,6 +683,7 @@ public static partial class Planner
             }
 
             var electives = summerOnlyCourses ? 0 : Math.Max(0, Math.Min(free, max - credits));
+            if (maxCoursesPerTerm is { } courseCap) electives = Math.Min(electives, Math.Max(0, courseCap - taken.Count) * 3);
             free -= electives;
             foreach (var t in taken) grades.TryAdd(t, "P");
             remaining = remaining.Where(n => !taken.Contains(n.Code)).ToList();

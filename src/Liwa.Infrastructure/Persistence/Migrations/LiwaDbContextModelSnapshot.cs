@@ -158,6 +158,10 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
+                    b.Property<int?>("NormalLoad")
+                        .HasColumnType("integer")
+                        .HasColumnName("normal_load");
+
                     b.Property<bool?>("OnProbation")
                         .HasColumnType("boolean")
                         .HasColumnName("on_probation");
@@ -205,6 +209,12 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
+
+                    b.Property<int>("NormalLoad")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(15)
+                        .HasColumnName("normal_load");
 
                     b.Property<string>("RepeatGradeRule")
                         .IsRequired()
@@ -470,6 +480,10 @@ namespace Liwa.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
+
+                    b.Property<int?>("NormalLoad")
+                        .HasColumnType("integer")
+                        .HasColumnName("normal_load");
 
                     b.Property<string>("Season")
                         .IsRequired()

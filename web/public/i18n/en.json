@@ -608,8 +608,8 @@
       "deliveryAny": "On campus or online",
       "deliveryCampus": "On campus only",
       "deliveryOnline": "Online only",
-      "maxCredits": "How many credits?",
-      "noLimit": "As many as I can",
+      "maxCredits": "Credits to aim for",
+      "noLimit": "The usual load",
       "upTo": "Up to {{ n }} credits"
     },
     "listLabel": "Classes in your plan",
@@ -704,7 +704,13 @@
       "heading": "Classes you can't take yet ({{ n }})",
       "intro": "Why each one has to wait."
     },
-    "pageHeading": "My plan"
+    "pageHeading": "My plan",
+    "takeFirst": "Take this first",
+    "chainLabel": "Opens this chain of classes:",
+    "load": {
+      "label": "Credits to aim for this semester",
+      "usual": "The usual load ({{ n }} credits)"
+    }
   },
   "planner": {
     "join": {
@@ -762,7 +768,8 @@
       "GradeMustBePosted": "Your grade in {{ courses }} must be posted first",
       "FallOnlyMissed": "{{ courses }} is only offered in {{ value }}: if you skip it now, it waits a whole year",
       "NearlyFull": "Almost full: {{ courses }} has only a few seats left",
-      "PermissionAssumed": "Your path assumes the department gives permission for {{ courses }} when the time comes"
+      "PermissionAssumed": "Your path assumes the department gives permission for {{ courses }} when the time comes",
+      "OnlyCreditsFit": "Only {{ value }} credits fit your free time"
     },
     "actions": {
       "BelowMinimumCredits": "Add {{ missing }} more credits to reach the {{ value }}-credit minimum, or ask your advisor to approve a lighter load.",
@@ -776,7 +783,8 @@
       "AlreadyTaken": "Remove {{ courses }}: you've already taken it.",
       "AccountHold": "There is a {{ value }} hold on your account. You can send your plan, but contact the office to clear it before registration.",
       "FallOnlyMissed": "Try to fit {{ courses }} in now: it's only offered in {{ value }}, so skipping it can delay graduation.",
-      "NearlyFull": "{{ courses }} is almost full. Send your plan soon, or pick another class time."
+      "NearlyFull": "{{ courses }} is almost full. Send your plan soon, or pick another class time.",
+      "OnlyCreditsFit": "Only {{ value }} credits fit your free time. Add more free time to take more classes, or keep this lighter semester."
     },
     "holds": {
       "FINANCE": "finance",
@@ -942,7 +950,15 @@
     "recommendedLine": "With the plan we recommend, you could graduate in {{ term }}.",
     "electivesOne": "1 credit of free electives (any class)",
     "summerOnly": "Summer classes don't change your date: {{ courses }} are only offered in summer, so your path includes a summer either way.",
-    "summerOnlyOne": "Summer classes don't change your date: {{ courses }} is only offered in summer, so your path includes that summer either way."
+    "summerOnlyOne": "Summer classes don't change your date: {{ courses }} is only offered in summer, so your path includes that summer either way.",
+    "keepFreeTime": "If you keep {{ freeTime }}: {{ term }}. With a full-time schedule: {{ fullTime }}.",
+    "freeTime": {
+      "evenings": "evenings only",
+      "weekends": "weekends and evenings",
+      "daytime": "daytime only",
+      "custom": "your own hours",
+      "any": "your free time"
+    }
   },
   "myPlan": {
     "heading": "Where my plan is",

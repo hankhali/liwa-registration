@@ -21,7 +21,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
     public static readonly IReadOnlyDictionary<ImportKind, (string[] Required, string[] Optional)> Columns =
         new Dictionary<ImportKind, (string[], string[])>
         {
-            [ImportKind.Terms] = (["term_code", "name", "season", "year", "start_date", "end_date"], ["teaching_days", "friday_afternoon", "is_current", "in_progress_prerequisites"]),
+            [ImportKind.Terms] = (["term_code", "name", "season", "year", "start_date", "end_date"], ["teaching_days", "friday_afternoon", "is_current", "in_progress_prerequisites", "normal_load"]),
             [ImportKind.Courses] = (["course_code", "title", "credits"], ["title_ar", "department", "prerequisites", "offered", "description", "active", "source"]),
             [ImportKind.Programs] = (["program_code", "name", "total_credits"], ["name_ar", "college"]),
             [ImportKind.DegreePlans] = (["program_code", "catalog_year", "group_key", "group_type"], ["group_name", "group_credits", "course_code", "suggested_semester", "source"]),
@@ -127,6 +127,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             var friday = r.Bool("friday_afternoon", false);
             var current = r.Bool("is_current", false);
             bool? inProgress = r.Optional("in_progress_prerequisites") is null ? null : r.Bool("in_progress_prerequisites", true);
+            var normalLoad = r.OptionalInt("normal_load", 0, 30);
             if (!r.Ok) continue;
 
             if (!TermCodes.TryParse(code, out var codeYear, out var codeSeason)) { r.Fail("term_code", $"'{code}' should look like 2027SP (year + SP, SU or FA)."); continue; }
@@ -150,6 +151,7 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
             term.SetTeachingDays(days, friday);
             term.SetCurrent(current);
             term.SetInProgressPrerequisites(inProgress);
+            term.SetNormalLoad(normalLoad);
             Count(term, isNew, report);
         }
 

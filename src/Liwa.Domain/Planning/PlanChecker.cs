@@ -128,9 +128,10 @@ public static partial class Planner
             else free = Math.Max(0, free - catalog[c].Credits); // outside the plan's groups: counts as a free elective
         }
 
+        var slots = WeeklySlots(input); // same free-time assumption as the recommendation
         return new GraduationProjection(
-            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: true),
-            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: false));
+            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: true, slots),
+            Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: false, slots));
     }
 
     /// <summary>A stable key for a warning, so the student's "I understand" can be matched on the server.</summary>

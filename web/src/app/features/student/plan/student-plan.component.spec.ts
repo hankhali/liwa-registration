@@ -15,7 +15,7 @@ const view: PlanningView = {
     limits: { minCredits: 12, maxCredits: 18, ruleName: 'Standard' },
     maxCredits: 18,
     plan: [
-      { courseCode: 'ITC201', credits: 3, sectionId: 's1', sectionCode: '01', priorityRank: 1, reasons: [{ code: 'UnlocksOtherCourses', courses: [], value: '5' }], alternatives: [] },
+      { courseCode: 'ITC201', credits: 3, sectionId: 's1', sectionCode: '01', priorityRank: 1, reasons: [{ code: 'UnlocksOtherCourses', courses: [], value: '5' }], alternatives: [], takeFirst: true, chain: [['ITC201'], ['ITC301'], ['ITC401', 'ITC402']] },
     ],
     totalCredits: 3,
     courses: [
@@ -82,7 +82,9 @@ describe('planner view (brief §9, UX pass)', () => {
   it('shows the credits as a big number and one plain reason per class', async () => {
     const el = await renderPlanner();
     expect(el.querySelector('.credits-big .num')!.textContent).toBe('3');
-    expect(el.querySelector('.course .liwa-critical')!.textContent).toContain('Take this soon');
+    // The top chain-starting course says "Take this first" and spells out its chain.
+    expect(el.querySelector('.course .take-first')!.textContent).toContain('Take this first');
+    expect(el.querySelector('.course .chain')!.textContent).toContain('ITC201 → ITC301 → ITC401 & ITC402');
     expect(el.querySelectorAll('.course .why-one')).toHaveLength(1);
     expect(el.textContent).toContain('Take this soon: 5 other classes depend on it');
   });

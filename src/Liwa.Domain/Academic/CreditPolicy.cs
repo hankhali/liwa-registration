@@ -42,6 +42,16 @@ public sealed class CreditLimitRule
 
     public int MaxCredits { get; private set; }
 
+    /// <summary>This rule's normal load (credits the planner aims for); null = the policy's <see cref="CreditPolicy.NormalLoad"/>.</summary>
+    public int? NormalLoad { get; private set; }
+
+    public CreditLimitRule WithNormalLoad(int? credits)
+    {
+        if (credits is < 0 or > 30) throw new ArgumentOutOfRangeException(nameof(credits), "A normal load must be between 0 and 30 credits.");
+        NormalLoad = credits;
+        return this;
+    }
+
     public CreditLimitRule When(TermSeason? season = null, Standing? standing = null, decimal? minGpa = null, decimal? maxGpaExclusive = null, bool? onProbation = null)
     {
         Season = season;
@@ -62,7 +72,8 @@ public sealed class CreditLimitRule
     internal void AttachTo(Guid policyId) => CreditPolicyId = policyId;
 }
 
-public sealed record CreditLimits(int MinCredits, int MaxCredits, string RuleName);
+/// <param name="NormalLoad">Credits the planner aims for (never above <paramref name="MaxCredits"/>); the maximum is the hard cap.</param>
+public sealed record CreditLimits(int MinCredits, int MaxCredits, string RuleName, int NormalLoad = CreditPolicy.DefaultNormalLoad);
 
 /// <summary>
 /// Credit limits and planning switches. Fully configurable (brief §8); defaults are seeded from configuration
@@ -74,10 +85,14 @@ public sealed class CreditPolicy
 
     private CreditPolicy() { } // EF Core
 
+    /// <summary>The usual full-time load when nothing else is configured.</summary>
+    public const int DefaultNormalLoad = 15;
+
     public CreditPolicy(Guid id, string name)
     {
         Id = id;
         Name = name;
+        NormalLoad = DefaultNormalLoad;
         RepeatGradeRule = RepeatGradeRule.LatestCounts;
         AllowInProgressPrerequisites = true;
         GraduatingStudentsExemptFromMinimum = true;
@@ -94,6 +109,19 @@ public sealed class CreditPolicy
 
     /// <summary>A student who needs fewer credits than the minimum to graduate is not forced up to the minimum.</summary>
     public bool GraduatingStudentsExemptFromMinimum { get; private set; }
+
+    /// <summary>
+    /// Credits a recommendation aims for (and the projection plans per semester). The rule's maximum stays the hard
+    /// cap; a rule (per standing or season) or a term can set its own normal load; a student can choose more in
+    /// "max credits this semester".
+    /// </summary>
+    public int NormalLoad { get; private set; } = DefaultNormalLoad;
+
+    public void SetNormalLoad(int credits)
+    {
+        if (credits is < 0 or > 30) throw new ArgumentOutOfRangeException(nameof(credits), "A normal load must be between 0 and 30 credits.");
+        NormalLoad = credits;
+    }
 
     public IReadOnlyList<CreditLimitRule> Rules => _rules;
 
@@ -129,6 +157,6 @@ public sealed class CreditPolicy
         var min = rule.MinCredits;
         if (GraduatingStudentsExemptFromMinimum && creditsLeftToGraduate is { } left && left < min)
             min = Math.Max(0, left);
-        return new CreditLimits(min, rule.MaxCredits, rule.Name);
+        return new CreditLimits(min, rule.MaxCredits, rule.Name, Math.Min(rule.NormalLoad ?? NormalLoad, rule.MaxCredits));
     }
 }

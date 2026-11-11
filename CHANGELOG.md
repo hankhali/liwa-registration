@@ -2,6 +2,23 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: normal load, free-time-aware projection, "Take this first" (2026-11-11)
+
+- **Normal load.** `CreditPolicy.NormalLoad` (default 15, in `appsettings.json`) can be set per credit rule (e.g. per
+  standing) and per term (`normal_load` in the terms file); migration `NormalLoad`. The recommendation aims for it
+  (`targetCredits`) and only goes higher if the student picks more in "Credits to aim for this semester". The rule's
+  maximum stays the hard cap. The projection plans the normal load too; a semester that can finish the degree may go
+  up to the maximum, so all three real plans graduate a fresh student in exactly 8 semesters again.
+- **Only what fits.** When free time can't reach the normal load, the plan fills what fits and says "Only N credits
+  fit your free time" (new reason `OnlyCreditsFit`).
+- **Free-time-aware projection.** Future semesters assume the current free time continues: at most as many classes
+  as it has weekly class times (evenings at Liwa: 4). Graduation shows both dates: "If you keep evenings only: X.
+  With a full-time schedule: Y." (`fullTimeProjection`).
+- **"Take this first"** on the top two chain-starting planned courses, with the chain in one line ("MTH105 → MTH203 →
+  BUS306 → BUS307 & BUS309"). The ranking is unchanged.
+- PRM422 is now `PRM410 AND CREDITS(105)`, so the final semester can hold it.
+- Tests: 226 unit, 96 integration, 75 frontend.
+
 ## Unreleased: real catalog data (2025-2026) (2026-11-11)
 
 - **The demo catalog is now the official University Catalog 2025–2026** (`docs/reference/`): 112 courses with real

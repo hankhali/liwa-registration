@@ -49,6 +49,12 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
             <span class="liwa-muted small">{{ (summer() ? 'graduation.summerOn' : 'graduation.summerOff') | transloco: { term: label(otherTerm()) } }}</span>
           }
         </div>
+        @if (fullTimeTerm() !== undefined) {
+          <!-- Free time is limited: the date if it continues, next to a full-time schedule -->
+          <p class="compare keep" role="note">
+            {{ 'graduation.keepFreeTime' | transloco: { freeTime: ('graduation.freeTime.' + (d.preset ?? 'custom') | transloco), term: label(shownTerm()), fullTime: label(fullTimeTerm() ?? null) } }}
+          </p>
+        }
         @if (d.selection && selectionTerm() !== recommendedTerm()) {
           <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: label(recommendedTerm()) } }}</p>
         }
@@ -141,6 +147,9 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
     .compare {
       flex-basis: 100%;
       margin: 0;
+    }
+    .keep {
+      font-weight: 600;
     }
     .summer-note {
       max-width: 34rem;
@@ -262,7 +271,7 @@ export class GraduationPage {
       const recommendedIds = view.recommendation.plan.map((p) => p.sectionId);
       const differs = ids.length > 0 && [...ids].sort().join() !== [...recommendedIds].sort().join();
       const selection: GraduationProjection | null = differs ? (view.savedProjection ?? (await this.planning.projection(ids))) : null;
-      return { view, selection };
+      return { view, selection, preset: prefs.preset };
     },
   });
 
@@ -283,6 +292,13 @@ export class GraduationPage {
     const p = this.data.value()?.selection;
     return (this.summer() ? p?.withSummer : p?.withoutSummer)?.graduationTerm ?? null;
   });
+  /** With limited free time: the graduation date with a full-time schedule from next semester (undefined = not limited). */
+  protected readonly fullTimeTerm = computed(() => {
+    const f = this.data.value()?.view.recommendation.fullTimeProjection;
+    if (!f) return undefined;
+    return (this.summer() ? f.withSummer : f.withoutSummer).graduationTerm;
+  });
+
   /** The date with the toggle the other way ("with summer you could finish in …"). */
   protected readonly otherTerm = computed(() => {
     const d = this.data.value();

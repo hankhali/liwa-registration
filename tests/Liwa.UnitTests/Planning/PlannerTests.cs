@@ -177,11 +177,80 @@ public sealed class PlannerRequiredTests
         var atBoundary = Build(3.50m).Run();
         var justBelow = Build(3.49m).Run();
 
+        // The cap (hard maximum) depends on the GPA ...
         Assert.Equal(21, atBoundary.MaxCredits);
-        Assert.Equal(21, atBoundary.TotalCredits);
-        Assert.Equal(7, atBoundary.Plan.Count);
         Assert.Equal(18, justBelow.MaxCredits);
-        Assert.Equal(18, justBelow.TotalCredits);
+        // ... but the recommendation aims for the normal load (15) unless the student asks for more.
+        Assert.Equal(15, atBoundary.TargetCredits);
+        Assert.Equal(15, atBoundary.TotalCredits);
+        Assert.Equal(15, justBelow.TotalCredits);
+
+        var more = new PlannerPreferences(21, DeliveryPreference.Any);
+        var s = Build(3.50m);
+        s.Preferences = more;
+        var raised = s.Run();
+        Assert.Equal(21, raised.TotalCredits);
+        Assert.Equal(7, raised.Plan.Count);
+        var below = Build(3.49m);
+        below.Preferences = more;
+        Assert.Equal(18, below.Run().TotalCredits); // never above the hard cap
+    }
+
+    [Fact]
+    public void The_normal_load_can_be_set_per_term_and_per_rule()
+    {
+        var s = new Scenario { Term = new PlannerTerm("2027SP", TermSeason.Spring, 2027, NormalLoad: 12) };
+        for (var i = 1; i <= 8; i++) s.Course($"ITC{300 + i}").Section($"ITC{300 + i}");
+        Assert.Equal(12, s.Run().TotalCredits);
+
+        var policy = new CreditPolicy(Guid.NewGuid(), "Test");
+        policy.ReplaceRules([new CreditLimitRule(Guid.NewGuid(), 1, "Seniors", 12, 18).When(standing: Standing.Senior).WithNormalLoad(18),
+                             new CreditLimitRule(Guid.NewGuid(), 2, "Everyone", 12, 18)]);
+        Assert.Equal(18, policy.LimitsFor(TermSeason.Spring, Standing.Senior, 3.0m, false)!.NormalLoad);
+        Assert.Equal(15, policy.LimitsFor(TermSeason.Spring, Standing.Junior, 3.0m, false)!.NormalLoad);
+    }
+
+    [Fact]
+    public void When_free_time_limits_the_load_the_plan_fills_what_fits_and_says_so()
+    {
+        // Evenings only, and only two evening class times exist: 6 credits fit, the target is 15.
+        var s = new Scenario { Availability = Scenario.EveningsMonToThu() };
+        for (var i = 1; i <= 6; i++) s.Course($"ITC{300 + i}").Section($"ITC{300 + i}", days: "Mon;Wed", start: "09:00", end: "10:15");
+        s.Section("ITC301", "E1", "Mon;Wed", "17:00", "18:15").Section("ITC302", "E1", "Tue;Thu", "17:00", "18:15");
+        var r = s.Run();
+        Assert.Equal(6, r.TotalCredits);
+        Assert.Contains(r.Warnings, w => w.Code == ReasonCode.OnlyCreditsFit && w.Value == "6");
+    }
+
+    [Fact]
+    public void The_projection_keeps_the_free_time_and_also_shows_a_full_time_schedule()
+    {
+        var s = new Scenario { Availability = Scenario.EveningsMonToThu() };
+        for (var i = 1; i <= 8; i++) s.Course($"ITC{300 + i}").Section($"ITC{300 + i}", "E1", "Mon;Wed", "17:00", "18:15");
+        s.Section("ITC301", "E2", "Tue;Thu", "17:00", "18:15");
+        var r = s.Run();
+        Assert.NotNull(r.FullTimeProjection);
+        // Two evening patterns this term → at most 2 classes a semester if evenings continue.
+        Assert.All(r.Projection.WithoutSummer.Terms.Skip(1), t => Assert.True(t.Courses.Count <= 2));
+        Assert.True(TermCodes.SortKey(r.FullTimeProjection!.WithoutSummer.GraduationTerm!) <= TermCodes.SortKey(r.Projection.WithoutSummer.GraduationTerm!));
+        Assert.Null(new Scenario().Course("ITC301").Section("ITC301").Run().FullTimeProjection); // no limit, no second date
+    }
+
+    [Fact]
+    public void The_top_two_chain_starting_courses_are_marked_take_this_first_with_their_chain()
+    {
+        var s = new Scenario()
+            .Course("MTH105").Course("MTH203", prereq: "MTH105").Course("BUS306", prereq: "MTH203")
+            .Course("BUS307", prereq: "BUS306").Course("BUS309", prereq: "BUS306")
+            .Course("BUS201").Course("BUS301", prereq: "BUS201").Course("GEN102")
+            .Section("MTH105").Section("BUS201", days: "Tue;Thu").Section("GEN102", days: "Mon;Wed", start: "14:00", end: "15:15");
+        var r = s.Run();
+        var mth = r.Plan.Single(p => p.CourseCode == "MTH105");
+        Assert.True(mth.TakeFirst);
+        Assert.Equal(["MTH105", "MTH203", "BUS306", "BUS307 & BUS309"], mth.Chain!.Select(l => string.Join(" & ", l)));
+        Assert.True(r.Plan.Single(p => p.CourseCode == "BUS201").TakeFirst);
+        Assert.False(r.Plan.Single(p => p.CourseCode == "GEN102").TakeFirst);
+        Assert.Empty(r.Plan.Single(p => p.CourseCode == "GEN102").Chain!);
     }
 
     [Fact]

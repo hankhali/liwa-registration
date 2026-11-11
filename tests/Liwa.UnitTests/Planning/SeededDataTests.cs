@@ -45,21 +45,19 @@ public sealed class SeededDataTests
     }
 
     /// <summary>
-    /// The three real catalog plans (123 credits each) can be finished by a fresh student in the catalog's four years
-    /// (8 semesters, no summer). The projection loads each semester up to the credit limit (18), so a plan with few
-    /// credit gates can finish sooner: the BBA in Business Information Technology projects 7 (7 × 18 = 126). Fewer than
-    /// 7 would mean the limits were ignored.
+    /// Brief §8: each seeded program graduates a fresh student in 8 semesters (no summer). The projection plans the
+    /// normal load (15) each semester; the semester that can finish the degree may go up to the maximum (18), as the
+    /// catalog's own final semesters do (7 × 15 + 18 = 123).
     /// </summary>
     [Fact]
-    public void Each_seeded_program_graduates_a_fresh_student_within_eight_semesters()
+    public void Each_seeded_program_graduates_a_fresh_student_in_eight_semesters()
     {
         Assert.Equal(3, Seed.ProgramKeys.Count);
         foreach (var program in Seed.ProgramKeys)
         {
             var r = Planner.Plan(Seed.FreshStudent(program, Policy(), Today));
-            var n = r.Projection.WithoutSummer.TermsRemaining;
-            Assert.True(n is >= 7 and <= 8, $"{program}: {n} semesters without summer");
-            Assert.NotNull(r.Projection.WithoutSummer.GraduationTerm);
+            Assert.True(r.Projection.WithoutSummer.TermsRemaining == 8, $"{program}: {r.Projection.WithoutSummer.TermsRemaining} semesters without summer");
+            Assert.Equal(15, r.TargetCredits);
         }
     }
 

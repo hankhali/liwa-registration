@@ -174,7 +174,7 @@ internal sealed partial class StudentPlanService(
 
         var input = new PlannerInput(
             DateOnly.FromDateTime(clock.GetLocalNow().DateTime),
-            new PlannerTerm(term.Code, term.Season, term.Year, term.AllowInProgressPrerequisites),
+            new PlannerTerm(term.Code, term.Season, term.Year, term.AllowInProgressPrerequisites, term.NormalLoad),
             PlannerFacts.StudentFacts(record, policy.RepeatGradeRule, codeById, program.TotalCredits),
             courses.Select(c => new PlannerCourse(c.Code, c.Credits, PrerequisiteParser.TryParse(c.Prerequisites, out var p, out _) ? p : null, c.Offered)).ToList(),
             plan.Groups.OrderBy(g => g.SortOrder).Select(g => new PlannerRequirementGroup(g.Key, g.Name, g.Kind, g.CreditsRequired,

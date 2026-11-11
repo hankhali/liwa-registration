@@ -121,6 +121,22 @@
           }
         }
       </p>
+      @if (onlyFit(); as n) {
+        <p class="fit-note" role="status"><mat-icon aria-hidden="true" class="inline-icon">schedule</mat-icon> {{ 'planner.reasons.OnlyCreditsFit' | transloco: { value: n } }}</p>
+      }
+      @if (!sent()) {
+        <div class="load">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>{{ 'plan.load.label' | transloco }}</mat-label>
+            <mat-select [value]="loadChoice() ?? 0" (valueChange)="setLoad($event === 0 ? null : $event)" [disabled]="busy()">
+              <mat-option [value]="0">{{ 'plan.load.usual' | transloco: { n: usualLoad() } }}</mat-option>
+              @for (n of loadOptions(); track n) {
+                <mat-option [value]="n">{{ 'plan.prefs.upTo' | transloco: { n: n } }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
 
       <!-- Checks: what to fix before sending, as sentences the student can act on -->
       @if (!sent() && errors().length > 0) {
@@ -150,11 +166,16 @@
             <div class="course-head">
               <bdi class="code" dir="ltr">{{ r.code }}</bdi>
               <strong class="title">{{ r.title }}</strong>
-              @if (r.critical) {
+              @if (r.takeFirst) {
+                <span class="take-first"><mat-icon aria-hidden="true" class="inline-icon">flag</mat-icon>{{ 'plan.takeFirst' | transloco }}</span>
+              } @else if (r.critical) {
                 <span class="liwa-critical" [title]="'plan.criticalHint' | transloco"><mat-icon aria-hidden="true" class="inline-icon">star</mat-icon>{{ 'plan.critical' | transloco }}</span>
               }
               <span class="credits">{{ (r.credits === 1 ? 'plan.credit1' : 'plan.credits') | transloco: { n: r.credits } }}</span>
             </div>
+            @if (r.takeFirst && r.chain) {
+              <p class="chain" [title]="r.chainTitles"><span class="visually-hidden">{{ 'plan.chainLabel' | transloco }}</span><bdi dir="ltr">{{ r.chain }}</bdi></p>
+            }
             @if (r.section; as s) {
               <div class="when">
                 @if (s.meetings.length === 0) {

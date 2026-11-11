@@ -453,3 +453,38 @@
   padding-top: 1.25rem;
   border-top: 1px solid var(--liwa-border);
 }
+
+// "Take this first": the top two courses that start a chain, with the chain spelled out.
+.take-first {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--liwa-gold);
+  color: var(--liwa-on-gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chain {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--liwa-primary);
+}
+
+.fit-note {
+  margin: -0.5rem 0 0.75rem;
+  font-weight: 600;
+  color: var(--liwa-warning);
+}
+
+.load {
+  margin: 0 0 1rem;
+
+  mat-form-field {
+    width: min(100%, 18rem);
+  }
+}

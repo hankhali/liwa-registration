@@ -154,6 +154,15 @@ public sealed class Term
 
     public void SetInProgressPrerequisites(bool? allow) => AllowInProgressPrerequisites = allow;
 
+    /// <summary>This term's normal load (credits the planner aims for); null = the credit policy's.</summary>
+    public int? NormalLoad { get; private set; }
+
+    public void SetNormalLoad(int? credits)
+    {
+        if (credits is < 0 or > 30) throw new ArgumentOutOfRangeException(nameof(credits), "A normal load must be between 0 and 30 credits.");
+        NormalLoad = credits;
+    }
+
     public void Update(string name, TermSeason season, int year, DateOnly startDate, DateOnly endDate)
     {
         if (endDate <= startDate) throw new ArgumentException("A term must end after it starts.", nameof(endDate));

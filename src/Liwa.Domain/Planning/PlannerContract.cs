@@ -23,7 +23,8 @@ public sealed record PlannerInput(
 
 /// <summary>The term being planned (normally the current term).</summary>
 /// <param name="AllowInProgressPrerequisites">This term's override of the policy switch (null = use the policy).</param>
-public sealed record PlannerTerm(string Code, TermSeason Season, int Year, bool? AllowInProgressPrerequisites = null);
+/// <param name="NormalLoad">This term's normal load (null = the credit rule's or the policy's).</param>
+public sealed record PlannerTerm(string Code, TermSeason Season, int Year, bool? AllowInProgressPrerequisites = null, int? NormalLoad = null);
 
 /// <summary>
 /// What the student has done, already reduced to facts (the repeat-grade rule has been applied).
@@ -77,7 +78,10 @@ public enum DeliveryPreference
     OnlineOnly = 3,
 }
 
-/// <param name="MaxCredits">The student's own cap; can only lower the policy maximum, never raise it.</param>
+/// <param name="MaxCredits">
+/// "Max credits this semester": when set, the planner aims for this many (above the normal load if the student wants
+/// more, below it for part-time), but never above the policy maximum. When null, it aims for the normal load.
+/// </param>
 public sealed record PlannerPreferences(int? MaxCredits, DeliveryPreference Delivery)
 {
     public static PlannerPreferences None { get; } = new(null, DeliveryPreference.Any);
@@ -85,6 +89,12 @@ public sealed record PlannerPreferences(int? MaxCredits, DeliveryPreference Deli
 
 // ----------------------------------------------------------------------------------- output
 
+/// <param name="MaxCredits">Hard cap for this term (policy maximum, lowered by the student's own cap).</param>
+/// <param name="TargetCredits">What the recommendation aims for: the normal load, or the student's "max credits".</param>
+/// <param name="FullTimeProjection">
+/// When the student's free time is limited: the projection with a full-time schedule from next semester, next to
+/// <see cref="Projection"/> (which assumes the current free time continues). Null otherwise.
+/// </param>
 public sealed record PlannerResult(
     string TermCode,
     CreditLimits? Limits,
@@ -93,9 +103,16 @@ public sealed record PlannerResult(
     int TotalCredits,
     IReadOnlyList<CourseAssessment> Courses,
     IReadOnlyList<PlannerReason> Warnings,
-    GraduationProjection Projection);
+    GraduationProjection Projection,
+    int TargetCredits = 0,
+    GraduationProjection? FullTimeProjection = null);
 
 /// <summary>A recommended section, why it was chosen, and the sections that lost (and why).</summary>
+/// <param name="Chain">
+/// The longest chain of remaining courses this one starts, level by level (e.g. [MTH105], [MTH203], [BUS306],
+/// [BUS307, BUS309]); one-course chains are empty.
+/// </param>
+/// <param name="TakeFirst">One of the two highest-ranked planned courses that start a chain ("Take this first").</param>
 public sealed record PlannedCourse(
     string CourseCode,
     int Credits,
@@ -103,7 +120,9 @@ public sealed record PlannedCourse(
     string SectionCode,
     int PriorityRank,
     IReadOnlyList<PlannerReason> Reasons,
-    IReadOnlyList<RejectedSection> Alternatives);
+    IReadOnlyList<RejectedSection> Alternatives,
+    IReadOnlyList<IReadOnlyList<string>>? Chain = null,
+    bool TakeFirst = false);
 
 public sealed record RejectedSection(Guid SectionId, string SectionCode, IReadOnlyList<PlannerReason> Reasons);
 
@@ -194,6 +213,7 @@ public enum ReasonCode
     FallOnlyMissed = 106,         // Courses = single-season courses offered now but not planned; Value = this season (skipping waits a year)
     NearlyFull = 107,             // Courses = planned courses whose section is at least 90% full
     PermissionAssumed = 108,      // Courses = later courses that need department permission; the projection assumes it is granted
+    OnlyCreditsFit = 109,         // Value = credits that fit the student's free time (below the target)
 
     // Checking a plan the student changed by hand (Planner.Check)
     NotInDegreePlan = 120,        // Courses = course

@@ -50,11 +50,13 @@ public interface IAdminCatalogService
 
 // ------------------------------------------------------------------------- credit policy
 
+/// <param name="NormalLoad">This rule's normal load (credits the planner aims for); null = the policy's.</param>
 public sealed record CreditRuleDto(string Name, TermSeason? Season, Standing? Standing, decimal? MinGpa, decimal? MaxGpaExclusive, bool? OnProbation,
-    int MinCredits, int MaxCredits);
+    int MinCredits, int MaxCredits, int? NormalLoad = null);
 
+/// <param name="NormalLoad">Credits a semester's recommendation aims for; each rule's maximum stays the hard cap.</param>
 public sealed record CreditPolicyDto(RepeatGradeRule RepeatGradeRule, bool AllowInProgressPrerequisites, bool GraduatingStudentsExemptFromMinimum,
-    IReadOnlyList<CreditRuleDto> Rules);
+    IReadOnlyList<CreditRuleDto> Rules, int NormalLoad = Domain.Academic.CreditPolicy.DefaultNormalLoad);
 
 /// <summary>A student whose credit limits for the current term would change.</summary>
 public sealed record CreditPolicyChange(string StudentId, string StudentName, string Standing, decimal? Gpa, bool OnProbation,

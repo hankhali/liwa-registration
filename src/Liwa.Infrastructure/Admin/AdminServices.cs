@@ -65,6 +65,7 @@ internal sealed class CreditPolicyAdmin(LiwaDbContext db, TimeProvider clock) : 
 
         db.RemoveRange(policy.Rules);
         policy.SetSwitches(proposed.RepeatGradeRule, proposed.AllowInProgressPrerequisites, proposed.GraduatingStudentsExemptFromMinimum);
+        policy.SetNormalLoad(proposed.NormalLoad);
         policy.ReplaceRules(NewRules(proposed));
         foreach (var rule in policy.Rules) db.Entry(rule).State = EntityState.Added;
         db.AuditLog.Add(new AuditEntry(Guid.NewGuid(), clock.GetUtcNow(), actorUserId, "creditPolicy.saved", "CreditPolicy", policy.Id.ToString(),
@@ -84,10 +85,12 @@ internal sealed class CreditPolicyAdmin(LiwaDbContext db, TimeProvider clock) : 
     {
         var problems = new List<string>();
         if (p.Rules.Count == 0) problems.Add("Add at least one rule, otherwise no student has a credit limit.");
+        if (p.NormalLoad is < 0 or > 30) problems.Add("The normal load must be between 0 and 30 credits.");
         foreach (var (r, i) in p.Rules.Select((r, i) => (r, i + 1)))
         {
             if (r.MinCredits < 0 || r.MaxCredits < r.MinCredits) problems.Add($"Rule {i} ({r.Name}): the minimum must be between 0 and the maximum.");
             if (r.MaxCredits > 30) problems.Add($"Rule {i} ({r.Name}): a maximum above 30 credits isn't allowed.");
+            if (r.NormalLoad is < 0 or > 30) problems.Add($"Rule {i} ({r.Name}): the normal load must be between 0 and 30 credits.");
             if (r.MinGpa is < 0 or > 4 || r.MaxGpaExclusive is < 0 or > 5) problems.Add($"Rule {i} ({r.Name}): GPA bounds must be between 0 and 4.");
         }
 
@@ -99,18 +102,20 @@ internal sealed class CreditPolicyAdmin(LiwaDbContext db, TimeProvider clock) : 
     }
 
     private static IEnumerable<CreditLimitRule> NewRules(CreditPolicyDto p) => p.Rules.Select((r, i) =>
-        new CreditLimitRule(Guid.NewGuid(), i + 1, r.Name, r.MinCredits, r.MaxCredits).When(r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation));
+        new CreditLimitRule(Guid.NewGuid(), i + 1, r.Name, r.MinCredits, r.MaxCredits).When(r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation).WithNormalLoad(r.NormalLoad));
 
     private static CreditPolicy Build(CreditPolicyDto p)
     {
         var policy = new CreditPolicy(Guid.NewGuid(), "Proposed");
         policy.SetSwitches(p.RepeatGradeRule, p.AllowInProgressPrerequisites, p.GraduatingStudentsExemptFromMinimum);
+        policy.SetNormalLoad(p.NormalLoad);
         policy.ReplaceRules(NewRules(p));
         return policy;
     }
 
     private static CreditPolicyDto ToDto(CreditPolicy p) => new(p.RepeatGradeRule, p.AllowInProgressPrerequisites, p.GraduatingStudentsExemptFromMinimum,
-        p.Rules.OrderBy(r => r.Priority).Select(r => new CreditRuleDto(r.Name, r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation, r.MinCredits, r.MaxCredits)).ToList());
+        p.Rules.OrderBy(r => r.Priority).Select(r => new CreditRuleDto(r.Name, r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation, r.MinCredits, r.MaxCredits, r.NormalLoad)).ToList(),
+        p.NormalLoad);
 }
 
 /// <summary>Staff accounts and bulk advisor reassignment (brief §11).</summary>

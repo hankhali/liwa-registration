@@ -179,6 +179,7 @@ internal sealed class CreditPolicyConfiguration : IEntityTypeConfiguration<Credi
         b.Property(p => p.Id).ValueGeneratedNever();
         b.Property(p => p.Name).HasMaxLength(100).IsRequired();
         b.Property(p => p.RepeatGradeRule).HasConversion<string>().HasMaxLength(20);
+        b.Property(p => p.NormalLoad).HasDefaultValue(CreditPolicy.DefaultNormalLoad); // existing policies get the usual 15
         b.HasMany(p => p.Rules).WithOne().HasForeignKey(r => r.CreditPolicyId).OnDelete(DeleteBehavior.Cascade);
         b.Navigation(p => p.Rules).UsePropertyAccessMode(PropertyAccessMode.Field);
     }

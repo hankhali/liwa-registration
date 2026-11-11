@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 112 · UI strings: 839
+- Programs: 3 · Courses: 112 · UI strings: 851
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -548,7 +548,13 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `graduation.electives` | {{ n }} credits of free electives (any class) | {{ n }} ساعات معتمدة من المواد الاختيارية الحرة (أي مادة) |
 | [ ] | `graduation.electivesOne` | 1 credit of free electives (any class) | ساعة معتمدة واحدة من المواد الاختيارية الحرة (أي مادة) |
 | [ ] | `graduation.fix` | Change my plan | عدّل خطتي |
+| [ ] | `graduation.freeTime.any` | your free time | أوقات فراغك |
+| [ ] | `graduation.freeTime.custom` | your own hours | ساعاتك الخاصة |
+| [ ] | `graduation.freeTime.daytime` | daytime only | النهار فقط |
+| [ ] | `graduation.freeTime.evenings` | evenings only | المساء فقط |
+| [ ] | `graduation.freeTime.weekends` | weekends and evenings | عطلة نهاية الأسبوع والمساء |
 | [ ] | `graduation.heading` | Graduation | التخرج |
+| [ ] | `graduation.keepFreeTime` | If you keep {{ freeTime }}: {{ term }}. With a full-time schedule: {{ fullTime }}. | إذا بقيت على {{ freeTime }}: {{ term }}. مع جدول دوام كامل: {{ fullTime }}. |
 | [ ] | `graduation.leftLabel` | Semesters left, counting this one | الفصول المتبقية، مع هذا الفصل |
 | [ ] | `graduation.legend` | Gold classes must be taken on time, or you graduate later. | المواد الذهبية يجب أن تُسجَّل في وقتها، وإلا تأخر تخرجك. |
 | [ ] | `graduation.mySelection` | My selection | اختياري |
@@ -713,6 +719,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.building` | Building your plan… | جارٍ إعداد خطتك… |
 | [ ] | `plan.cantTake.heading` | Classes you can't take yet ({{ n }}) | مواد لا يمكنك تسجيلها بعد ({{ n }}) |
 | [ ] | `plan.cantTake.intro` | Why each one has to wait. | سبب انتظار كل واحدة منها. |
+| [ ] | `plan.chainLabel` | Opens this chain of classes: | تفتح هذه السلسلة من المواد: |
 | [ ] | `plan.change` | Change courses | تغيير المواد |
 | [ ] | `plan.confirm.cancel` | Not yet | ليس الآن |
 | [ ] | `plan.confirm.heading` | Send your plan to {{ advisor }}? | هل تريد إرسال خطتك إلى {{ advisor }}؟ |
@@ -770,6 +777,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.intro` | Here is the plan we recommend for {{ term }}. We only picked classes you can take, at times that don't overlap. Happy with it? Send it to your advisor. | هذه هي الخطة التي نقترحها لفصل {{ term }}. اخترنا فقط مواد يمكنك تسجيلها، في أوقات لا تتعارض. هل أعجبتك؟ أرسلها إلى مرشدك. |
 | [ ] | `plan.limits` | You can take {{ min }}–{{ max }} credits this semester. | يمكنك تسجيل {{ min }}–{{ max }} ساعة معتمدة هذا الفصل الدراسي. |
 | [ ] | `plan.listLabel` | Classes in your plan | المواد في خطتك |
+| [ ] | `plan.load.label` | Credits to aim for this semester | عدد الساعات المعتمدة المستهدف هذا الفصل |
+| [ ] | `plan.load.usual` | The usual load ({{ n }} credits) | العبء المعتاد ({{ n }} ساعة معتمدة) |
 | [ ] | `plan.messages.accepted` | Done. Your plan is approved. | تم. خطتك معتمدة الآن. |
 | [ ] | `plan.messages.error` | Your plan couldn't be sent. Please check the notes above and try again. | تعذّر إرسال خطتك. يرجى مراجعة الملاحظات أعلاه والمحاولة مرة أخرى. |
 | [ ] | `plan.messages.saved` | Saved. You can come back and send it later. | تم الحفظ. يمكنك العودة وإرسالها لاحقاً. |
@@ -784,8 +793,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.prefs.deliveryAny` | On campus or online | في الحرم الجامعي أو عن بُعد |
 | [ ] | `plan.prefs.deliveryCampus` | On campus only | في الحرم الجامعي فقط |
 | [ ] | `plan.prefs.deliveryOnline` | Online only | عن بُعد فقط |
-| [ ] | `plan.prefs.maxCredits` | How many credits? | كم عدد الساعات؟ |
-| [ ] | `plan.prefs.noLimit` | As many as I can | أكبر عدد ممكن |
+| [ ] | `plan.prefs.maxCredits` | Credits to aim for | عدد الساعات المستهدف |
+| [ ] | `plan.prefs.noLimit` | The usual load | العبء المعتاد |
 | [ ] | `plan.prefs.upTo` | Up to {{ n }} credits | حتى {{ n }} ساعة |
 | [ ] | `plan.quickPresets.any` | Any time | أي وقت |
 | [ ] | `plan.quickPresets.custom` | Choose my own hours | أختار ساعاتي بنفسي |
@@ -809,6 +818,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.status.AdvisorReviewing` | {{ advisor }} is reviewing your plan. | {{ advisor }} يراجع خطتك الآن. |
 | [ ] | `plan.status.Approved` | Approved by {{ advisor }}. | وافق عليها {{ advisor }}. |
 | [ ] | `plan.status.Submitted` | Sent to {{ advisor }}. Waiting for their review. | أُرسلت إلى {{ advisor }} بانتظار المراجعة. |
+| [ ] | `plan.takeFirst` | Take this first | سجّلها أولًا |
 | [ ] | `plan.total` | Total: {{ n }} credits | المجموع: {{ n }} ساعة |
 | [ ] | `plan.useRecommendation` | Go back to the recommended plan | العودة إلى الخطة المقترحة |
 | [ ] | `plan.week` | Your week | أسبوعك |
@@ -830,6 +840,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `planner.actions.NearlyFull` | {{ courses }} is almost full. Send your plan soon, or pick another class time. | {{ courses }} يكاد يمتلئ. أرسل خطتك قريبًا، أو اختر وقتًا آخر. |
 | [ ] | `planner.actions.NotEligibleNow` | Remove {{ courses }}: you can't take it yet. | احذف {{ courses }}: لا يمكنك أخذه بعد. |
 | [ ] | `planner.actions.NotInDegreePlan` | Remove {{ courses }}: it isn't part of your degree plan. | احذف {{ courses }}: ليس جزءًا من خطتك الدراسية. |
+| [ ] | `planner.actions.OnlyCreditsFit` | Only {{ value }} credits fit your free time. Add more free time to take more classes, or keep this lighter semester. | لا تتسع أوقات فراغك إلا لـ {{ value }} ساعات معتمدة. أضف أوقات فراغ لتسجّل مواد أكثر، أو أبقِ هذا الفصل أخف. |
 | [ ] | `planner.actions.OutsideAvailability` | {{ courses }} is outside the times you said you're free. Pick another class time, or keep it if that's fine. | {{ courses }} خارج الأوقات التي قلت إنك متفرغ فيها. اختر وقتًا آخر، أو أبقِه إن كان ذلك مناسبًا. |
 | [ ] | `planner.actions.OverCreditLimit` | Remove {{ over }} credits to get back under your limit of {{ value }} credits. | احذف {{ over }} ساعات معتمدة لتعود ضمن حدّك وهو {{ value }} ساعة. |
 | [ ] | `planner.actions.SectionFull` | {{ courses }} is full. Pick another class time. | {{ courses }} ممتلئ. اختر وقتًا آخر. |
@@ -865,6 +876,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `planner.reasons.NotInDegreePlan` | {{ courses }} isn't part of your degree plan | {{ courses }} ليست ضمن خطتك الدراسية |
 | [ ] | `planner.reasons.NotOfferedThisTerm` | Not offered this semester (usually in {{ value }}) | لا يُطرح هذا الفصل الدراسي (يُطرح عادةً في {{ value }}) |
 | [ ] | `planner.reasons.OfferedButNoSections` | Some courses have no classes scheduled this semester: {{ courses }} | بعض المقررات ليس لها شُعب مجدولة هذا الفصل الدراسي: {{ courses }} |
+| [ ] | `planner.reasons.OnlyCreditsFit` | Only {{ value }} credits fit your free time | لا تتسع أوقات فراغك إلا لـ {{ value }} ساعات معتمدة |
 | [ ] | `planner.reasons.OnlyOfferedIn` | Only offered in {{ value }}, so take it now | تُطرح في {{ value }} فقط، لذا سجّلها الآن |
 | [ ] | `planner.reasons.OutsideAvailability` | {{ courses }} is outside the times you said you're free | {{ courses }} خارج الأوقات التي اخترت أنك متفرغ فيها |
 | [ ] | `planner.reasons.OutsideAvailabilitySection` | Outside the times you're free | خارج أوقات فراغك |

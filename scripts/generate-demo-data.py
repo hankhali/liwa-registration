@@ -157,8 +157,8 @@ c('PRM403', 'Online Public Relations', 'العلاقات العامة الرقم
 # "Passing 80 hours, including 12 hours of specialization courses" (p.285); the description adds PRM303 (p.377).
 # The "12 hours of specialization" part can't be written as a rule yet (assumptions.md).
 c('PRM410', 'Field Training in Public Relations', 'التدريب الميداني في العلاقات العامة', MC, 'CREDITS(80) AND PRM303', 285)
-# "Graduation Semester" (p.285) / "Graduation Class + PRM410" (p.377): approximated as at most 15 credits left.
-c('PRM422', 'Graduation Project in Public Relations', 'مشروع التخرج في العلاقات العامة', MC, 'PRM410 AND CREDITS(108)', 285)
+# "Graduation Semester" (p.285) / "Graduation Class + PRM410" (p.377): approximated as at most 18 credits left (one final semester).
+c('PRM422', 'Graduation Project in Public Relations', 'مشروع التخرج في العلاقات العامة', MC, 'PRM410 AND CREDITS(105)', 285)
 
 for code, x in C.items():
     for ref in re.findall(r'[A-Z]{2,4}\d{3}', x['pre']):

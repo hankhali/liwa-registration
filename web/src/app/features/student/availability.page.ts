@@ -62,7 +62,7 @@ import { TimetableGridComponent } from '../../shared/timetable-grid.component';
               <mat-label>{{ 'plan.prefs.maxCredits' | transloco }}</mat-label>
               <mat-select [value]="maxCredits()" (valueChange)="maxCredits.set($event)">
                 <mat-option [value]="null">{{ 'plan.prefs.noLimit' | transloco }}</mat-option>
-                @for (n of [6, 9, 12, 15, 18]; track n) {
+                @for (n of [6, 9, 12, 15, 18, 21]; track n) {
                   <mat-option [value]="n">{{ 'plan.prefs.upTo' | transloco: { n: n } }}</mat-option>
                 }
               </mat-select>

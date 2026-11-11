@@ -50,7 +50,7 @@ public sealed class CsvPlannerSource
             var r = Reader(row, ImportKind.Terms);
             if (!r.Bool("is_current", false)) continue;
             var inProgress = r.Optional("in_progress_prerequisites") is null ? (bool?)null : r.Bool("in_progress_prerequisites", true);
-            s._term = new PlannerTerm(r.Required("term_code").ToUpperInvariant(), r.Enum<TermSeason>("season"), r.RequiredInt("year", 2000, 2100), inProgress);
+            s._term = new PlannerTerm(r.Required("term_code").ToUpperInvariant(), r.Enum<TermSeason>("season"), r.RequiredInt("year", 2000, 2100), inProgress, r.OptionalInt("normal_load", 0, 30));
         }
 
         foreach (var row in Table("courses.csv").Rows)

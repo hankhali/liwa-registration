@@ -22,6 +22,9 @@ public sealed class CreditPolicyDefaults
 
     public bool GraduatingStudentsExemptFromMinimum { get; set; } = true;
 
+    /// <summary>Credits a semester's recommendation aims for (the maximum stays the hard cap).</summary>
+    public int NormalLoad { get; set; } = CreditPolicy.DefaultNormalLoad;
+
     public List<CreditRuleDefaults> Rules { get; set; } = [];
 }
 
@@ -42,6 +45,9 @@ public sealed class CreditRuleDefaults
     public int MinCredits { get; set; }
 
     public int MaxCredits { get; set; }
+
+    /// <summary>This rule's normal load (per standing or season); null = the policy's.</summary>
+    public int? NormalLoad { get; set; }
 }
 
 /// <summary>Creates the credit policy from configuration the first time the app starts. Never overwrites admin edits.</summary>
@@ -68,9 +74,11 @@ public sealed class CreditPolicySeeder(LiwaDbContext db, IOptions<CreditPolicyDe
     {
         var policy = new CreditPolicy(Guid.NewGuid(), defaults.Name);
         policy.SetSwitches(defaults.RepeatGradeRule, defaults.AllowInProgressPrerequisites, defaults.GraduatingStudentsExemptFromMinimum);
+        policy.SetNormalLoad(defaults.NormalLoad);
         policy.ReplaceRules(defaults.Rules.Select((r, i) =>
             new CreditLimitRule(Guid.NewGuid(), i + 1, r.Name, r.MinCredits, r.MaxCredits)
-                .When(r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation)));
+                .When(r.Season, r.Standing, r.MinGpa, r.MaxGpaExclusive, r.OnProbation)
+                .WithNormalLoad(r.NormalLoad)));
         return policy;
     }
 }

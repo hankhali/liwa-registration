@@ -122,7 +122,7 @@ public sealed class CreditPolicyTests
 
     [Fact]
     public void Summer_has_its_own_limits() =>
-        Assert.Equal(new CreditLimits(0, 9, "Summer"), DefaultPolicy().LimitsFor(TermSeason.Summer, Standing.Senior, 3.9m, false));
+        Assert.Equal(new CreditLimits(0, 9, "Summer", NormalLoad: 9), DefaultPolicy().LimitsFor(TermSeason.Summer, Standing.Senior, 3.9m, false));
 
     [Fact]
     public void A_graduating_senior_with_6_credits_left_is_not_forced_to_the_12_credit_minimum()

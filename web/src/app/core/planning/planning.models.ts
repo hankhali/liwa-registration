@@ -25,6 +25,8 @@ export interface CreditLimits {
   minCredits: number;
   maxCredits: number;
   ruleName: string;
+  /** Credits a recommendation aims for (the maximum is the hard cap). */
+  normalLoad?: number;
 }
 
 export interface PlannedCourse {
@@ -35,6 +37,15 @@ export interface PlannedCourse {
   priorityRank: number;
   reasons: Reason[];
   alternatives: { sectionId: string; sectionCode: string; reasons: Reason[] }[];
+  /** The chain this course starts, level by level: [["MTH105"], ["MTH203"], ["BUS306"], ["BUS307", "BUS309"]]. */
+  chain?: string[][] | null;
+  /** One of the two top-ranked courses that start a chain ("Take this first"). */
+  takeFirst?: boolean;
+}
+
+/** "MTH105 → MTH203 → BUS306 → BUS307 & BUS309". */
+export function chainText(chain: string[][] | null | undefined): string {
+  return (chain ?? []).map((level) => level.join(' & ')).join(' → ');
 }
 
 export type CourseStatus = 'Planned' | 'Eligible' | 'EligibleWithCondition' | 'NotEligible';
@@ -94,6 +105,10 @@ export interface PlannerResult {
   courses: CourseAssessment[];
   warnings: Reason[];
   projection: GraduationProjection;
+  /** What the recommendation aims for: the normal load, or the student's own "credits to aim for". */
+  targetCredits?: number;
+  /** When free time is limited: the dates with a full-time schedule (projection assumes the free time continues). */
+  fullTimeProjection?: GraduationProjection | null;
 }
 
 export interface CourseInfo {

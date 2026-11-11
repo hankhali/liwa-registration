@@ -21,6 +21,7 @@ import {
   SectionInfo,
   TEACHING_DAYS,
   blockedGroup,
+  chainText,
   courseTitle,
   criticalCodes,
   meetingPatterns,
@@ -47,6 +48,10 @@ interface PlannedRow {
   rank: number | null;
   /** Other class times and why they weren't picked (labelled by day and time, never by section code). */
   alternatives: { sectionId: string; label: string; reasons: Reason[] }[];
+  /** "Take this first": one of the two top-ranked courses that start a chain; `chain` spells it out. */
+  takeFirst: boolean;
+  chain: string;
+  chainTitles: string;
 }
 
 /** Reasons that say why a class is in the plan; the first useful one is shown (RequiredForDegree only as a fallback). */
@@ -214,6 +219,9 @@ export class StudentPlanComponent {
           reason: reasons.length > 0 ? mainReason(reasons) : null,
           critical: this.critical().has(code),
           rank: assessed?.priorityRank ?? null,
+          takeFirst: !!recommended?.takeFirst,
+          chain: chainText(recommended?.chain),
+          chainTitles: (recommended?.chain ?? []).map((l) => l.map((x) => `${x} ${courseTitle(this.courseByCode().get(x), lang)}`).join(' & ')).join(' → '),
           alternatives:
             recommended?.alternatives
               .filter((a) => this.sectionById().has(a.sectionId))
@@ -249,6 +257,37 @@ export class StudentPlanComponent {
   protected readonly allConfirmed = computed(() => this.warnings().every((w) => this.acknowledged()[warningKey(w)]));
   protected readonly canSend = computed(() => this.rows().length > 0 && this.check.hasValue() && this.errors().length === 0 && !this.check.isLoading());
   protected readonly limits = computed(() => (this.check.hasValue() ? { min: this.check.value().limits?.minCredits ?? null, max: this.check.value().maxCredits } : null));
+
+  /** "Only N credits fit your free time" (the recommendation couldn't reach its target), while showing the recommendation. */
+  protected readonly onlyFit = computed(() => {
+    if (this.edited() || this.sent() || !this.view.hasValue()) return null;
+    return this.view.value().recommendation.warnings.find((w) => w.code === 'OnlyCreditsFit')?.value ?? null;
+  });
+
+  /** Credits to aim for: the usual load, or more/fewer, never above the policy maximum. */
+  protected readonly loadChoice = computed(() => this.prefs.value()?.maxCredits ?? null);
+  protected readonly loadOptions = computed(() => {
+    const max = this.view.value()?.recommendation.limits?.maxCredits ?? 18;
+    return [6, 9, 12, 15, 18, 21].filter((n) => n <= max);
+  });
+  protected readonly usualLoad = computed(() => this.view.value()?.recommendation.limits?.normalLoad ?? 15);
+
+  protected async setLoad(credits: number | null): Promise<void> {
+    if (credits === this.loadChoice()) return;
+    this.busy.set(true);
+    try {
+      const p = this.prefs.value();
+      await this.planning.savePreferences(p?.preset ?? 'any', p?.availability ?? [], p?.delivery ?? 'Any', credits);
+      await this.planning.saveDraft([]).catch(() => undefined);
+      this.edited.set(false);
+      this.restoredDraft.set(false);
+      this.prefs.reload();
+    } catch {
+      this.message.set('error');
+    } finally {
+      this.busy.set(false);
+    }
+  }
 
   protected readonly quickPresets = QUICK_PRESETS;
   protected readonly currentPreset = computed(() => this.prefs.value()?.preset ?? null);
