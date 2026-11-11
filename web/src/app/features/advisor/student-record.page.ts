@@ -1,4 +1,4 @@
-﻿import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, input, resource } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { formatGpa, programName } from '../../core/academic/academic.models';
 import { LanguageService } from '../../core/i18n/language.service';
 import { StudentRecordView, TranscriptLine } from '../../core/planning/advisor.models';
-import { courseTitle, parseTermCode } from '../../core/planning/planning.models';
+import { courseTitle, parseTermCode, termLabel } from '../../core/planning/planning.models';
 import { PlanHistoryComponent } from '../../shared/plan-history.component';
 import { StatusChipComponent } from '../../shared/status-chip.component';
 
@@ -116,8 +116,7 @@ export class StudentRecordPage {
   }
 
   protected termLabel(code: string): string {
-    const t = parseTermCode(code);
-    return t ? `${this.transloco.translate('planner.season.' + t.season)} ${t.year}` : this.transloco.translate('advisor.record.transfer');
+    return parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.record.transfer');
   }
 
   protected gradeLabel(l: TranscriptLine): string {

@@ -2,6 +2,28 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: real catalog data (2025-2026) (2026-11-11)
+
+- **The demo catalog is now the official University Catalog 2025–2026** (`docs/reference/`): 112 courses with real
+  codes, titles, credits, prerequisites and descriptions, and three real 123-credit programs with their requirement
+  groups, electives and Year/Semester sequence. They are the **BBA in Business Information Technology** (replacing
+  "BBA in Management"), **Bachelor of Information Technology (BIT) — General Track** and **Bachelor of Mass
+  Communication Concentration in Public Relations**. `courses.csv` and `degree-plans.csv` carry a `source` column
+  (catalog page); the importer accepts it. Arabic titles stay machine-drafted.
+- `scripts/extract_catalog.py` extracts the Course Descriptions section from the PDF. `scripts/generate-demo-data.py`
+  now builds everything from the catalog and checks it: 123 credits per plan, every study-plan slot, unknown
+  courses, cycles, and a prerequisite cross-check against the course descriptions (the differences are listed in
+  docs/assumptions.md K7).
+- Offering pattern: every course every term (not in the catalog; registrar question K1). The Spring 2027 timetable
+  is regenerated for the real codes (264 sections).
+- **Terms named by academic year**, as on Liwa transcripts: "Spring 2026-2027", "Fall 2026-2027", "Summer 1
+  2025-2026" (term codes unchanged). Summer 2 is a registrar question (K3).
+- **16 demo students**: the 15 stories re-mapped onto the real plans, plus `student.hanieh`, a real BBA-BIT record
+  (anonymised) with weekday-evening free time.
+- Tests updated for the real codes. "A fresh student graduates in 8 semesters" became "within 8, at least 7": the
+  BBA-BIT plan projects 7 at the 18-credit limit (K13). The permission-assumed and lab-corequisite stories moved to
+  synthetic tests (K12). Totals: 222 unit, 96 integration, 74 frontend.
+
 ## Unreleased: UX pass for first-year students (2026-11-11)
 
 Based on screenshots of every student screen (EN/AR, desktop/phone). Findings and what changed for each are in

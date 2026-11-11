@@ -50,7 +50,8 @@ public sealed class DemoSeeder(
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000012"), "student.transfer", "Maryam Al Blooshi", UserRole.Student, "202500112", "Transfer credits"),
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000013"), "student.hold", "Sultan Al Mehairi", UserRole.Student, "202500113", "Hold on account (finance)"),
         new(new Guid("0b9e6a1e-0001-4000-8000-000000000014"), "student.parttime", "Hessa Al Ali", UserRole.Student, "202600114", "Part-time (up to 9 credits)"),
-        new(new Guid("0b9e6a1e-0001-4000-8000-000000000015"), "student.intern", "Mohammed Al Junaibi", UserRole.Student, "202300115", "Internship needs department permission"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000015"), "student.intern", "Mohammed Al Junaibi", UserRole.Student, "202300115", "Close to the end: internship and graduation projects left"),
+        new(new Guid("0b9e6a1e-0001-4000-8000-000000000016"), "student.hanieh", "Demo Student H", UserRole.Student, "202600116", "Real BBA-BIT record (anonymised): evenings only"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000001"), "advisor.it", "Dr. Ahmed Al Zaabi", UserRole.Advisor, "E1001", "Advisor, Information Technology"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000002"), "advisor.business", "Dr. Fatima Al Suwaidi", UserRole.Advisor, "E1002", "Advisor, Business"),
         new(new Guid("0b9e6a1e-0002-4000-8000-000000000003"), "advisor.media", "Dr. Saeed Al Mazrouei", UserRole.Advisor, "E1003", "Advisor, Mass Communication"),
@@ -92,7 +93,7 @@ public sealed class DemoSeeder(
 
     private static readonly System.Text.Json.JsonSerializerOptions WebJson = new(System.Text.Json.JsonSerializerDefaults.Web);
 
-    /// <summary>Saved free time for the stories that depend on it (evening-only, part-time).</summary>
+    /// <summary>Saved free time for the stories that depend on it (evening-only, part-time, the real BBA-BIT record).</summary>
     private async Task SeedPreferencesAsync(CancellationToken ct)
     {
         var now = clock.GetUtcNow();
@@ -104,9 +105,12 @@ public sealed class DemoSeeder(
         evening.SetAvailability("evenings", evenings, Domain.Planning.DeliveryPreference.Any, null, now);
         var partTime = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.parttime").Id, now);
         partTime.SetAvailability("any", null, Domain.Planning.DeliveryPreference.Any, 9, now);
-        var ids = new[] { evening.UserId, partTime.UserId };
+        // The real BBA-BIT record: weekday evenings only (Mon–Thu 5–8 pm).
+        var hanieh = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.hanieh").Id, now);
+        hanieh.SetAvailability("evenings", evenings, Domain.Planning.DeliveryPreference.Any, null, now);
+        var ids = new[] { evening.UserId, partTime.UserId, hanieh.UserId };
         if (await db.StudentPreferences.AnyAsync(p => ids.Contains(p.UserId), ct)) return;
-        db.StudentPreferences.AddRange(evening, partTime);
+        db.StudentPreferences.AddRange(evening, partTime, hanieh);
         await db.SaveChangesAsync(ct);
     }
 

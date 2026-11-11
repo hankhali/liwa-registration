@@ -782,7 +782,13 @@
       "FINANCE": "مالي",
       "REGISTRAR": "من التسجيل",
       "ADVISING": "إرشادي"
-    }
+    },
+    "termSeason": {
+      "Fall": "الخريف",
+      "Spring": "الربيع",
+      "Summer": "الصيف 1"
+    },
+    "summer2": "الصيف 2"
   },
   "notifications": {
     "planSubmitted": "أرسل {{ student }} خطة لفصل {{ term }}.",

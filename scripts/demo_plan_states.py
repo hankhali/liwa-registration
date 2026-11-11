@@ -100,7 +100,7 @@ def main():
     print('Approved          student.senior')
 
     send_recommended(api, 'student.mid1')
-    decide(api, business, plan_id(api, business, '202500108'), 'Reject', 'Please add an evening option for BUS220 so you can keep working.')
+    decide(api, business, plan_id(api, business, '202500108'), 'Reject', 'Please swap BUS301 for an evening class so you can keep working.')
     print('Rejected          student.mid1')
 
     _, ids, _ = send_recommended(api, 'student.transfer')

@@ -21,7 +21,7 @@ import {
   courseTitle,
   formatTime,
   meetingPatterns,
-  parseTermCode,
+  parseTermCode, termLabel,
   timeRange,
 } from '../../core/planning/planning.models';
 import { ReasonTextPipe } from '../../core/planning/reason-text.pipe';
@@ -223,8 +223,7 @@ export class PlanReviewPage {
   }
 
   protected term(code: string | null): string {
-    const t = code ? parseTermCode(code) : null;
-    return t ? `${this.transloco.translate('planner.season.' + t.season)} ${t.year}` : this.transloco.translate('advisor.review.unknownTerm');
+    return code && parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
   }
 
   protected when(iso: string): string {

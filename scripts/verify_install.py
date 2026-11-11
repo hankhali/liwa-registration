@@ -8,9 +8,9 @@ seed run), or after an upgrade:
 Checks:
   1. the API is up and its database is reachable;
   2. every migration in the code is applied, in order (needs psql; settings from .env);
-  3. the seed loaded: 3 programs, 15 students, the Spring 2027 timetable;
+  3. the seed loaded: 3 programs, 16 students, the Spring 2027 timetable;
   4. every demo account signs in;
-  5. the planner runs for all 15 demo students (a plan, credit limits and a graduation projection);
+  5. the planner runs for all 16 demo students (a plan, credit limits and a graduation projection);
   6. the advisor and admin pages' data loads;
   7. optionally, the web app is served (--web) or the production build exists (--web-dir).
 Uses only the Python standard library. Exit code 0 = everything passed.
@@ -28,7 +28,7 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PASSWORD_DEFAULT = 'Liwa#2027'
 STUDENTS = ['student.new', 'student.evening', 'student.repeat', 'student.transfer', 'student.probation', 'student.senior', 'student.hold',
-            'student.honors', 'student.parttime', 'student.intern', 'student.switch', 'student.mid1', 'student.mid2', 'student.first', 'student.media']
+            'student.honors', 'student.parttime', 'student.intern', 'student.switch', 'student.mid1', 'student.mid2', 'student.first', 'student.media', 'student.hanieh']
 STAFF = ['advisor.it', 'advisor.business', 'advisor.media', 'admin']
 
 results = []
@@ -117,7 +117,7 @@ def main():
         status, o = call(api, '/api/admin/overview', admin)
         ok = status == 200 and isinstance(o, dict)
         check('3 programs loaded', ok and o.get('programs') == 3, str(o.get('programs') if ok else status))
-        check('15 students loaded', ok and o.get('students', 0) >= 15, str(o.get('students') if ok else status))
+        check('16 students loaded', ok and o.get('students', 0) >= 16, str(o.get('students') if ok else status))
         check('current term has a timetable', ok and (o.get('sectionsThisTerm') or 0) > 100, str(o.get('sectionsThisTerm') if ok else status))
 
     print('4. Every demo account signs in')
@@ -126,7 +126,7 @@ def main():
         tokens[u] = sign_in(api, u, args.password)
         check(f'{u} signs in', tokens[u] is not None)
 
-    print('5. The planner runs for all 15 demo students')
+    print('5. The planner runs for all 16 demo students')
     for u in STUDENTS:
         t = tokens.get(u)
         if not t:

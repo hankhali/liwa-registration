@@ -33,9 +33,9 @@ public sealed class SeededDataTests
         Planner.Plan(Seed.InputFor(studentId, SeedPolicy, Today, availability, prefs));
 
     [Fact]
-    public void There_are_fifteen_demo_students_and_every_one_gets_a_plan()
+    public void There_are_sixteen_demo_students_and_every_one_gets_a_plan()
     {
-        Assert.Equal(15, Seed.StudentIds.Count);
+        Assert.Equal(16, Seed.StudentIds.Count);
         foreach (var id in Seed.StudentIds)
         {
             var r = Plan(id);
@@ -44,14 +44,22 @@ public sealed class SeededDataTests
         }
     }
 
+    /// <summary>
+    /// The three real catalog plans (123 credits each) can be finished by a fresh student in the catalog's four years
+    /// (8 semesters, no summer). The projection loads each semester up to the credit limit (18), so a plan with few
+    /// credit gates can finish sooner: the BBA in Business Information Technology projects 7 (7 × 18 = 126). Fewer than
+    /// 7 would mean the limits were ignored.
+    /// </summary>
     [Fact]
-    public void Each_seeded_program_graduates_a_fresh_student_in_eight_semesters()
+    public void Each_seeded_program_graduates_a_fresh_student_within_eight_semesters()
     {
         Assert.Equal(3, Seed.ProgramKeys.Count);
         foreach (var program in Seed.ProgramKeys)
         {
             var r = Planner.Plan(Seed.FreshStudent(program, Policy(), Today));
-            Assert.True(r.Projection.WithoutSummer.TermsRemaining == 8, $"{program}: {r.Projection.WithoutSummer.TermsRemaining} semesters without summer");
+            var n = r.Projection.WithoutSummer.TermsRemaining;
+            Assert.True(n is >= 7 and <= 8, $"{program}: {n} semesters without summer");
+            Assert.NotNull(r.Projection.WithoutSummer.GraduationTerm);
         }
     }
 
@@ -66,8 +74,8 @@ public sealed class SeededDataTests
             .ToList();
         Assert.NotEmpty(decisions);
 
-        // And the planner never prefers the section with fewer seats when both fit: MTH110 01 has 5 seats, 02 has 25.
-        var mth = Seed.StudentIds.SelectMany(id => Plan(id).Plan).Where(p => p.CourseCode == "MTH110").ToList();
+        // And the planner never prefers the section with fewer seats when both fit: MTH105 01 has 5 seats, 02 has 25.
+        var mth = Seed.StudentIds.SelectMany(id => Plan(id).Plan).Where(p => p.CourseCode == "MTH105").ToList();
         Assert.All(mth, p => Assert.NotEqual("01", p.SectionCode));
     }
 
@@ -88,10 +96,27 @@ public sealed class SeededDataTests
     }
 
     [Fact]
-    public void The_internship_projection_says_it_assumes_department_permission()
+    public void The_student_near_the_end_has_the_internship_and_graduation_projects_ahead()
     {
+        // The real catalog's internship needs 75 credits (no department permission); student.intern has 102.
         var r = Plan("202300115");
-        Assert.Contains(r.Warnings, w => w.Code == ReasonCode.PermissionAssumed && w.Courses.Contains("ITC410"));
+        var ahead = r.Plan.Select(p => p.CourseCode).Concat(r.Projection.WithoutSummer.Terms!.SelectMany(t => t.Courses)).ToHashSet();
+        Assert.Contains("CIT483", ahead);
+        Assert.Contains("CIT484", ahead);
+        Assert.Contains("CIT485", ahead);
+    }
+
+    [Fact]
+    public void The_real_bba_bit_record_gets_an_evening_plan()
+    {
+        // student.hanieh: 18 credits earned, 12 in progress, weekday evenings only (Mon–Thu 5–8 pm).
+        var evenings = Scenario.EveningsMonToThu();
+        var input = Seed.InputFor("202600116", Policy(), Today, evenings);
+        Assert.Equal(18, input.Student.CreditsEarned);
+        var r = Planner.Plan(input);
+        Assert.NotEmpty(r.Plan);
+        foreach (var p in r.Plan)
+            Assert.True(evenings.Fits(input.Sections.Single(s => s.Id == p.SectionId).Meetings), $"{p.CourseCode} {p.SectionCode}");
     }
 
     [Fact]
@@ -109,9 +134,9 @@ public sealed class SeededDataTests
     public void Transfer_credit_satisfies_requirements_but_not_the_gpa()
     {
         var input = Seed.InputFor("202500112", Policy(), Today);
-        Assert.Equal("TR", input.Student.Passed["ENG101"]);
+        Assert.Equal("TR", input.Student.Passed["ENG100"]);
         var r = Planner.Plan(input);
-        Assert.DoesNotContain(r.Courses, c => c.CourseCode == "ENG101"); // already counts
+        Assert.DoesNotContain(r.Courses, c => c.CourseCode == "ENG100"); // already counts
     }
 
     [Fact]

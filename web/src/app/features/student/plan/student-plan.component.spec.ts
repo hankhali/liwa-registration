@@ -70,7 +70,7 @@ describe('planner view (brief §9, UX pass)', () => {
   it('says what to do first and has one gold action, "Send to my advisor", in the page header', async () => {
     const el = await renderPlanner();
     expect(el.querySelector('h1')!.textContent).toContain('My plan');
-    expect(el.querySelector('app-page-header')!.textContent).toContain('Here is the plan we recommend for Spring 2027.');
+    expect(el.querySelector('app-page-header')!.textContent).toContain('Here is the plan we recommend for Spring 2026-2027.');
     expect(el.querySelector('app-page-header')!.textContent).toContain('Happy with it? Send it to your advisor.');
     const primary = [...el.querySelectorAll('[mat-flat-button]')].map((b) => b.textContent!.trim());
     expect(primary).toHaveLength(1);

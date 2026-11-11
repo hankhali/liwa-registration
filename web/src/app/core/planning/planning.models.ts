@@ -228,15 +228,34 @@ export function parseTermCode(code: string): { season: 'Spring' | 'Summer' | 'Fa
   return { year: Number(m[1]), season: m[2] === 'SP' ? 'Spring' : m[2] === 'SU' ? 'Summer' : 'Fall' };
 }
 
-/** "2027SP" → "Spring 2027" / "الربيع 2027" (the server's own term names are English only). */
-export function termLabel(code: string | null, t: (key: string) => string, lang: string): string {
-  const p = code ? parseTermCode(code) : null;
-  return p ? `${t('planner.season.' + p.season)} ${localDigits(String(p.year), lang)}` : (code ?? '');
+/** The academic year a term belongs to: Fall 2026 → 2026-2027; Spring and Summer 2027 → 2026-2027. */
+function academicYear(season: 'Spring' | 'Summer' | 'Fall', year: number): string {
+  const start = season === 'Fall' ? year : year - 1;
+  return `${start}-${start + 1}`;
 }
 
-/** Replaces English term names inside text from the server ("Spring 2027") with the reader's language. */
+/**
+ * "2027SP" → "Spring 2026-2027" / "الربيع 2026-2027"; "2026SU" → "Summer 1 2025-2026". Liwa names terms by academic
+ * year (codes stay calendar-year). Summer is Summer 1 until a Summer 2 is modelled (docs/assumptions.md).
+ */
+export function termLabel(code: string | null, t: (key: string) => string, lang: string): string {
+  const p = code ? parseTermCode(code) : null;
+  return p ? `${t('planner.termSeason.' + p.season)} ${localDigits(academicYear(p.season, p.year), lang)}` : (code ?? '');
+}
+
+/**
+ * Term names inside text from the server, in the reader's language and Liwa's academic-year style: both
+ * "Spring 2026-2027" / "Summer 1 2025-2026" (term names) and calendar-style "Spring 2027" (older messages).
+ */
 export function localizeTermNames(text: string, t: (key: string) => string, lang: string): string {
-  return text.replace(/\b(Spring|Summer|Fall) (\d{4})\b/g, (_, season: string, year: string) => `${t('planner.season.' + season)} ${localDigits(year, lang)}`);
+  return text.replace(
+    /\b(Spring|Summer|Fall)(?: ([12]))? (\d{4})(?:-(\d{4}))?\b/g,
+    (_, season: 'Spring' | 'Summer' | 'Fall', n: string | undefined, year: string, end: string | undefined) => {
+      const name = season === 'Summer' && n === '2' ? t('planner.summer2') : t('planner.termSeason.' + season);
+      const years = end ? `${year}-${end}` : academicYear(season, Number(year));
+      return `${name} ${localDigits(years, lang)}`;
+    },
+  );
 }
 
 /** Notification parameters with any term names translated. */

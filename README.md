@@ -74,10 +74,11 @@ blocked this file", turn it off or ask IT for an exception for the repository fo
 | `.\scripts\run-dev.ps1 [-NoWeb]` | Starts the API (and the web dev server) against the local database |
 | `.\scripts\test.ps1 [-UnitOnly]` | All tests: .NET unit, .NET integration (each run creates `liwa_test_…` on the local PostgreSQL and drops it), Angular unit |
 | `.\scripts\reset-db.ps1 [-Force]` | Drops and recreates the local `liwa` database (local hosts only) |
-| `python scripts/verify_install.py [--web URL] [--web-dir dist/web]` | Clean-install check: migrations in order, seed loaded, every demo account signs in, the planner runs for all 15 students, advisor and admin pages load. Drops nothing |
+| `python scripts/verify_install.py [--web URL] [--web-dir dist/web]` | Clean-install check: migrations in order, seed loaded, every demo account signs in, the planner runs for all 16 students, advisor and admin pages load. Drops nothing |
 | `python scripts/demo_plan_states.py` | Puts demo plans into every status (draft → needs review) for manual review |
 | `python scripts/check_contrast.py` | Every text/background pair of the theme tokens, light and dark, against WCAG AA |
-| `python scripts/generate-demo-data.py src/Liwa.Infrastructure/Seeding/Demo` | Regenerates the demo CSV files with self-checks (120-credit plans, UAE timetable rules, student stories) |
+| `python scripts/generate-demo-data.py src/Liwa.Infrastructure/Seeding/Demo` | Regenerates the demo CSV files from the 2025–2026 catalog, with self-checks (123-credit plans, prerequisite cross-check against the course descriptions, cycles, UAE timetable rules, student stories) |
+| `python -I scripts/extract_catalog.py` | Re-extracts `docs/reference/catalog-2025-2026-courses.json` (titles, prerequisites, descriptions) from the catalog PDF; needs `pdfplumber` in `.local/pylib` |
 | `python scripts/translation_review.py` | Regenerates `translations/REVIEW.md` |
 
 Release build: `dotnet publish src/Liwa.Api -c Release -o dist/api` and
@@ -89,24 +90,29 @@ Only when `DemoSeed:Enabled` is true (Development); never on a real server. Pass
 
 | Username | Program | Story (brief §5) |
 |---|---|---|
-| `student.new` | IT | New first-year; AP English credit; CSC101 + lab corequisite pair |
-| `student.evening` | IT | Works during the day: free time saved as evenings only |
-| `student.repeat` | Mass Communication | Failed MCM201, which MCM301 needs with at least a C |
-| `student.transfer` | Business | Three transfer credits (count toward the degree, not the GPA) |
-| `student.probation` | Business | GPA 1.40, on probation (12-credit cap); repeated BUS120 |
-| `student.senior` | IT | 6 credits left, not forced to the 12-credit minimum |
-| `student.hold` | Mass Communication | FINANCE hold: can plan, can't register until cleared |
-| `student.honors` | IT | GPA exactly 3.50 (21-credit cap); Fall 2026 grades not posted yet |
-| `student.parttime` | Business | Part-time: saved cap of 9 credits |
-| `student.intern` | IT | Internship needs department permission (assumed in the projection, with a note) |
-| `student.switch` | Business | Changed major from Mass Communication |
-| `student.mid1`, `student.mid2` | Business, IT | Mid-programme |
-| `student.first`, `student.media` | IT, Mass Communication | Steady progress |
-| `advisor.it`, `advisor.business`, `advisor.media` | | Advisors (7, 5 and 3 students) |
+| `student.new` | BIT | New first-year; AP English credit (ENG100) |
+| `student.evening` | BIT | Works during the day: free time saved as evenings only |
+| `student.repeat` | Mass Communication (PR) | Failed MCM123 Media Theories, which MCM202 Media Research Methods needs |
+| `student.transfer` | BBA Business IT | Three transfer credits (count toward the degree, not the GPA) |
+| `student.probation` | BBA Business IT | GPA 1.43, on probation (12-credit cap); repeated BUS201 |
+| `student.senior` | BIT | 6 credits left (CIT485 and an elective), not forced to the 12-credit minimum |
+| `student.hold` | Mass Communication (PR) | FINANCE hold: can plan, can't register until cleared |
+| `student.honors` | BIT | GPA exactly 3.50 (21-credit cap); Fall 2026 grades not posted yet |
+| `student.parttime` | BBA Business IT | Part-time: saved cap of 9 credits |
+| `student.intern` | BIT | 102 credits: internship (needs 75) and graduation projects still ahead |
+| `student.switch` | BBA Business IT | Changed major from Mass Communication |
+| `student.hanieh` | BBA Business IT | A real record (anonymised): 18 credits, 12 in progress, weekday evenings only |
+| `student.mid1`, `student.mid2` | BBA Business IT, BIT | Mid-programme |
+| `student.first`, `student.media` | BIT, Mass Communication (PR) | Steady progress |
+| `advisor.it`, `advisor.business`, `advisor.media` | | Advisors (7, 6 and 3 students) |
 | `admin` | | Registrar administrator |
 
-The data is illustrative: the three program titles are real, the courses, plans, 196-section Spring 2027 timetable and
-students are invented until the Registrar supplies real data.
+**The catalog data is real**: the three programs, their courses, credits, prerequisites, requirement groups, electives
+and Year/Semester sequence come from the official *University Catalog 2025–2026*
+(`docs/reference/University_Catalog_2025_2026.pdf`; every row in `courses.csv` and `degree-plans.csv` has a `source`
+column with the page). Still illustrative: Arabic course titles (machine-drafted), offering patterns (every term), the
+264-section Spring 2027 timetable, and the students (one transcript is a real, anonymised record). See
+[docs/assumptions.md](docs/assumptions.md#real-catalog-data-2025-2026) for the catalog's own inconsistencies.
 
 ## Configuration
 

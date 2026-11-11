@@ -4,118 +4,133 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 97 · UI strings: 835
+- Programs: 3 · Courses: 112 · UI strings: 839
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
 
 | OK | Code | English | Arabic (draft) |
 |---|---|---|---|
+| [ ] | BBA-BIT | Bachelor of Business Administration in Business Information Technology | بكالوريوس إدارة الأعمال في تقنية معلومات الأعمال |
 | [ ] | BIT | Bachelor of Information Technology (BIT) — General Track | بكالوريوس تقنية المعلومات - المسار العام |
-| [ ] | BBA-MGT | BBA in Management | بكالوريوس إدارة الأعمال - تخصص الإدارة |
 | [ ] | BMC | Bachelor of Mass Communication Concentration in Public Relations | بكالوريوس الاتصال الجماهيري - تخصص العلاقات العامة |
 
 ## Course titles (`courses.csv`, `title_ar`)
 
 | OK | Code | English | Arabic (draft) |
 |---|---|---|---|
-| [ ] | ENG101 | English Composition I | الكتابة الإنجليزية 1 |
-| [ ] | ENG102 | English Composition II | الكتابة الإنجليزية 2 |
-| [ ] | ENG201 | Technical and Professional Writing | الكتابة التقنية والمهنية |
-| [ ] | ARB101 | Arabic Language Skills | مهارات اللغة العربية |
-| [ ] | ISL101 | Islamic Culture | الثقافة الإسلامية |
-| [ ] | GEN100 | Student Success Seminar | ندوة النجاح الجامعي |
-| [ ] | GEN101 | UAE Society | المجتمع الإماراتي |
-| [ ] | GEN110 | Innovation and Entrepreneurship | الابتكار وريادة الأعمال |
-| [ ] | GEN120 | Critical Thinking | التفكير الناقد |
-| [ ] | PED101 | Health and Wellness | الصحة واللياقة |
-| [ ] | MTH101 | College Mathematics | الرياضيات الجامعية |
+| [ ] | CIT100 | Introduction to Information Technology | مقدمة في تقنية المعلومات |
+| [ ] | CIT101 | Introduction to Generative AI | مقدمة في الذكاء الاصطناعي التوليدي |
+| [ ] | ENG100 | English I | اللغة الإنجليزية 1 |
+| [ ] | GEN100 | Communication Skills in Arabic | مهارات الاتصال باللغة العربية |
+| [ ] | GEN101 | Communication Skills in Arabic for Non-Arabic Speakers | مهارات الاتصال باللغة العربية لغير الناطقين بها |
+| [ ] | GEN102 | Islamic Culture | الثقافة الإسلامية |
+| [ ] | GEN105 | Emirates Culture and Society | ثقافة ومجتمع الإمارات |
+| [ ] | ENG104 | English II | اللغة الإنجليزية 2 |
+| [ ] | GEN103 | Logic and Critical Thinking | المنطق والتفكير الناقد |
+| [ ] | GEN201 | Psychology | علم النفس |
+| [ ] | GEN302 | Fundamentals of Innovation and Entrepreneurship | أساسيات الابتكار وريادة الأعمال |
+| [ ] | GEN304 | Ethics | الأخلاقيات |
+| [ ] | MTH105 | Mathematics and Statistics | الرياضيات والإحصاء |
+| [ ] | BUS100 | Introduction to Management | مقدمة في الإدارة |
+| [ ] | ACC106 | Accounting Principles I | مبادئ المحاسبة 1 |
+| [ ] | MKT200 | Introduction to Marketing | مقدمة في التسويق |
+| [ ] | ACC200 | Accounting Principles II | مبادئ المحاسبة 2 |
+| [ ] | HRM201 | Introduction to Human Resource Management | مقدمة في إدارة الموارد البشرية |
+| [ ] | BUS201 | Microeconomics | الاقتصاد الجزئي |
+| [ ] | BUS203 | Organizational Behavior | السلوك التنظيمي |
+| [ ] | BIT203 | Management Information Systems | نظم المعلومات الإدارية |
+| [ ] | MTH203 | Business Statistics | إحصاء الأعمال |
+| [ ] | BUS301 | Macroeconomics | الاقتصاد الكلي |
+| [ ] | BAF301 | Introduction to Financial Management | مقدمة في الإدارة المالية |
+| [ ] | BUS306 | Quantitative Business Analysis | التحليل الكمي للأعمال |
+| [ ] | BUS307 | Research Methods | مناهج البحث |
+| [ ] | BUS309 | Operations Management | إدارة العمليات |
+| [ ] | BUS409 | Strategic Management | الإدارة الاستراتيجية |
+| [ ] | BUS417 | International Business Management | إدارة الأعمال الدولية |
+| [ ] | BIT201 | Introduction to Computer Programming | مقدمة في برمجة الحاسوب |
+| [ ] | BIT205 | Object Oriented Programming | البرمجة كائنية التوجه |
+| [ ] | BIT207 | Introduction to Web Development | مقدمة في تطوير الويب |
+| [ ] | BUS302 | E-Business | الأعمال الإلكترونية |
+| [ ] | BIT305 | Database Management Systems | نظم إدارة قواعد البيانات |
+| [ ] | BIT405 | Business Intelligence | ذكاء الأعمال |
+| [ ] | BIT407 | Object Oriented Systems Analysis and Design | تحليل وتصميم النظم كائنية التوجه |
+| [ ] | BIT413 | Data Communications and Networking | اتصالات البيانات والشبكات |
+| [ ] | BIT415 | Graduation Project | مشروع التخرج |
+| [ ] | BIT430 | Information Security | أمن المعلومات |
+| [ ] | BIT417 | Advanced Web Development | تطوير الويب المتقدم |
+| [ ] | BIT422 | Advanced Database Management Systems | نظم إدارة قواعد البيانات المتقدمة |
+| [ ] | BIT419 | Internship | التدريب العملي |
+| [ ] | BUS421 | Entrepreneurship and Small Business Management | ريادة الأعمال وإدارة المشروعات الصغيرة |
+| [ ] | BAF403 | Financial Institutions and Markets | المؤسسات والأسواق المالية |
+| [ ] | MKT301 | Consumer Behavior | سلوك المستهلك |
+| [ ] | BUS411 | Change Management | إدارة التغيير |
+| [ ] | CIT112 | Introduction to Computer Programming | مقدمة في برمجة الحاسوب |
+| [ ] | CIT121 | Introduction to Computer Architecture | مقدمة في معمارية الحاسوب |
+| [ ] | CIT122 | Introduction to Database Management Systems | مقدمة في نظم إدارة قواعد البيانات |
+| [ ] | CIT123 | Computer Programming and Problem Solving | برمجة الحاسوب وحل المشكلات |
+| [ ] | CIT231 | Introduction to Computer Networks | مقدمة في شبكات الحاسوب |
+| [ ] | CIT232 | Introduction to Operating Systems | مقدمة في نظم التشغيل |
+| [ ] | CIT241 | Network Security | أمن الشبكات |
+| [ ] | CIT242 | System Analysis and Design | تحليل النظم وتصميمها |
+| [ ] | CIT244 | Database Systems | نظم قواعد البيانات |
+| [ ] | CIT234 | Discrete Mathematics | الرياضيات المتقطعة |
+| [ ] | CIT353 | Web Development | تطوير الويب |
+| [ ] | CIT354 | Object-Oriented Programming | البرمجة كائنية التوجه |
+| [ ] | BUS407 | Project Management | إدارة المشاريع |
+| [ ] | CIT362 | Information Security Management | إدارة أمن المعلومات |
+| [ ] | BIM200 | Linear Algebra | الجبر الخطي |
+| [ ] | CIT483 | Internship | التدريب العملي |
+| [ ] | CIT472 | User Interface Design | تصميم واجهات المستخدم |
 | [ ] | MTH110 | Calculus I | التفاضل والتكامل 1 |
-| [ ] | STA201 | Introduction to Statistics | مقدمة في الإحصاء |
-| [ ] | CSC101 | Introduction to Programming | مقدمة في البرمجة |
-| [ ] | CSC101L | Programming Lab | مختبر البرمجة |
-| [ ] | CSC102 | Object-Oriented Programming | البرمجة كائنية التوجه |
-| [ ] | CSC201 | Data Structures | هياكل البيانات |
-| [ ] | CSC210 | Discrete Mathematics | الرياضيات المتقطعة |
-| [ ] | ITC101 | Introduction to Information Technology | مقدمة في تقنية المعلومات |
-| [ ] | ITC110 | Computer Hardware Fundamentals | أساسيات عتاد الحاسوب |
-| [ ] | ITC110L | Computer Hardware Lab | مختبر عتاد الحاسوب |
-| [ ] | ITC201 | Database Systems | نظم قواعد البيانات |
-| [ ] | ITC202 | Computer Networks | شبكات الحاسوب |
-| [ ] | ITC202L | Computer Networks Lab | مختبر شبكات الحاسوب |
-| [ ] | ITC210 | Web Development | تطوير الويب |
-| [ ] | ITC220 | Operating Systems | نظم التشغيل |
-| [ ] | ITC250 | Software Engineering | هندسة البرمجيات |
-| [ ] | ITC301 | Systems Analysis and Design | تحليل النظم وتصميمها |
-| [ ] | ITC304 | Information Security | أمن المعلومات |
-| [ ] | ITC310 | Cloud Computing | الحوسبة السحابية |
-| [ ] | ITC320 | Mobile App Development | تطوير تطبيقات الهاتف |
-| [ ] | ITC330 | Human-Computer Interaction | التفاعل بين الإنسان والحاسوب |
-| [ ] | ITC340 | IT Project Management | إدارة مشاريع تقنية المعلومات |
-| [ ] | ITC350 | Data Analytics | تحليل البيانات |
-| [ ] | ITC360 | Artificial Intelligence Fundamentals | أساسيات الذكاء الاصطناعي |
-| [ ] | ITC370 | Network Administration | إدارة الشبكات |
-| [ ] | ITC380 | Digital Forensics | التحقيق الجنائي الرقمي |
-| [ ] | ITC390 | Special Topics in IT | موضوعات خاصة في تقنية المعلومات |
-| [ ] | ITC401 | Capstone Project I | مشروع التخرج 1 |
-| [ ] | ITC402 | Capstone Project II | مشروع التخرج 2 |
-| [ ] | ITC410 | IT Internship | التدريب العملي في تقنية المعلومات |
-| [ ] | BUS101 | Introduction to Business | مقدمة في إدارة الأعمال |
-| [ ] | BUS110 | Business Communication | الاتصال في الأعمال |
-| [ ] | BUS120 | Microeconomics | الاقتصاد الجزئي |
-| [ ] | BUS121 | Macroeconomics | الاقتصاد الكلي |
-| [ ] | BUS205 | Spreadsheet Modelling Lab | مختبر نمذجة الجداول الإلكترونية |
-| [ ] | BUS210 | Business Law | قانون الأعمال |
-| [ ] | BUS220 | Business Statistics | إحصاء الأعمال |
-| [ ] | BUS230 | Management Information Systems | نظم المعلومات الإدارية |
-| [ ] | BUS301 | Business Ethics | أخلاقيات الأعمال |
-| [ ] | BUS310 | Business Research Methods | مناهج البحث في الأعمال |
-| [ ] | BUS401 | Strategic Management | الإدارة الاستراتيجية |
-| [ ] | BUS410 | Business Internship | التدريب العملي في الأعمال |
-| [ ] | ACC101 | Financial Accounting | المحاسبة المالية |
-| [ ] | ACC102 | Managerial Accounting | المحاسبة الإدارية |
-| [ ] | FIN201 | Principles of Finance | مبادئ التمويل |
-| [ ] | FIN301 | Corporate Finance | تمويل الشركات |
-| [ ] | MGT201 | Principles of Management | مبادئ الإدارة |
-| [ ] | MGT210 | Organizational Behavior | السلوك التنظيمي |
-| [ ] | MGT220 | Human Resource Management | إدارة الموارد البشرية |
-| [ ] | MGT230 | Operations Management | إدارة العمليات |
-| [ ] | MGT290 | Professional Skills Workshop | ورشة المهارات المهنية |
-| [ ] | MGT301 | Leadership | القيادة |
-| [ ] | MGT310 | Project Management | إدارة المشاريع |
-| [ ] | MGT320 | Entrepreneurship and Small Business | ريادة الأعمال والمشروعات الصغيرة |
-| [ ] | MGT330 | International Business | الأعمال الدولية |
-| [ ] | MGT340 | Change Management | إدارة التغيير |
-| [ ] | MGT350 | Quality Management | إدارة الجودة |
-| [ ] | MGT360 | Negotiation | التفاوض |
-| [ ] | MGT370 | Strategic Human Resource Management | الإدارة الاستراتيجية للموارد البشرية |
-| [ ] | MGT380 | Business Analytics | تحليلات الأعمال |
-| [ ] | MCM101 | Introduction to Mass Communication | مقدمة في الاتصال الجماهيري |
-| [ ] | MCM110 | Media Writing | الكتابة الإعلامية |
-| [ ] | MCM120 | Visual Communication | الاتصال البصري |
-| [ ] | MCM130 | Photography | التصوير الفوتوغرافي |
-| [ ] | MCM130L | Photography Lab | مختبر التصوير |
-| [ ] | MCM201 | Principles of Journalism | مبادئ الصحافة |
-| [ ] | MCM210 | Principles of Public Relations | مبادئ العلاقات العامة |
-| [ ] | MCM220 | Media Law and Ethics | قوانين الإعلام وأخلاقياته |
-| [ ] | MCM230 | Broadcast Production | الإنتاج الإذاعي والتلفزيوني |
-| [ ] | MCM240 | Digital Media | الإعلام الرقمي |
-| [ ] | MCM250 | Arabic Media Writing | الكتابة الإعلامية باللغة العربية |
-| [ ] | MCM290 | Portfolio Workshop | ورشة الملف المهني |
-| [ ] | MCM301 | News Reporting and Editing | كتابة الأخبار وتحريرها |
-| [ ] | MCM310 | Advertising | الإعلان |
-| [ ] | MCM320 | Media Research Methods | مناهج البحث الإعلامي |
-| [ ] | MCM330 | Social Media Strategy | استراتيجية وسائل التواصل الاجتماعي |
-| [ ] | MCM340 | Crisis Communication | اتصال الأزمات |
-| [ ] | MCM350 | Documentary Production | إنتاج الأفلام الوثائقية |
-| [ ] | MCM360 | Media and Society in the UAE | الإعلام والمجتمع في الإمارات |
-| [ ] | MCM370 | Corporate Communication | الاتصال المؤسسي |
-| [ ] | MCM380 | Data Journalism | صحافة البيانات |
-| [ ] | MCM390 | Investigative Journalism | الصحافة الاستقصائية |
-| [ ] | MCM395 | Event Management | إدارة الفعاليات |
-| [ ] | MCM401 | Graduation Project I | مشروع التخرج 1 |
-| [ ] | MCM402 | Graduation Project II | مشروع التخرج 2 |
-| [ ] | MCM410 | Media Internship | التدريب العملي في الإعلام |
+| [ ] | CIT478 | Mobile Applications Development | تطوير تطبيقات الهاتف المحمول |
+| [ ] | CIT473 | Introduction to Artificial Intelligence | مقدمة في الذكاء الاصطناعي |
+| [ ] | CIT484 | Senior Graduation Project I | مشروع التخرج 1 |
+| [ ] | CIT485 | Senior Graduation Project II | مشروع التخرج 2 |
+| [ ] | CIT474 | Internet of Things | إنترنت الأشياء |
+| [ ] | CIT487 | Cloud and Edge Computing | الحوسبة السحابية والطرفية |
+| [ ] | CIT477 | Natural Language Processing | معالجة اللغات الطبيعية |
+| [ ] | CIT470 | Data Mining | التنقيب في البيانات |
+| [ ] | CIT233 | Software Development Process | عملية تطوير البرمجيات |
+| [ ] | CIT243 | Network Administration | إدارة الشبكات |
+| [ ] | CIT352 | Distributed Information Management | إدارة المعلومات الموزعة |
+| [ ] | CIT365 | Advanced Database Design | تصميم قواعد البيانات المتقدم |
+| [ ] | CIT481 | Contemporary Issues in IT | قضايا معاصرة في تقنية المعلومات |
+| [ ] | MCM101 | Introduction to Digital Media | مدخل إلى الإعلام الرقمي |
+| [ ] | MCM102 | Introduction to Public Relations | مدخل إلى العلاقات العامة |
+| [ ] | MCM121 | Introduction to Advertising | مدخل إلى الإعلان |
+| [ ] | MCM123 | Media Theories | نظريات الإعلام |
+| [ ] | MCM201 | Media in the UAE | الإعلام في دولة الإمارات |
+| [ ] | MCM202 | Media Research Methods | مناهج البحث الإعلامي |
+| [ ] | MCM203 | Digital Photography | التصوير الرقمي |
+| [ ] | MCM301 | International Communication | الاتصال الدولي |
+| [ ] | MCM210 | Geopolitics | الجغرافيا السياسية |
+| [ ] | MCM211 | Consumer Behavior | سلوك المستهلك |
+| [ ] | MCM212 | The Art of Persuasion | فن الإقناع |
+| [ ] | MCM213 | Social Psychology | علم النفس الاجتماعي |
+| [ ] | MCM122 | Professional Writing in Arabic | الكتابة المهنية باللغة العربية |
+| [ ] | MCM204 | Introduction to Media and Artificial Intelligence | مقدمة في الإعلام والذكاء الاصطناعي |
+| [ ] | MCM221 | Rhetorical Communication | الاتصال البلاغي |
+| [ ] | MCM222 | Social Marketing | التسويق الاجتماعي |
+| [ ] | MCM223 | Public Opinion | الرأي العام |
+| [ ] | MCM321 | Arab Media | الإعلام العربي |
+| [ ] | MCM322 | Media Translation | الترجمة الإعلامية |
+| [ ] | MCM401 | Economics and Management of Media Organizations | اقتصاديات المؤسسات الإعلامية وإدارتها |
+| [ ] | MCM421 | Protocol and Etiquette | البروتوكول والإتيكيت |
+| [ ] | MCM125 | Introduction to Sociology | مدخل إلى علم الاجتماع |
+| [ ] | MCM326 | Modern Arab History | التاريخ العربي الحديث |
+| [ ] | MCM327 | Global Issues | قضايا عالمية |
+| [ ] | MCM328 | Modern Arabic Literature | الأدب العربي الحديث |
+| [ ] | MCM329 | Documentary Cinema | السينما الوثائقية |
+| [ ] | PRM301 | Public Relations Management | إدارة العلاقات العامة |
+| [ ] | PRM302 | Writing for Public Relations | الكتابة للعلاقات العامة |
+| [ ] | PRM303 | Production of Materials for Public Relations | إنتاج مواد العلاقات العامة |
+| [ ] | PRM321 | International Public Relations | العلاقات العامة الدولية |
+| [ ] | PRM401 | Case Studies in Public Relations | دراسات حالة في العلاقات العامة |
+| [ ] | PRM402 | Public Relations Campaigns | حملات العلاقات العامة |
+| [ ] | PRM403 | Online Public Relations | العلاقات العامة الرقمية |
+| [ ] | PRM410 | Field Training in Public Relations | التدريب الميداني في العلاقات العامة |
+| [ ] | PRM422 | Graduation Project in Public Relations | مشروع التخرج في العلاقات العامة |
 
 ## App text (`web/public/i18n/ar.json`)
 
@@ -872,6 +887,10 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `planner.season.Fall` | Fall | الخريف |
 | [ ] | `planner.season.Spring` | Spring | الربيع |
 | [ ] | `planner.season.Summer` | Summer | الصيف |
+| [ ] | `planner.summer2` | Summer 2 | الصيف 2 |
+| [ ] | `planner.termSeason.Fall` | Fall | الخريف |
+| [ ] | `planner.termSeason.Spring` | Spring | الربيع |
+| [ ] | `planner.termSeason.Summer` | Summer 1 | الصيف 1 |
 | [ ] | `roles.Admin` | Administrator | مسؤول النظام |
 | [ ] | `roles.Advisor` | Academic advisor | مرشد أكاديمي |
 | [ ] | `roles.Student` | Student | طالب |

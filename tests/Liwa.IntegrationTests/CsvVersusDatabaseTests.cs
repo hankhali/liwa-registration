@@ -1,4 +1,4 @@
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Liwa.Domain.Planning;
@@ -7,7 +7,7 @@ using Liwa.Infrastructure.Seeding;
 namespace Liwa.IntegrationTests;
 
 /// <summary>
-/// Brief §5: the planner gives identical output whether the data comes from the CSV files or from the database.
+/// Brief Â§5: the planner gives identical output whether the data comes from the CSV files or from the database.
 /// Every demo student's recommendation through the API (database) is compared with the planner run directly on the
 /// demo CSV files. Section ids differ between the two sources, so sections are compared by course + section code.
 /// </summary>
@@ -24,7 +24,7 @@ public sealed class CsvVersusDatabaseTests(LiwaApiFactory factory)
         var csv = CsvPlannerSource.FromDemoFiles();
         var policy = Policy();
         var students = DemoSeeder.Accounts.Where(a => a.Role == Domain.Users.UserRole.Student).ToList();
-        Assert.Equal(15, students.Count);
+        Assert.Equal(16, students.Count);
 
         foreach (var a in students)
         {

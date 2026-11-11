@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { setArabicDigits } from '../i18n/digits';
 import {
+  localizeTermNames,
+  termLabel,
   CourseAssessment,
   PRESETS,
   PRESET_CARDS,
@@ -93,5 +95,21 @@ describe('planning helpers', () => {
       ({ courseCode: code, credits: 3, groupKey: 'CORE', status: 'Eligible', priorityRank: 1, unlocks: 0, chainLength, reasons: [] }) as CourseAssessment;
     expect([...criticalCodes([c('A', 5), c('B', 4), c('C', 2), c('D', 1)])].sort()).toEqual(['A', 'B']);
     expect(criticalCodes([c('A', 1), c('B', 1)]).size).toBe(0);
+  });
+});
+
+describe('Liwa term names (academic year)', () => {
+  const t = (k: string) => ({ 'planner.termSeason.Fall': 'Fall', 'planner.termSeason.Spring': 'Spring', 'planner.termSeason.Summer': 'Summer 1', 'planner.summer2': 'Summer 2' })[k] ?? k;
+
+  it('names terms by academic year: Fall starts it, Spring and Summer 1 end it', () => {
+    expect(termLabel('2026FA', t, 'en')).toBe('Fall 2026-2027');
+    expect(termLabel('2027SP', t, 'en')).toBe('Spring 2026-2027');
+    expect(termLabel('2026SU', t, 'en')).toBe('Summer 1 2025-2026');
+  });
+
+  it('rewrites term names in server text, both academic-year and calendar style', () => {
+    expect(localizeTermNames('Your plan for Spring 2026-2027', t, 'en')).toBe('Your plan for Spring 2026-2027');
+    expect(localizeTermNames('Summer 2 2025-2026 opens', t, 'en')).toBe('Summer 2 2025-2026 opens');
+    expect(localizeTermNames('You sent your plan for Spring 2027.', t, 'en')).toBe('You sent your plan for Spring 2026-2027.');
   });
 });

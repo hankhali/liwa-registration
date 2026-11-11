@@ -89,11 +89,11 @@ public sealed class GradePostingTests(GradePostingApiFactory factory) : IClassFi
         var admin = await factory.SignedInClientAsync("admin");
 
         Assert.Equal(HttpStatusCode.BadRequest, (await admin.PostAsJsonAsync("/api/admin/grades",
-            new { studentId = "202500103", courseCode = "ITC101", termCode = "2026FA", grade = "Z" })).StatusCode);
+            new { studentId = "202500103", courseCode = "CIT121", termCode = "2026FA", grade = "Z" })).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await admin.PostAsJsonAsync("/api/admin/grades",
-            new { studentId = "999999999", courseCode = "ITC101", termCode = "2026FA", grade = "A" })).StatusCode);
+            new { studentId = "999999999", courseCode = "CIT121", termCode = "2026FA", grade = "A" })).StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, (await admin.PostAsJsonAsync("/api/admin/grades",
-            new { studentId = "202700101", courseCode = "ITC101", termCode = "2026FA", grade = "A" })).StatusCode);
+            new { studentId = "202700101", courseCode = "CIT121", termCode = "2026FA", grade = "A" })).StatusCode);
 
         var student = await factory.SignedInClientAsync("student.new");
         Assert.Equal(HttpStatusCode.Forbidden, (await student.PostAsync("/api/admin/recheck", null)).StatusCode);

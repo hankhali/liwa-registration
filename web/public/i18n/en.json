@@ -782,7 +782,13 @@
       "FINANCE": "finance",
       "REGISTRAR": "Registrar",
       "ADVISING": "advising"
-    }
+    },
+    "termSeason": {
+      "Fall": "Fall",
+      "Spring": "Spring",
+      "Summer": "Summer 1"
+    },
+    "summer2": "Summer 2"
   },
   "notifications": {
     "planSubmitted": "{{ student }} sent a plan for {{ term }}.",

@@ -65,14 +65,14 @@ public sealed class AdminTests(AdminApiFactory factory) : IClassFixture<AdminApi
     public async Task Editing_a_row_goes_through_the_importer_and_creates_a_catalog_version()
     {
         var admin = await factory.SignedInClientAsync("admin");
-        var row = (await Read<RowsBody>(await admin.GetAsync("/api/admin/catalog/courses"))).Rows.First(x => x["course_code"] == "MCM360");
+        var row = (await Read<RowsBody>(await admin.GetAsync("/api/admin/catalog/courses"))).Rows.First(x => x["course_code"] == "MCM221");
         row["title"] = "Advanced Media Writing";
 
         var preview = await Read<ReportBody>(await admin.PostAsJsonAsync("/api/admin/catalog/courses/rows", new { rows = new[] { row }, dryRun = true }));
         Assert.Equal(1, preview.Updated);
         Assert.False(preview.Saved);
 
-        var bad = row.ToDictionary(); bad["prerequisites"] = "MCM360";
+        var bad = row.ToDictionary(); bad["prerequisites"] = "MCM221";
         Assert.Equal(HttpStatusCode.UnprocessableEntity, (await admin.PostAsJsonAsync("/api/admin/catalog/courses/rows", new { rows = new[] { bad }, dryRun = false })).StatusCode);
 
         var saved = await Read<ReportBody>(await admin.PostAsJsonAsync("/api/admin/catalog/courses/rows", new { rows = new[] { row }, dryRun = false }));
@@ -99,19 +99,19 @@ public sealed class AdminTests(AdminApiFactory factory) : IClassFixture<AdminApi
         async Task<CheckBody> Check(string course, string expr) =>
             await Read<CheckBody>(await admin.PostAsJsonAsync("/api/admin/catalog/prerequisites/check", new { courseCode = course, expression = expr }));
 
-        var ok = await Check("ITC301", "itc201 and (csc102 or mth110:c)");
+        var ok = await Check("CIT242", "cit122 and (cit123 or mth110:c)");
         Assert.True(ok.Ok);
-        Assert.Equal("ITC201 AND (CSC102 OR MTH110:C)", ok.Canonical);
-        Assert.Contains("isn't in the catalog", (await Check("ITC301", "ITC999")).Problems.Single(), StringComparison.Ordinal);
-        Assert.Contains("circle", (await Check("CSC101", "CSC201")).Problems.Single(), StringComparison.Ordinal); // CSC201 needs CSC102 needs CSC101
-        Assert.False((await Check("ITC301", "ITC201 AND (")).Ok);
+        Assert.Equal("CIT122 AND (CIT123 OR MTH110:C)", ok.Canonical);
+        Assert.Contains("isn't in the catalog", (await Check("CIT242", "CIT999")).Problems.Single(), StringComparison.Ordinal);
+        Assert.Contains("circle", (await Check("CIT112", "CIT354")).Problems.Single(), StringComparison.Ordinal); // CIT354 needs CIT123 needs CIT112
+        Assert.False((await Check("CIT242", "CIT122 AND (")).Ok);
     }
 
     [Fact]
     public async Task A_degree_plan_with_students_cannot_be_removed()
     {
         var admin = await factory.SignedInClientAsync("admin");
-        var r = await admin.DeleteAsync("/api/admin/catalog/degree-plans/BIT/2024");
+        var r = await admin.DeleteAsync("/api/admin/catalog/degree-plans/BIT/2025");
         Assert.Equal(HttpStatusCode.Conflict, r.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await admin.DeleteAsync("/api/admin/catalog/degree-plans/BIT/2031")).StatusCode);
     }

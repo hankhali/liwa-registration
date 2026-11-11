@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { LanguageService } from '../core/i18n/language.service';
-import { parseTermCode } from '../core/planning/planning.models';
+import { parseTermCode, termLabel } from '../core/planning/planning.models';
 
 export interface ExplainFacts {
   intent: string;
@@ -187,8 +187,7 @@ export class ExplainerPanelComponent {
   }
 
   protected term(code: string | null): string {
-    const t = code ? parseTermCode(code) : null;
-    return t ? `${this.transloco.translate('planner.season.' + t.season)} ${t.year}` : this.transloco.translate('advisor.review.unknownTerm');
+    return code && parseTermCode(code) ? termLabel(code, (k) => this.transloco.translate(k), this.language.lang()) : this.transloco.translate('advisor.review.unknownTerm');
   }
 
   protected abs(n: number): number {

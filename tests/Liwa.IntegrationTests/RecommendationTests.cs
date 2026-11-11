@@ -33,7 +33,8 @@ public sealed class RecommendationTests(LiwaApiFactory factory)
 
         Assert.Equal(6, r.TotalCredits);
         Assert.Equal(6, r.Limits!.MinCredits);
-        Assert.Contains(r.Plan, p => p.CourseCode == "ITC304");
+        Assert.Contains(r.Plan, p => p.CourseCode == "CIT485");
+        Assert.Contains(r.Plan, p => p.CourseCode == "CIT470");
         Assert.DoesNotContain(r.Warnings, w => w.Code == "BelowMinimumCredits");
         Assert.Equal("2027SP", r.Projection.WithoutSummer.GraduationTerm);
     }
@@ -58,46 +59,46 @@ public sealed class RecommendationTests(LiwaApiFactory factory)
     }
 
     [Fact]
-    public async Task The_repeat_student_is_told_why_they_cannot_take_mcm301()
+    public async Task The_repeat_student_is_told_why_they_cannot_take_mcm202()
     {
         var r = await RecommendAsync("student.repeat");
 
-        var mcm301 = r.Courses.Single(c => c.CourseCode == "MCM301");
-        Assert.Equal("NotEligible", mcm301.Status);
-        Assert.Contains(mcm301.Reasons, x => x.Code == "PrerequisiteFailed" && x.Courses.Contains("MCM201"));
-        var mcm201 = r.Courses.Single(c => c.CourseCode == "MCM201");
-        Assert.Contains(mcm201.Reasons, x => x.Code == "NotOfferedThisTerm" && x.Value == "Fall");
+        // Failed MCM123 Media Theories, which MCM202 Media Research Methods needs; MCM123 can be retaken now.
+        var mcm202 = r.Courses.Single(c => c.CourseCode == "MCM202");
+        Assert.Equal("NotEligible", mcm202.Status);
+        Assert.Contains(mcm202.Reasons, x => x.Code is "PrerequisiteFailed" or "PrerequisiteNotMet" && x.Courses.Contains("MCM123"));
+        Assert.NotEqual("NotEligible", r.Courses.Single(c => c.CourseCode == "MCM123").Status);
     }
 
     [Fact]
-    public async Task The_new_student_gets_programming_and_its_lab_together()
+    public async Task The_new_student_starts_with_the_first_semester_of_the_bit_plan()
     {
         var r = await RecommendAsync("student.new");
 
-        Assert.Contains(r.Plan, p => p.CourseCode == "CSC101");
-        Assert.Contains(r.Plan, p => p.CourseCode == "CSC101L");
-        Assert.DoesNotContain(r.Plan, p => p.CourseCode == "ENG101"); // already has AP credit
+        Assert.Contains(r.Plan, p => p.CourseCode == "CIT112"); // Introduction to Computer Programming (Year 1, Semester 1)
+        Assert.Contains(r.Plan, p => p.CourseCode == "CIT121"); // Introduction to Computer Architecture
+        Assert.DoesNotContain(r.Plan, p => p.CourseCode == "ENG100"); // already has AP credit
         Assert.InRange(r.TotalCredits, 12, 18);
     }
 
     [Fact]
-    public async Task An_evenings_only_student_gets_only_evening_or_online_sections_and_daytime_labs_reject_the_pair()
+    public async Task An_evenings_only_student_gets_a_plan_and_daytime_only_courses_say_why()
     {
-        var r = await RecommendAsync("student.honors", EveningsOnly);
+        // A fifth-semester BIT student studying Mon–Thu 5–8 pm: some later courses only have daytime sections.
+        var r = await RecommendAsync("student.mid2", EveningsOnly);
 
+        Assert.NotEmpty(r.Plan);
         Assert.All(r.Plan, p => Assert.DoesNotContain(p.Alternatives, a => a.SectionId == p.SectionId));
-        var itc202 = r.Courses.SingleOrDefault(c => c.CourseCode == "ITC202");
-        Assert.NotNull(itc202);
-        Assert.Contains(itc202!.Reasons, x => x.Code == "CorequisiteDoesNotFit" && x.Courses.Contains("ITC202L"));
+        Assert.Contains(r.Courses, c => c.Reasons.Any(x => x.Code == "NoSectionFits"));
     }
 
     [Fact]
     public async Task A_course_offered_this_season_with_no_sections_is_a_soft_warning()
     {
-        // ITC390 is offered Fall and Spring in the catalog but the demo timetable schedules no section for it.
-        var r = await RecommendAsync("student.senior");
-        var itc390 = r.Courses.SingleOrDefault(c => c.CourseCode == "ITC390");
-        if (itc390 is not null) Assert.Contains(itc390.Reasons, x => x.Code == "NoSectionsThisTerm");
+        // MCM329 Documentary Cinema is offered every term (catalog default) but the demo timetable schedules no section.
+        var r = await RecommendAsync("student.media");
+        var mcm329 = r.Courses.SingleOrDefault(c => c.CourseCode == "MCM329");
+        if (mcm329 is not null) Assert.Contains(mcm329.Reasons, x => x.Code == "NoSectionsThisTerm");
     }
 
     [Fact]

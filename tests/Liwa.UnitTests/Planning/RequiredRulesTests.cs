@@ -19,6 +19,15 @@ public sealed class RequiredRulesTests
         Assert.True(M("10:00", "10:51").Overlaps(M("10:50", "11:40")));
 
     [Fact]
+    public void A_course_needing_department_permission_is_assumed_in_the_projection_with_a_note()
+    {
+        // Was a seeded-data test; the real 2025-2026 catalog has no permission-based course, so it is synthetic now.
+        var s = new Scenario().Course("BUS201").Section("BUS201").Course("BUS499", prereq: "PERMISSION");
+        var r = s.Run();
+        Assert.Contains(r.Warnings, w => w.Code == ReasonCode.PermissionAssumed && w.Courses.Contains("BUS499"));
+    }
+
+    [Fact]
     public void On_probation_a_15_credit_selection_fails()
     {
         var s = new Scenario { Probation = true, Gpa = 1.8m };

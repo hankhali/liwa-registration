@@ -132,7 +132,7 @@ public sealed class AdvisorFlowTests(AdvisorFlowApiFactory factory) : IClassFixt
 
         var record = await Read<RecordBody>(await media.GetAsync($"/api/advisor/students/{userId}"));
 
-        Assert.Contains(record.Transcript, t => t.CourseCode == "MCM201" && t.Grade == "F");
+        Assert.Contains(record.Transcript, t => t.CourseCode == "MCM123" && t.Grade == "F");
         Assert.NotEmpty(students);
         var it = await factory.SignedInClientAsync("advisor.it");
         Assert.Equal(HttpStatusCode.NotFound, (await it.GetAsync($"/api/advisor/students/{userId}")).StatusCode);

@@ -22,9 +22,9 @@ public sealed partial class ImportService(LiwaDbContext db, TimeProvider clock, 
         new Dictionary<ImportKind, (string[], string[])>
         {
             [ImportKind.Terms] = (["term_code", "name", "season", "year", "start_date", "end_date"], ["teaching_days", "friday_afternoon", "is_current", "in_progress_prerequisites"]),
-            [ImportKind.Courses] = (["course_code", "title", "credits"], ["title_ar", "department", "prerequisites", "offered", "description", "active"]),
+            [ImportKind.Courses] = (["course_code", "title", "credits"], ["title_ar", "department", "prerequisites", "offered", "description", "active", "source"]),
             [ImportKind.Programs] = (["program_code", "name", "total_credits"], ["name_ar", "college"]),
-            [ImportKind.DegreePlans] = (["program_code", "catalog_year", "group_key", "group_type"], ["group_name", "group_credits", "course_code", "suggested_semester"]),
+            [ImportKind.DegreePlans] = (["program_code", "catalog_year", "group_key", "group_type"], ["group_name", "group_credits", "course_code", "suggested_semester", "source"]),
             [ImportKind.Sections] = (["term_code", "course_code", "section", "capacity"], ["delivery", "instructor", "room", "enrolled", "days", "start_time", "end_time"]),
             [ImportKind.Students] = (["student_id", "display_name", "program_code", "catalog_year", "admit_term"], ["email", "username", "status", "advisor_username", "hold"]),
             [ImportKind.Transcripts] = (["student_id", "course_code"], ["term_code", "credits", "grade", "status", "source"]),

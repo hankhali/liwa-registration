@@ -30,7 +30,7 @@ public sealed class PlanFlowTests(PlanFlowApiFactory factory) : IClassFixture<Pl
     {
         var (_, view) = await ViewAsync("student.new");
 
-        Assert.Equal("Spring 2027", view.TermName);
+        Assert.Equal("Spring 2026-2027", view.TermName); // Liwa names terms by academic year
         Assert.Equal("Dr. Ahmed Al Zaabi", view.AdvisorName);
         Assert.NotEmpty(view.Recommendation.Plan);
         foreach (var p in view.Recommendation.Plan)
@@ -43,16 +43,18 @@ public sealed class PlanFlowTests(PlanFlowApiFactory factory) : IClassFixture<Pl
     }
 
     [Fact]
-    public async Task A_programming_class_without_its_lab_is_refused()
+    public async Task A_class_the_student_cannot_take_yet_is_refused()
     {
+        // The real catalog has no lecture/lab pairs; corequisites are covered by the planner unit tests. Here a new
+        // student picks CIT231 Introduction to Computer Networks, which needs CIT121 first.
         var (client, view) = await ViewAsync("student.new");
-        var csc101 = view.Sections.First(s => s.CourseCode == "CSC101");
+        var cit231 = view.Sections.First(s => s.CourseCode == "CIT231");
 
-        var response = await client.PostAsJsonAsync("/api/students/me/plan", new { sectionIds = new[] { csc101.Id }, submit = false });
+        var response = await client.PostAsJsonAsync("/api/students/me/plan", new { sectionIds = new[] { cit231.Id }, submit = false });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<SaveBody>(Json);
-        Assert.Contains(body!.Check!.Errors, e => e.Code == "CorequisiteMissing" && e.Courses.SequenceEqual(new[] { "CSC101", "CSC101L" }));
+        Assert.Contains(body!.Check!.Errors, e => e.Code == "NotEligibleNow" && e.Courses.SequenceEqual(new[] { "CIT231" }));
     }
 
     [Fact]

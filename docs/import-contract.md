@@ -27,13 +27,13 @@ Common value formats:
 
 | Type | Format | Examples |
 |---|---|---|
-| Term code | Year + `SP` / `SU` / `FA` | `2027SP` (Spring 2027), `2026FA` |
+| Term code | Calendar year + `SP` / `SU` / `FA` | `2027SP` (Spring 2026-2027), `2026FA` (Fall 2026-2027), `2026SU` (Summer 1 2025-2026) |
 | Date | `YYYY-MM-DD` | `2027-01-11` |
 | Time | 24-hour `HH:MM` (shown as 12-hour in the app) | `17:00` (5:00 pm) |
 | Days | Names separated by `;` (or space), or compact letters | `Mon;Wed`, `Mon Wed Fri`, `MW`, `TR` (R = Thursday) |
 | Seasons | Separated by `;` | `Fall;Spring`, `Summer`, `All` |
 | Yes/no | `yes`/`no` (also `true`/`false`, `1`/`0`) | `yes` |
-| Course code | 2–4 letters + 3 digits, optional letter (`L` for labs) | `ITC201`, `ITC110L` |
+| Course code | 2–4 letters + 3 digits, optional letter (`L` for labs) | `CIT112`, `BIT203`, `PRM301` |
 
 ---
 
@@ -41,8 +41,8 @@ Common value formats:
 
 | Column | Required | Meaning | PeopleSoft hint |
 |---|---|---|---|
-| `term_code` 🔑 | yes | e.g. `2027SP`. Must match `season` and `year`. | `STRM` (mapped to this format) |
-| `name` | yes | e.g. `Spring 2027` | `DESCR` |
+| `term_code` 🔑 | yes | e.g. `2027SP`. Must match `season` and `year` (the calendar year the term falls in). | `STRM` (mapped to this format) |
+| `name` | yes | Liwa names terms by academic year: `Spring 2026-2027`, `Fall 2026-2027`, `Summer 1 2025-2026` | `DESCR` |
 | `season` | yes | `Fall`, `Spring` or `Summer` | |
 | `year` | yes | e.g. `2027` | |
 | `start_date`, `end_date` | yes | First and last day | `TERM_BEGIN_DT`, `TERM_END_DT` |
@@ -55,7 +55,7 @@ Common value formats:
 
 | Column | Required | Meaning | PeopleSoft hint |
 |---|---|---|---|
-| `course_code` 🔑 | yes | e.g. `ITC201` | `SUBJECT` + `CATALOG_NBR` |
+| `course_code` 🔑 | yes | e.g. `CIT112` | `SUBJECT` + `CATALOG_NBR` |
 | `title` | yes | English title | `COURSE_TITLE_LONG` |
 | `title_ar` | no | Arabic title | |
 | `credits` | yes | Whole number 0–6 | `UNITS_MAXIMUM` |
@@ -64,6 +64,7 @@ Common value formats:
 | `offered` | no | Seasons it is normally offered. Default `Fall;Spring`. Used to project future terms (a course offered only in Fall adds a year if missed). | `CRSE_OFFER` / typical-offer |
 | `description` | no | | `DESCRLONG` |
 | `active` | no | Default `yes` | `EFF_STATUS` |
+| `source` | no | Where the row comes from, for people (not stored), e.g. `Catalog 2025-2026 p.130; description p.309` | |
 
 ### Writing prerequisites
 
@@ -77,7 +78,7 @@ Common value formats:
 | `PERMISSION` | Needs department permission |
 | `A AND B`, `A OR B`, `( … )` | Combine. **AND is checked before OR**, so use parentheses when mixing them. |
 
-Examples: `CSC101 AND (MTH102 OR MTH110:C)` · `ITC301 AND STANDING(Senior)` · `CREDITS(90) AND PERMISSION`.
+Examples from the 2025–2026 catalog: `MKT200 AND BUS301` (BUS417) · `CREDITS(99) AND BIT407` (BIT415 Graduation Project) · `(CIT100 OR CIT101)` (BIT203: either introductory course) · `CIT231 AND CREDITS(81)` (CIT474). Others: `MTH110:C` · `STANDING(Senior)` · `CREDITS(90) AND PERMISSION`.
 
 Every course a rule mentions must exist (in the same file or already imported); a course can't require itself. Rules are stored in a tidy standard form, so `itc201 and standing(junior)` becomes `ITC201 AND STANDING(Junior)`.
 
@@ -104,7 +105,8 @@ One row per course in a requirement group. A file **replaces the whole plan** fo
 | `group_type` | yes | `AllOf` (take every course listed) · `ChooseCredits` (choose courses from the list until `group_credits` is reached) · `AnyCourse` (free electives: any course counts; `course_code` may be blank) |
 | `group_credits` | for `ChooseCredits`/`AnyCourse` | Credits required from the group |
 | `course_code` | yes, except `AnyCourse` | An existing course |
-| `suggested_semester` | no | 1–8: when the plan suggests taking it (guidance only) |
+| `suggested_semester` | no | 1–8: when the plan suggests taking it (guidance only), from the catalog's Year/Semester study plan |
+| `source` | no | Where the row comes from, for people (not stored), e.g. `Catalog 2025-2026 p.130-132` |
 
 Checks: rows of the same group must agree on name, type and credits; a `ChooseCredits` group must list enough courses to reach its credits. A plan that doesn't add up to the program's total is a **warning**.
 

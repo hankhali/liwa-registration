@@ -24,7 +24,7 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     }
 
     [Fact]
-    public async Task Three_programs_each_add_up_to_120_credits()
+    public async Task Three_real_catalog_programs_each_add_up_to_123_credits()
     {
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<LiwaDbContext>();
@@ -32,13 +32,12 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
         var plans = await db.DegreePlans.Include(d => d.Groups).ThenInclude(g => g.Courses).ToListAsync();
         var programs = await db.Programs.ToDictionaryAsync(p => p.Id);
 
-        Assert.Equal(["BBA-MGT", "BIT", "BMC"], programs.Values.Select(p => p.Code).Order());
+        Assert.Equal(["BBA-BIT", "BIT", "BMC"], programs.Values.Select(p => p.Code).Order());
         Assert.Equal(3, plans.Count);
+        Assert.All(programs.Values, p => Assert.Equal(123, p.TotalCredits));
         Assert.All(plans, p => Assert.Equal(programs[p.ProgramId].TotalCredits, p.PlannedCredits(credits)));
-        // Credit edge cases are exercised: 1-, 2- and 4-credit courses exist.
-        Assert.Contains(1, credits.Values);
-        Assert.Contains(2, credits.Values);
-        Assert.Contains(4, credits.Values);
+        // The 2025-2026 catalog: every course in these three programs is 3 credits.
+        Assert.All(credits.Values, c => Assert.Equal(3, c));
     }
 
     [Fact]
@@ -67,17 +66,18 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     }
 
     [Theory]
-    [InlineData("student.new", "BIT", 3, null, false)]          // new first-year with AP English credit only
-    [InlineData("student.probation", "BBA-MGT", 33, 1.40, true)] // on probation
-    [InlineData("student.honors", "BIT", 36, 3.50, false)]       // exactly at the 3.50 boundary
-    [InlineData("student.senior", "BIT", 114, 3.35, false)]      // 6 credits left to graduate
-    [InlineData("student.repeat", "BMC", 38, 2.88, false)]       // failed MCM201
+    [InlineData("student.new", "BIT", 3, null, false)]           // new first-year with AP English credit only
+    [InlineData("student.probation", "BBA-BIT", 42, 1.43, true)] // on probation
+    [InlineData("student.honors", "BIT", 30, 3.50, false)]        // exactly at the 3.50 boundary
+    [InlineData("student.senior", "BIT", 117, 3.38, false)]       // 6 credits left to graduate
+    [InlineData("student.repeat", "BMC", 45, 3.06, false)]        // failed MCM123
+    [InlineData("student.hanieh", "BBA-BIT", 18, 4.00, false)]   // the real record (anonymised)
     public async Task Each_demo_student_tells_their_story(string username, string program, int earned, double? gpa, bool probation)
     {
         var s = await GetAsync<StudentSummaryBody>(username, "/api/students/me/summary");
         Assert.Equal(program, s.ProgramCode);
         Assert.Equal(earned, s.CreditsEarned);
-        Assert.Equal(120, s.CreditsRequired);
+        Assert.Equal(123, s.CreditsRequired);
         Assert.Equal(gpa is null ? null : (decimal)gpa, s.Gpa);
         Assert.Equal(probation, s.OnProbation);
         Assert.Equal("2027SP", s.CurrentTerm!.Code);
@@ -88,7 +88,7 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     public async Task The_high_gpa_student_has_courses_in_progress()
     {
         var s = await GetAsync<StudentSummaryBody>("student.honors", "/api/students/me/summary");
-        Assert.Equal(15, s.InProgressCredits);
+        Assert.Equal(18, s.InProgressCredits);
     }
 
     [Fact]
@@ -96,10 +96,10 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     {
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<LiwaDbContext>();
-        var mcm201 = await db.Courses.SingleAsync(c => c.Code == "MCM201");
+        var mcm123 = await db.Courses.SingleAsync(c => c.Code == "MCM123");
         var record = await db.StudentRecords.Include(r => r.Transcript).SingleAsync(r => r.StudentId == "202500105");
-        Assert.Contains(record.Transcript, t => t.CourseId == mcm201.Id && t.Grade == "F");
-        Assert.Equal("MCM201:C", (await db.Courses.SingleAsync(c => c.Code == "MCM301")).Prerequisites);
+        Assert.Contains(record.Transcript, t => t.CourseId == mcm123.Id && t.Grade == "F");
+        Assert.Equal("MCM123", (await db.Courses.SingleAsync(c => c.Code == "MCM202")).Prerequisites);
     }
 
     [Fact]
@@ -116,11 +116,11 @@ public sealed class DemoDataTests(LiwaApiFactory factory)
     public async Task The_admin_overview_counts_the_data()
     {
         var o = await GetAsync<OverviewBody>("admin", "/api/admin/overview");
-        Assert.Equal("Spring 2027", o.CurrentTerm!.Name);
+        Assert.Equal("Spring 2026-2027", o.CurrentTerm!.Name); // Liwa names terms by academic year
         Assert.Equal(3, o.Programs);
-        Assert.True(o.Courses >= 90);
+        Assert.True(o.Courses >= 110);
         Assert.True(o.SectionsThisTerm > 100);
-        Assert.True(o.Students >= 15); // 15 demo students (other tests in this collection may import more)
+        Assert.True(o.Students >= 16); // 16 demo students (other tests in this collection may import more)
         Assert.NotNull(o.LastImportAt);
     }
 
@@ -185,7 +185,7 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
     [Fact]
     public async Task A_real_import_saves_and_importing_again_changes_nothing()
     {
-        const string csv = "course_code,title,title_ar,credits,prerequisites\nTST201,Testing Practice,ممارسة الاختبار,3,itc201 and standing(junior)\n";
+        const string csv = "course_code,title,title_ar,credits,prerequisites\nTST201,Testing Practice,ممارسة الاختبار,3,cit122 and standing(junior)\n";
 
         var (_, first) = await ImportAsync("courses", csv, dryRun: false);
         var (_, second) = await ImportAsync("courses", csv, dryRun: false);
@@ -196,7 +196,7 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
         Assert.Equal(0, second.Created + second.Updated);
         using var scope = factory.Services.CreateScope();
         var course = await scope.ServiceProvider.GetRequiredService<LiwaDbContext>().Courses.SingleAsync(c => c.Code == "TST201");
-        Assert.Equal("ITC201 AND STANDING(Junior)", course.Prerequisites); // stored in canonical form
+        Assert.Equal("CIT122 AND STANDING(Junior)", course.Prerequisites); // stored in canonical form
         Assert.Equal("ممارسة الاختبار", course.TitleAr);
     }
 
@@ -219,8 +219,8 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
     public async Task Sections_that_break_uae_calendar_rules_are_rejected()
     {
         const string csv = "term_code,course_code,section,capacity,days,start_time,end_time\n" +
-                           "2027SP,ITC201,S9,30,Sun;Tue;Thu,09:00,10:15\n" +
-                           "2027SP,ITC210,F9,30,Mon;Wed;Fri,11:00,12:15\n";
+                           "2027SP,CIT122,S9,30,Sun;Tue;Thu,09:00,10:15\n" +
+                           "2027SP,CIT123,F9,30,Mon;Wed;Fri,11:00,12:15\n";
 
         var (_, report) = await ImportAsync("sections", csv, dryRun: true);
 
@@ -238,8 +238,8 @@ public sealed class ImportTests(ImportApiFactory factory) : IClassFixture<Import
     [Fact]
     public async Task A_new_student_gets_an_account_without_a_password_and_a_record()
     {
-        const string students = "student_id,display_name,email,program_code,catalog_year,admit_term,advisor_username\n202799990,Test Student,202799990@lu.ac.ae,BIT,2024,2027SP,advisor.it\n";
-        const string transcript = "student_id,term_code,course_code,grade\n202799990,2026FA,ENG101,A\n202799990,2027SP,MTH101,\n";
+        const string students = "student_id,display_name,email,program_code,catalog_year,admit_term,advisor_username\n202799990,Test Student,202799990@lu.ac.ae,BIT,2025,2027SP,advisor.it\n";
+        const string transcript = "student_id,term_code,course_code,grade\n202799990,2026FA,ENG100,A\n202799990,2027SP,MTH105,\n";
 
         Assert.True((await ImportAsync("students", students, false)).Report!.Saved);
         var (_, history) = await ImportAsync("transcripts", transcript, false);
