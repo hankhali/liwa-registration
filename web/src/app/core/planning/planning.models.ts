@@ -109,6 +109,8 @@ export interface PlannerResult {
   targetCredits?: number;
   /** When free time is limited: the dates with a full-time schedule (projection assumes the free time continues). */
   fullTimeProjection?: GraduationProjection | null;
+  /** What the limited-free-time projection assumes per semester (from this semester's timetable). */
+  freeTime?: { inPersonSlots: number; onlinePerTerm: number; onlineSharePercent: number } | null;
 }
 
 export interface CourseInfo {

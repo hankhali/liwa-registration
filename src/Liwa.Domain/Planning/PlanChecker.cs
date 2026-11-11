@@ -128,7 +128,11 @@ public static partial class Planner
             else free = Math.Max(0, free - catalog[c].Credits); // outside the plan's groups: counts as a free elective
         }
 
-        var slots = WeeklySlots(input); // same free-time assumption as the recommendation
+        // Same free-time assumption as the recommendation (in-person slots + this term's online share).
+        var sectionsByCourse = input.Sections.GroupBy(s => s.CourseCode, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+        var limits = input.Policy.LimitsFor(input.Term.Season, AcademicSummary.StandingFor(input.Student.CreditsEarned), input.Student.Gpa, input.Student.OnProbation);
+        var target = TargetFor(input, limits, Math.Min(limits?.MaxCredits ?? 0, input.Preferences.MaxCredits ?? int.MaxValue));
+        var slots = FreeTimeCapacity(input, needs, sectionsByCourse, target)?.ClassesPerTerm;
         return new GraduationProjection(
             Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: true, slots),
             Project(input, catalog, ordered, codes, credits, quota, free, includeSummer: false, slots));

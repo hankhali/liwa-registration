@@ -54,6 +54,9 @@ import { PageHeaderComponent } from '../../shared/page-header.component';
           <p class="compare keep" role="note">
             {{ 'graduation.keepFreeTime' | transloco: { freeTime: ('graduation.freeTime.' + (d.preset ?? 'custom') | transloco), term: label(shownTerm()), fullTime: label(fullTimeTerm() ?? null) } }}
           </p>
+          @if (d.view.recommendation.freeTime; as ft) {
+            <p class="compare liwa-muted small assumes">{{ (ft.onlinePerTerm === 1 ? 'graduation.assumesOnlineOne' : 'graduation.assumesOnline') | transloco: { n: ft.onlinePerTerm } }}</p>
+          }
         }
         @if (d.selection && selectionTerm() !== recommendedTerm()) {
           <p class="compare liwa-muted">{{ 'graduation.recommendedLine' | transloco: { term: label(recommendedTerm()) } }}</p>

@@ -958,7 +958,9 @@
       "daytime": "daytime only",
       "custom": "your own hours",
       "any": "your free time"
-    }
+    },
+    "assumesOnline": "This assumes about {{ n }} online classes a semester, like this semester.",
+    "assumesOnlineOne": "This assumes about 1 online class a semester, like this semester."
   },
   "myPlan": {
     "heading": "Where my plan is",

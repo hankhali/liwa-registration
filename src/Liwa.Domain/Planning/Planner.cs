@@ -278,8 +278,10 @@ public static partial class Planner
             chosenCodes.Contains(n.Code) ? plan.First(p => p.CourseCode == n.Code).Reasons : reasons[n.Code].Distinct().ToList())).ToList();
 
         // 6. Graduation projection ------------------------------------------------------------
-        // Future semesters assume the current free time continues (at most as many classes as it has weekly slots).
-        var slots = WeeklySlots(input);
+        // Future semesters assume the current free time continues, with the same mix as this semester's timetable:
+        // the in-person class times that fit, plus about as many online classes as this term offers.
+        var freeTime = FreeTimeCapacity(input, needs, sectionsByCourse, target);
+        var slots = freeTime?.ClassesPerTerm;
         var plannedCodes = chosen.Select(c => c.Need.Code).ToList();
         var withSummer = Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: true, slots);
         var withoutSummer = Project(input, catalog, ordered, plannedCodes, total, quota, freeRemaining, includeSummer: false, slots);
@@ -304,7 +306,26 @@ public static partial class Planner
         if (assumed.Count > 0) warnings.Add(PlannerReason.Of(ReasonCode.PermissionAssumed, assumed));
 
         return new PlannerResult(input.Term.Code, limits, maxCredits, plan, total, assessments, warnings, new GraduationProjection(withSummer, withoutSummer),
-            target, fullTime);
+            target, fullTime, freeTime);
+    }
+
+    /// <summary>
+    /// The free-time assumption for future semesters, from this term's timetable (the same sections the recommendation
+    /// chose from): in-person weekly class times that fit, plus online classes = (share of remaining required courses
+    /// with an online section this term) × (classes in the target load), rounded. Null when free time isn't limited.
+    /// </summary>
+    private static FreeTimeAssumption? FreeTimeCapacity(PlannerInput input, IEnumerable<Need> needs,
+        Dictionary<string, List<PlannerSection>> sectionsByCourse, int target)
+    {
+        if (WeeklySlots(input) is not { } inPerson) return null;
+        var required = needs.Where(n => n.Kind == RequirementKind.AllOf && sectionsByCourse.ContainsKey(n.Code)).ToList();
+        var withOnline = input.Preferences.Delivery == DeliveryPreference.OnCampusOnly
+            ? 0
+            : required.Count(n => sectionsByCourse[n.Code].Any(s => s.Delivery == DeliveryMode.Online));
+        var share = required.Count == 0 ? 0m : (decimal)withOnline / required.Count;
+        var classesInLoad = target / 3m; // the catalog's courses are 3 credits
+        var online = (int)Math.Round(share * classesInLoad, MidpointRounding.AwayFromZero);
+        return new FreeTimeAssumption(inPerson, online, (int)Math.Round(share * 100, MidpointRounding.AwayFromZero));
     }
 
     /// <summary>

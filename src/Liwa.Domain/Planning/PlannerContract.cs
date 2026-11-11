@@ -105,7 +105,22 @@ public sealed record PlannerResult(
     IReadOnlyList<PlannerReason> Warnings,
     GraduationProjection Projection,
     int TargetCredits = 0,
-    GraduationProjection? FullTimeProjection = null);
+    GraduationProjection? FullTimeProjection = null,
+    FreeTimeAssumption? FreeTime = null);
+
+/// <summary>
+/// What the projection assumes about future semesters when free time is limited, taken from this semester's
+/// timetable: the in-person class times that fit (evenings at Liwa: 4) plus about as many online classes as this
+/// semester offers for the student's remaining required courses.
+/// </summary>
+/// <param name="InPersonSlots">Non-overlapping weekly class times that fit the free time.</param>
+/// <param name="OnlinePerTerm">Online classes assumed each semester: the share of remaining required courses with an online
+/// section this term, times the classes in a normal load.</param>
+/// <param name="OnlineSharePercent">That share, in percent (for advisors).</param>
+public sealed record FreeTimeAssumption(int InPersonSlots, int OnlinePerTerm, int OnlineSharePercent)
+{
+    public int ClassesPerTerm => InPersonSlots + OnlinePerTerm;
+}
 
 /// <summary>A recommended section, why it was chosen, and the sections that lost (and why).</summary>
 /// <param name="Chain">

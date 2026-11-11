@@ -132,12 +132,14 @@ describe('Graduation: summer-only class (follow-up 3)', () => {
         ...base.recommendation,
         projection: { withSummer: { graduationTerm: '2030SP', termsRemaining: 9, terms: [] }, withoutSummer: { graduationTerm: '2030FA', termsRemaining: 8, terms: [] } },
         fullTimeProjection: { withSummer: { graduationTerm: '2028FA', termsRemaining: 6, terms: [] }, withoutSummer: { graduationTerm: '2029SP', termsRemaining: 5, terms: [] } },
+        freeTime: { inPersonSlots: 4, onlinePerTerm: 1, onlineSharePercent: 21 },
       },
     };
     prefs.preset = 'evenings';
     const el = await render(GraduationPage, view);
     prefs.preset = 'any';
     expect(el.querySelector('.keep')!.textContent).toContain('If you keep evenings only: Fall 2030-2031. With a full-time schedule: Spring 2028-2029.');
+    expect(el.querySelector('.assumes')!.textContent).toContain('This assumes about 1 online class a semester, like this semester.');
   });
 
   it('shows no such line when summer does change the date', async () => {

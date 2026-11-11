@@ -237,6 +237,26 @@ public sealed class PlannerRequiredTests
     }
 
     [Fact]
+    public void The_evening_projection_adds_this_terms_share_of_online_classes()
+    {
+        // 10 required courses, 2 evening class times; 4 of the 10 have an online section this term (40%).
+        // Target 15 credits = 5 classes → about 2 online classes a semester: at most 2 + 2 = 4 classes per future term.
+        var s = new Scenario { Availability = Scenario.EveningsMonToThu() };
+        for (var i = 1; i <= 10; i++) s.Course($"ITC{300 + i}").Section($"ITC{300 + i}", "E1", i % 2 == 0 ? "Mon;Wed" : "Tue;Thu", "17:00", "18:15");
+        for (var i = 1; i <= 4; i++) s.Section($"ITC{300 + i}", "W1", days: null, delivery: DeliveryMode.Online);
+        var r = s.Run();
+
+        Assert.Equal(new FreeTimeAssumption(2, 2, 40), r.FreeTime);
+        Assert.Equal(4, r.FreeTime!.ClassesPerTerm);
+        Assert.All(r.Projection.WithoutSummer.Terms.Skip(1), t => Assert.True(t.Courses.Count <= 4, $"{t.TermCode}: {t.Courses.Count}"));
+        Assert.Contains(r.Projection.WithoutSummer.Terms.Skip(1), t => t.Courses.Count == 4);
+
+        // Same logic for a plan the student picked by hand (advisor comparison).
+        var p = Planner.ProjectPlan(s.Input(), r.Plan.Select(x => x.SectionId).ToList());
+        Assert.Equal(r.Projection.WithoutSummer.GraduationTerm, p.WithoutSummer.GraduationTerm);
+    }
+
+    [Fact]
     public void The_top_two_chain_starting_courses_are_marked_take_this_first_with_their_chain()
     {
         var s = new Scenario()

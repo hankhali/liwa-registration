@@ -4,7 +4,7 @@ Every Arabic string in the app was drafted by machine and needs review by a nati
 see it. Correct the Arabic in place (the source file is named in each section), tick the box, and re-run
 `python scripts/translation_review.py` to refresh this list. Course codes stay in Latin letters; placeholders such as `{{ courses }}` must be kept exactly.
 
-- Programs: 3 · Courses: 112 · UI strings: 851
+- Programs: 3 · Courses: 112 · UI strings: 853
 - Official university, college and program names should be checked against https://lu.ac.ae/ar/.
 
 ## Programs (`src/Liwa.Infrastructure/Seeding/Demo/programs.csv`, `name_ar`)
@@ -537,6 +537,8 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `explainer.thinking` | Thinking… | جارٍ التفكير… |
 | [ ] | `explainer.useNote` | Put this in my note to edit | ضعها في ملاحظتي لأعدّلها |
 | [ ] | `explainer.whyNot` | Why? | لماذا؟ |
+| [ ] | `graduation.assumesOnline` | This assumes about {{ n }} online classes a semester, like this semester. | يفترض هذا نحو {{ n }} مواد عن بُعد في كل فصل، مثل هذا الفصل. |
+| [ ] | `graduation.assumesOnlineOne` | This assumes about 1 online class a semester, like this semester. | يفترض هذا نحو مادة واحدة عن بُعد في كل فصل، مثل هذا الفصل. |
 | [ ] | `graduation.both` | With your selection you graduate in {{ mine }}; with the recommended plan in {{ rec }}. | باختيارك تتخرج في {{ mine }}؛ وبالخطة المقترحة في {{ rec }}. |
 | [ ] | `graduation.columns` | Semesters until graduation | الفصول الدراسية حتى التخرج |
 | [ ] | `graduation.compare` | Which plan to show | أي خطة تُعرض |
