@@ -107,7 +107,7 @@ public sealed class SeededDataTests
     [Fact]
     public void The_real_bba_bit_record_gets_an_evening_plan()
     {
-        // student.hanieh: 18 credits earned, 12 in progress, weekday evenings only (Mon–Thu 5–8 pm).
+        // student.hanieh: 18 credits earned, 12 in progress, weekday evenings only (Mon–Thu 5–10 pm).
         var evenings = Scenario.EveningsMonToThu();
         var input = Seed.InputFor("202600116", Policy(), Today, evenings);
         Assert.Equal(18, input.Student.CreditsEarned);

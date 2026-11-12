@@ -197,12 +197,12 @@ export const PRESETS: Record<Exclude<AvailabilityPreset, 'custom'>, TimeWindow[]
   any: [],
   // Full-time daytime: Mon–Fri 8 am–5 pm (Friday until noon).
   daytime: everyDay(TEACHING_DAYS, '08:00', '17:00'),
-  // Evenings only: Mon–Thu 5–8 pm (the brief's working-student blocks).
-  evenings: everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '20:00'),
+  // Evenings only: Mon–Thu 5–10 pm (Liwa teaches until 10 pm).
+  evenings: everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '22:00'),
   // Weekends + evenings: Mon–Thu evenings, Friday morning and Saturday daytime (Saturday classes only run
   // when a term teaches on Saturday; see docs/assumptions.md S6).
   weekends: [
-    ...everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '20:00'),
+    ...everyDay(['Monday', 'Tuesday', 'Wednesday', 'Thursday'], '17:00', '22:00'),
     { day: 'Friday', start: '08:00', end: '12:00' },
     { day: 'Saturday', start: '08:00', end: '17:00' },
   ],

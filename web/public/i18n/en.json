@@ -587,7 +587,7 @@
         },
         "evenings": {
           "title": "Evenings only",
-          "body": "I work during the day. Mon–Thu, 5–8 pm"
+          "body": "I work during the day. Mon–Thu, 5–10 pm"
         },
         "mornings": {
           "title": "Mornings only",
@@ -922,11 +922,11 @@
       },
       "evenings": {
         "title": "Evenings only",
-        "body": "I work during the day. Monday to Thursday, 5 to 8 pm"
+        "body": "I work during the day. Monday to Thursday, 5 to 10 pm"
       },
       "weekends": {
         "title": "Weekends + evenings",
-        "body": "Weekday evenings, Friday morning and Saturday"
+        "body": "Weekday evenings until 10 pm, Friday morning and Saturday"
       },
       "custom": {
         "title": "Custom",

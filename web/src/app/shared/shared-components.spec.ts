@@ -137,7 +137,7 @@ describe('timetable grid', () => {
     f.componentRef.setInput('free', []);
     f.detectChanges();
     const cells = [...(f.nativeElement as HTMLElement).querySelectorAll('button.cell')] as HTMLButtonElement[];
-    expect(cells.length).toBe(5 * 13 - 9); // 8 am–9 pm on 5 days, minus Friday from noon
+    expect(cells.length).toBe(5 * 14 - 10); // 8 am–10 pm on 5 days, minus Friday from noon
     cells[0].click();
     f.detectChanges();
     expect(f.componentInstance.free()).toEqual([{ day: 'Monday', start: '08:00', end: '09:00' }]);

@@ -87,7 +87,7 @@ Clicks counted from Home. Checked on the "after" captures and by hand on the run
 | Task | Path | Clicks |
 |---|---|---|
 | a. "I'm new. What do I take this semester?" (`student.evening`) | Home: "Spring 2027: your plan is ready to look at" → gold **See my plan** → the recommended plan is already built, with the week → gold **Send to my advisor** (top right) → **Send now** | 3 |
-| b. "I work evenings. Only classes I can attend." | Home → **Plan** (rail / bottom bar) → **Evenings only** at the top of the plan → the plan is rebuilt for Mon–Thu 5–8 pm. (Or Free time → the **Evenings only** card, which saves and opens the rebuilt plan.) | 2 |
+| b. "I work evenings. Only classes I can attend." | Home → **Plan** (rail / bottom bar) → **Evenings only** at the top of the plan → the plan is rebuilt for Mon–Thu 5–10 pm. (Or Free time → the **Evenings only** card, which saves and opens the rebuilt plan.) | 2 |
 | c. "Why can't I take ITC301?" | Home → **Plan** → "Classes you can't take yet": **ITC301 Systems Analysis and Design**: "You need to pass ITC201 Database Systems first". Visible without expanding anything | 1 |
 | d. "When will I graduate? What if I skip summer?" | Home already shows the graduation date as a big number. → **Graduation**: "You could graduate in **Spring 2030**", "Semesters left: **7**", one toggle "Include summer classes" with the other answer under it | 1–2 |
 | e. "My advisor sent it back. What now?" (`student.mid1`) | Home: "your plan is **Sent back with comments**" → gold **See what my advisor said** → My Plan opens with the advisor's note first → gold **Fix my plan** → the planner, with the note at the top and **Send to my advisor** | 2 |

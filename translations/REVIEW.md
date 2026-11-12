@@ -488,9 +488,9 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `availability.presets.custom.title` | Custom | مخصص |
 | [ ] | `availability.presets.daytime.body` | Monday to Friday, 8 am to 5 pm | من الاثنين إلى الجمعة، من 8 ص إلى 5 م |
 | [ ] | `availability.presets.daytime.title` | Full-time daytime | دوام كامل نهارًا |
-| [ ] | `availability.presets.evenings.body` | I work during the day. Monday to Thursday, 5 to 8 pm | أعمل خلال النهار. من الاثنين إلى الخميس، من 5 إلى 8 م |
+| [ ] | `availability.presets.evenings.body` | I work during the day. Monday to Thursday, 5 to 10 pm | أعمل خلال النهار. من الاثنين إلى الخميس، من 5 إلى 10 م |
 | [ ] | `availability.presets.evenings.title` | Evenings only | مساءً فقط |
-| [ ] | `availability.presets.weekends.body` | Weekday evenings, Friday morning and Saturday | مساء أيام الأسبوع وصباح الجمعة ويوم السبت |
+| [ ] | `availability.presets.weekends.body` | Weekday evenings until 10 pm, Friday morning and Saturday | أمسيات أيام الأسبوع حتى 10 م، وصباح الجمعة، ويوم السبت |
 | [ ] | `availability.presets.weekends.title` | Weekends + evenings | عطلة نهاية الأسبوع + المساء |
 | [ ] | `availability.presetsHeading` | Choose what fits your week | اختر ما يناسب أسبوعك |
 | [ ] | `availability.save` | Save and see my plan | احفظ واعرض خطتي |
@@ -795,7 +795,7 @@ see it. Correct the Arabic in place (the source file is named in each section), 
 | [ ] | `plan.freeTime.presets.custom.title` | Let me choose | دعني أختار |
 | [ ] | `plan.freeTime.presets.daytime.body` | Mon–Fri, before 5 pm | من الاثنين إلى الجمعة، قبل 5 مساءً |
 | [ ] | `plan.freeTime.presets.daytime.title` | Daytime | خلال النهار |
-| [ ] | `plan.freeTime.presets.evenings.body` | I work during the day. Mon–Thu, 5–8 pm | أعمل خلال النهار. من الاثنين إلى الخميس، 5–8 مساءً |
+| [ ] | `plan.freeTime.presets.evenings.body` | I work during the day. Mon–Thu, 5–10 pm | أعمل خلال النهار. من الاثنين إلى الخميس، 5–10 مساءً |
 | [ ] | `plan.freeTime.presets.evenings.title` | Evenings only | مساءً فقط |
 | [ ] | `plan.freeTime.presets.mornings.body` | Mon–Fri, before 12 noon | من الاثنين إلى الجمعة، قبل 12 ظهراً |
 | [ ] | `plan.freeTime.presets.mornings.title` | Mornings only | صباحاً فقط |

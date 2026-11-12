@@ -37,7 +37,7 @@ everything. Status chips, the gold critical-path badge, the timetable and notice
 
 ### Timetable grid
 
-`<app-timetable-grid [blocks] [online] [days] [free] [editable] [fridayCutoff] [startHour] [endHour]>`
+`<app-timetable-grid [blocks] [online] [days] [free] [editable] [fridayCutoff] [startHour] [endHour]>` (default 8 am–10 pm: Liwa teaches until 10 pm)
 
 - Monday–Friday by default (Saturday when a term or the student's free time includes it; Sunday is never shown).
 - Classes are placed by time in **5-minute rows**. Class times such as 10:50 and 4:50 pm are multiples of 5; with 15-minute rows they got fractional row numbers and fell below the grid. Each block shows the code and the title. Overlapping classes on the same day are marked as a **clash** (red outline and icon, plus a sentence above the grid). The clash rule is end-exclusive: 10:00–10:50 and 10:50–11:40 don't clash; a one-minute overlap does.

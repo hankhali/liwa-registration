@@ -352,7 +352,9 @@ write('terms.csv', ['term_code', 'name', 'season', 'year', 'start_date', 'end_da
 day_slots = [('Mon;Wed', '09:00', '10:15'), ('Tue;Thu', '09:00', '10:15'), ('Mon;Wed', '11:00', '12:15'),
              ('Tue;Thu', '11:00', '12:15'), ('Mon;Wed', '14:00', '15:15'), ('Tue;Thu', '14:00', '15:15')]
 mwf = [('Mon;Wed;Fri', '08:00', '08:50'), ('Mon;Wed;Fri', '09:00', '09:50'), ('Mon;Wed;Fri', '10:00', '10:50'), ('Mon;Wed;Fri', '11:00', '11:50')]
-eve = [('Mon;Wed', '17:00', '18:15'), ('Tue;Thu', '17:00', '18:15'), ('Mon;Wed', '18:30', '19:45'), ('Tue;Thu', '18:30', '19:45')]
+# Evening blocks Mon–Thu until 10 pm (Liwa teaches until 10 pm): 5:00, 6:30 and 8:00 pm, on Mon/Wed and Tue/Thu.
+eve = [('Mon;Wed', '17:00', '18:15'), ('Tue;Thu', '17:00', '18:15'), ('Mon;Wed', '18:30', '19:45'), ('Tue;Thu', '18:30', '19:45'),
+       ('Mon;Wed', '20:00', '21:15'), ('Tue;Thu', '20:00', '21:15')]
 instructors = ['Dr. Layla Haddad', 'Dr. Yousef Karim', 'Dr. Hana Saleh', 'Dr. Omar Farouk', 'Dr. Reem Nasser',
                'Dr. Tariq Aziz', 'Dr. Salma Idris', 'Dr. Faisal Rahman', 'Dr. Nadia Khoury', 'Dr. Khalid Mansour']
 NO_SPRING_SECTIONS = {'MCM329'}  # offered every term in the catalog but nothing scheduled: the NotScheduled warning case
@@ -375,9 +377,9 @@ for i, code in enumerate([k for k in C if k not in NO_SPRING_SECTIONS], start=1)
     if x['dept'] == GE or code in POPULAR:
         row('02', mwf[i % 4], f'A{200 + i}', instructors[(i + 3) % 10], k=1)
     # Evening sections: all general education and first/second-year courses, and every other course beyond that,
-    # so working students (Mon–Thu 5–8 pm) can still make progress.
+    # so working students (Mon–Thu 5–10 pm) can still make progress.
     if x['dept'] == GE or level <= 2 or i % 2 == 0:
-        row('E1', eve[i % 4], f'A{300 + i}', instructors[(i + 5) % 10], k=2)
+        row('E1', eve[i % len(eve)], f'A{300 + i}', instructors[(i + 5) % 10], k=2)
     if i % 5 == 0:
         row('W1', ('', '', ''), '', instructors[(i + 7) % 10], k=3, delivery='Online', capacity=40)
     if x['dept'] != GE and i % 3 == 1 and code not in POPULAR:
@@ -528,7 +530,7 @@ history('202500108', 'BBA-BIT', FALL25, ['B', 'B', 'C+', 'B', 'B-', 'C', 'B', 'C
 # student.media (BMC) and student.mid2 (BIT): five semesters done.
 history('202400109', 'BMC', FALL24, ['A', 'A', 'A-', 'A-', 'A', 'B+', 'B', 'A-', 'B+', 'A'], True)
 history('202400110', 'BIT', FALL24, ['C+', 'B-', 'C', 'B', 'C+', 'C-', 'B', 'C', 'B-'], True)
-# student.evening (BIT): first semester done; can only study Mon–Thu 5–8 pm (saved as free time by the seeder).
+# student.evening (BIT): first semester done; can only study Mon–Thu 5–10 pm (saved as free time by the seeder).
 history('202600111', 'BIT', ['2026FA'], ['B', 'C+', 'B', 'B+', 'B-'], False)
 # student.transfer (BBA-BIT): three courses accepted from another university, then three semesters here.
 for code in ('ENG100', 'MTH105', 'GEN102'):

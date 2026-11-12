@@ -2,6 +2,12 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: classes until 10 pm (2026-11-12)
+
+- Liwa teaches until 10 pm: the week grid and free-time editor show 8 am–10 pm, "Evenings only" is Mon–Thu 5–10 pm
+  (also in "Weekends + evenings"), and the demo timetable adds an 8:00–9:15 pm block on Mon/Wed and Tue/Thu, so
+  evenings give 6 class times a week instead of 4 (assumptions K20). The importer never had a closing-time limit.
+
 ## Unreleased: students count classes (2026-11-11)
 
 Display only: rules, the API, and the advisor and admin views stay in credits.

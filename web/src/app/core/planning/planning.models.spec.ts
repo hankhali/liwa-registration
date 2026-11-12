@@ -52,9 +52,9 @@ describe('planning helpers', () => {
     expect(PRESETS.daytime.find((w) => w.day === 'Friday')!.end).toBe('12:00');
   });
 
-  it('the evenings preset is Monday to Thursday, 5 to 8 pm', () => {
+  it('the evenings preset is Monday to Thursday, 5 to 10 pm', () => {
     expect(PRESETS.evenings.map((w) => w.day)).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday']);
-    expect(PRESETS.evenings.every((w) => w.start === '17:00' && w.end === '20:00')).toBe(true);
+    expect(PRESETS.evenings.every((w) => w.start === '17:00' && w.end === '22:00')).toBe(true);
   });
 
   it('weekends + evenings adds Saturday and never Sunday', () => {

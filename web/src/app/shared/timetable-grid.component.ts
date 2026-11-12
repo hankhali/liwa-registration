@@ -91,7 +91,8 @@ export class TimetableGridComponent {
   readonly online = input<{ code: string; label?: string }[]>([]);
   readonly days = input<Day[]>(TEACHING_DAYS);
   readonly startHour = input(8);
-  readonly endHour = input(21);
+  /** Liwa teaches until 10 pm. */
+  readonly endHour = input(22);
   /** Friday teaching ends at this time; null when a term allows Friday afternoons. */
   readonly fridayCutoff = input<string | null>('12:00');
   readonly editable = input(false);

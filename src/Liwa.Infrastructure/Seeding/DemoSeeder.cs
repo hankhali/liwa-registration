@@ -99,13 +99,13 @@ public sealed class DemoSeeder(
         var now = clock.GetUtcNow();
         var evenings = System.Text.Json.JsonSerializer.Serialize(
             new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday }
-                .Select(d => new Domain.Planning.TimeWindow(d, new TimeOnly(17, 0), new TimeOnly(20, 0))),
+                .Select(d => new Domain.Planning.TimeWindow(d, new TimeOnly(17, 0), new TimeOnly(22, 0))),
             WebJson);
         var evening = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.evening").Id, now);
         evening.SetAvailability("evenings", evenings, Domain.Planning.DeliveryPreference.Any, null, now);
         var partTime = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.parttime").Id, now);
         partTime.SetAvailability("any", null, Domain.Planning.DeliveryPreference.Any, 9, now);
-        // The real BBA-BIT record: weekday evenings only (Mon–Thu 5–8 pm).
+        // The real BBA-BIT record: weekday evenings only (Mon–Thu 5–10 pm; Liwa teaches until 10 pm).
         var hanieh = new Domain.Planning.StudentPreferences(Accounts.Single(a => a.Username == "student.hanieh").Id, now);
         hanieh.SetAvailability("evenings", evenings, Domain.Planning.DeliveryPreference.Any, null, now);
         var ids = new[] { evening.UserId, partTime.UserId, hanieh.UserId };

@@ -39,7 +39,7 @@
           @if (!r.planning.saved?.availability?.length) {
             <p class="small">{{ 'advisor.review.anyTime' | transloco }}</p>
           } @else {
-            <div class="mini-grid"><app-timetable-grid [free]="r.planning.saved!.availability!" [startHour]="8" [endHour]="20" [caption]="'advisor.review.freeTime' | transloco" /></div>
+            <div class="mini-grid"><app-timetable-grid [free]="r.planning.saved!.availability!" [startHour]="8" [endHour]="22" [caption]="'advisor.review.freeTime' | transloco" /></div>
           }
           <a class="small" [routerLink]="['/advisor/students', r.studentUserId]">{{ 'advisor.review.fullRecord' | transloco }}</a>
         </section>
