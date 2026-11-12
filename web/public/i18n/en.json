@@ -1141,7 +1141,7 @@
     "title": "Guided tour",
     "heading": "Welcome to the guided tour",
     "intro": "The Liwa Smart Registration Assistant helps a student choose next semester's classes so they fit the student's free time and keep them on track to graduate. An advisor then checks and approves the plan.",
-    "how": "Pick a step below. Each button opens the platform as a practice account, with no password to type. Use \"Back to the tour\" at the top of any page to come back here.",
+    "how": "The walkthrough goes through every step in order and shows you what to click. It takes about 3 minutes, and you can leave it at any time.",
     "unavailable": "The tour needs the practice data, which is only on the demo server.",
     "end": "End the tour and sign out",
     "stops": {
@@ -1159,7 +1159,7 @@
       },
       "advisor": {
         "title": "The advisor reviews plans",
-        "what": "Plans waiting for approval. Each one is already checked against prerequisites, credit limits and time clashes.",
+        "what": "Plans waiting for approval, each one already checked against prerequisites, credit limits and time clashes.",
         "look": "Look at: open a plan, then approve it, send it back with a comment, or suggest changes.",
         "button": "Open as an advisor"
       },
@@ -1182,6 +1182,128 @@
       "label": "Guided tour",
       "viewingAs": "Guided tour: you are viewing as {{ name }} ({{ role }})",
       "back": "Back to the tour"
+    },
+    "startWalk": "Start the walkthrough",
+    "partsHeading": "Or start from one part",
+    "startPart": "Start from here",
+    "walk": {
+      "partOf": "Part {{ part }} of {{ parts }}",
+      "stepOf": "Step {{ n }} of {{ of }}",
+      "parts": {
+        "1": "The student",
+        "2": "The advisor",
+        "3": "Advisor feedback",
+        "4": "The registrar"
+      },
+      "next": "Next",
+      "back": "Back",
+      "start": "Start",
+      "go": "Let's go",
+      "exit": "Exit tour",
+      "clickHint": "Click the highlighted item, or press Next.",
+      "opening": "Opening the next screen…",
+      "keys": "Tip: you can also use the ← and → keys.",
+      "explore": "Explore on my own",
+      "again": "Start again",
+      "signOut": "Sign out",
+      "steps": {
+        "welcome": {
+          "title": "Welcome! A 3-minute walk through the platform",
+          "body": "You will see the platform the way a student, an advisor and the registrar use it. Each step highlights one thing on the screen and explains it. Press Start to begin."
+        },
+        "studentIntro": {
+          "title": "Meet a student who works during the day",
+          "body": "You are now signed in as Demo Student H: a real Business Information Technology record with the name and ID removed. This student can only study in the evenings. Let's plan their next semester."
+        },
+        "home": {
+          "title": "The student's home page",
+          "body": "One clear answer: where the plan stands and the one thing to do next."
+        },
+        "freeTime": {
+          "title": "First: when is the student free?",
+          "body": "This student works during the day, so Evenings only is picked. Any hours can also be chosen on the grid below."
+        },
+        "classes": {
+          "title": "The assistant picks the classes",
+          "body": "Only classes the student is allowed to take, at times inside their free evenings. Each card says why it was picked. \"Take this first\" means other classes depend on it, and the line under the title shows the chain."
+        },
+        "howMany": {
+          "title": "How many classes?",
+          "body": "Students count classes, not credits. Moving the slider rebuilds the plan at once, within the university's credit limits."
+        },
+        "week": {
+          "title": "The student's week",
+          "body": "Every class on one timetable. Green is free time and nothing overlaps. Online classes are listed underneath."
+        },
+        "graduate": {
+          "title": "When the student graduates",
+          "body": "If the student follows this plan, this is the expected graduation month, worked out from the real degree plan and their free time."
+        },
+        "send": {
+          "title": "Send it to the advisor",
+          "body": "One button sends the plan to the advisor for approval. We won't press it during the tour."
+        },
+        "graduation": {
+          "title": "The path to graduation",
+          "body": "The date, the semesters left, and what summer classes would change, all in one place."
+        },
+        "advisorIntro": {
+          "title": "Now you are the advisor",
+          "body": "You are signed in as Dr. Ahmed Al Zaabi, an Information Technology advisor. Students' plans come here for approval."
+        },
+        "queue": {
+          "title": "Plans waiting for review",
+          "body": "Every plan sent by the advisor's students. Urgent ones, and students on probation or close to graduating, are marked."
+        },
+        "openPlan": {
+          "title": "Open a plan",
+          "body": "Click the highlighted student's name to open their plan."
+        },
+        "reviewStudent": {
+          "title": "Left: the student",
+          "body": "Who the student is, their record so far and their free time."
+        },
+        "reviewPlan": {
+          "title": "Middle: the plan, already checked",
+          "body": "The week and the classes. Prerequisites, credit limits and time clashes are already checked, so any problem shows at a glance."
+        },
+        "reviewGrad": {
+          "title": "Right: the path to graduation",
+          "body": "How this plan moves the student toward graduating, semester by semester."
+        },
+        "decide": {
+          "title": "The decision",
+          "body": "Approve, send the plan back with a comment, or suggest changes. Suggesting changes opens the same planner the student uses."
+        },
+        "feedbackIntro": {
+          "title": "The student gets the advisor's suggestion",
+          "body": "You are now a transfer student whose advisor suggested a change to the plan."
+        },
+        "compare": {
+          "title": "Before and after, side by side",
+          "body": "The student's plan and the advisor's suggestion next to each other, so the change is obvious."
+        },
+        "reply": {
+          "title": "One button to answer",
+          "body": "The student accepts the change, or replies to the advisor."
+        },
+        "registrarIntro": {
+          "title": "Behind the scenes: the registrar",
+          "body": "The registrar keeps the data and the rules that the assistant follows."
+        },
+        "catalog": {
+          "title": "The course catalog",
+          "body": "Every course and its prerequisites, from the official Liwa University Catalog 2025-2026."
+        },
+        "rules": {
+          "title": "The rules",
+          "body": "Credit limits by academic standing and the normal load per semester. Change a number here and every plan follows it."
+        },
+        "end": {
+          "title": "That's the whole journey",
+          "body": "A student plans a semester in minutes, the advisor approves with everything already checked, and the registrar sets the rules. Feel free to look around on your own."
+        }
+      }
     }
   }
 }

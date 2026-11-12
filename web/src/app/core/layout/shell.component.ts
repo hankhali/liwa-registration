@@ -15,6 +15,8 @@ import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
 import { TranslatedTitleStrategy } from '../i18n/translated-title.strategy';
 import { TourService } from '../tour/tour.service';
+import { WalkthroughService } from '../tour/walkthrough';
+import { WalkthroughOverlayComponent } from '../tour/walkthrough-overlay.component';
 import { NAV, NavItem } from './nav';
 import { NotificationBellComponent } from './notification-bell.component';
 import { ThemeChoice, ThemeService } from './theme.service';
@@ -45,6 +47,7 @@ const RAIL_KEY = 'liwa.railCollapsed';
     MatSelectModule,
     TranslocoPipe,
     NotificationBellComponent,
+    WalkthroughOverlayComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -80,8 +83,9 @@ export class ShellComponent {
   private readonly router = inject(Router);
   private readonly url = signal('');
   /** During the guided tour, everywhere except the tour page: the name of the account being viewed. */
+  protected readonly walk = inject(WalkthroughService);
   protected readonly tourBar = computed(() =>
-    this.tour.touring() && !this.url().startsWith('/tour') ? (this.auth.user()?.displayName ?? null) : null,
+    this.tour.touring() && this.walk.index() === null && !this.url().startsWith('/tour') ? (this.auth.user()?.displayName ?? null) : null,
   );
 
   constructor() {
@@ -133,6 +137,7 @@ export class ShellComponent {
   }
 
   protected signOut(): void {
+    this.walk.stop();
     this.tour.end();
     this.auth.signOut('user');
   }

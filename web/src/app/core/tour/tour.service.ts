@@ -80,6 +80,20 @@ export class TourService {
     }
   }
 
+  /** Signs in as a practice account without changing page (the walkthrough opens the page itself). */
+  async switchTo(username: string): Promise<boolean> {
+    const demo = await this.load();
+    if (!demo) return false;
+    this.switching.set(true);
+    try {
+      const result = await this.auth.signIn(username, username === 'admin' ? demo.adminPassword : demo.password);
+      if (result.ok) this.setTouring(true);
+      return result.ok;
+    } finally {
+      this.switching.set(false);
+    }
+  }
+
   /** Back to the tour page as the admin. */
   async back(): Promise<boolean> {
     const demo = await this.load();

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService, SignInError, SsoConfig } from '../../core/auth/auth.service';
 import { TourService } from '../../core/tour/tour.service';
+import { WalkthroughService } from '../../core/tour/walkthrough';
 import { LanguageService } from '../../core/i18n/language.service';
 
 const SSO_ERRORS = ['failed', 'not_registered', 'inactive', 'expired', 'unavailable'] as const;
@@ -77,6 +78,7 @@ export class LoginPage {
   }
 
   private readonly tour = inject(TourService);
+  private readonly walk = inject(WalkthroughService);
   protected readonly demo = this.tour.demo;
   protected readonly startingTour = signal(false);
 
@@ -95,8 +97,7 @@ export class LoginPage {
     const result = await this.auth.signIn('admin', d.adminPassword);
     this.startingTour.set(false);
     if (result.ok) {
-      this.tour.start();
-      await this.router.navigateByUrl('/tour');
+      await this.walk.start(0);
     } else this.error.set(result.error);
   }
 
@@ -130,8 +131,7 @@ export class LoginPage {
     if (result.ok) {
       // On a demo server, signing in as admin opens the guided tour.
       if (!this.safeReturnUrl() && (await this.tour.isTourSignIn(username))) {
-        this.tour.start();
-        await this.router.navigateByUrl('/tour');
+        await this.walk.start(0);
         return;
       }
       const target = this.safeReturnUrl() ?? this.auth.homeUrl();

@@ -2,6 +2,13 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: step-by-step walkthrough and a shareable link (2026-11-12)
+
+- **Guided walkthrough:** one continuous story in four parts (the student, the advisor, the advisor's feedback, the registrar), 24 steps. The page dims and a spotlight glides to the thing being explained, with a card beside it ("Part 2 of 4 · Step 3 of 6", progress bar, Back / Next / Exit). Practice accounts and pages switch on their own between parts.
+- **Click steps:** the item to click pulses ("Click the highlighted item, or press Next"). Clicking it yourself also moves on.
+- Keyboard ← → (mirrored in Arabic), Esc to leave. Smooth scrolling and transitions, none with reduced motion. On phones the card sits at the bottom. Reloading resumes the same step.
+- "Start the guided tour" and signing in as admin / admin start the walkthrough. The tour page has "Start the walkthrough" plus "Start from here" for each part.
+- `docs/sharing-the-demo.md`: a public link through VS Code port forwarding (nothing installed). `angular.json` allows `*.devtunnels.ms`.
 ## Unreleased: guided demo tour (2026-11-12)
 
 - **One-click tour for visitors** (demo server only): the sign-in page shows "Start the guided tour"; signing in as `admin` / `admin` also opens it.
