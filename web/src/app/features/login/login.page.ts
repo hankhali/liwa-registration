@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService, SignInError, SsoConfig } from '../../core/auth/auth.service';
-import { TourService } from '../../core/tour/tour.service';
+import { TourService, TourStop } from '../../core/tour/tour.service';
 import { SHOWCASE } from '../../showcase/showcase';
 import { WalkthroughService } from '../../core/tour/walkthrough';
 import { LanguageService } from '../../core/i18n/language.service';
@@ -89,6 +89,21 @@ export class LoginPage {
     if (!d) return;
     this.showLocal.set(true);
     this.form.setValue({ username, password: username === 'admin' ? d.adminPassword : d.password });
+  }
+
+  /** Look around without the tour: each opens the platform as that practice account. */
+  protected readonly explorers: TourStop[] = [
+    { key: 'student', icon: 'school', username: 'student.hanieh', link: '/student' },
+    { key: 'advisor', icon: 'supervisor_account', username: 'advisor.it', link: '/advisor' },
+    { key: 'admin', icon: 'admin_panel_settings', username: 'admin', link: '/admin' },
+  ];
+
+  protected async explore(e: TourStop): Promise<void> {
+    if (this.startingTour()) return;
+    this.startingTour.set(true);
+    const ok = await this.tour.visit(e);
+    this.startingTour.set(false);
+    if (!ok) this.error.set('unavailable');
   }
 
   /** One click for a visitor: signs in as the demo admin and opens the guided tour. */

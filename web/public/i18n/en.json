@@ -78,7 +78,13 @@
       "heading": "Here to see the project?",
       "text": "Take a short guided tour. One click signs you in and shows each part of the platform.",
       "button": "Start the guided tour",
-      "or": "Or sign in yourself as"
+      "or": "Or sign in yourself as",
+      "explore": "Or look around on your own, with no tour:",
+      "as": {
+        "student": "As a student",
+        "advisor": "As an advisor",
+        "admin": "As the registrar"
+      }
     }
   },
   "student": {
@@ -1180,7 +1186,7 @@
     },
     "bar": {
       "label": "Guided tour",
-      "viewingAs": "Guided tour: you are viewing as {{ name }} ({{ role }})",
+      "viewingAs": "You are viewing as {{ name }} ({{ role }})",
       "back": "Back to the tour"
     },
     "startWalk": "Start the walkthrough",

@@ -242,3 +242,22 @@ form.secondary {
   font-size: 0.875rem;
   color: var(--liwa-text-muted);
 }
+
+// Look around without the tour.
+.tour-start .explore-label {
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tour-start .explore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+
+  button {
+    flex: 1 1 8rem;
+    min-height: 44px;
+  }
+}

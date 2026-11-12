@@ -35,6 +35,16 @@
         @if (!showcase) {
           <p class="liwa-muted tour-or">{{ 'login.tour.or' | transloco }} <bdi dir="ltr"><strong>admin</strong> / <strong>{{ d.adminPassword }}</strong></bdi></p>
         }
+        <!-- No tour: open the platform as one of the practice accounts and look around freely. -->
+        <p class="explore-label">{{ 'login.tour.explore' | transloco }}</p>
+        <div class="explore">
+          @for (e of explorers; track e.key) {
+            <button mat-stroked-button type="button" (click)="explore(e)" [disabled]="startingTour()">
+              <mat-icon aria-hidden="true">{{ e.icon }}</mat-icon>
+              {{ 'login.tour.as.' + e.key | transloco }}
+            </button>
+          }
+        </div>
       </section>
     }
 
