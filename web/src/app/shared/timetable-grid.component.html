@@ -35,7 +35,7 @@
       class="grid"
       [class.editable]="editable()"
       [style.grid-template-columns]="'3.75rem repeat(' + days().length + ', minmax(5.5rem, 1fr))'"
-      [style.grid-template-rows]="'2.25rem repeat(' + rowCount() + ', 0.3rem)'"
+      [style.grid-template-rows]="'2.25rem repeat(' + rowCount() + ', 0.3rem) 1.5rem'"
       [attr.role]="editable() ? 'group' : null"
       [attr.aria-label]="editable() ? (caption() || ('timetable.editCaption' | transloco)) : null"
       [attr.aria-hidden]="editable() ? null : 'true'"
@@ -71,6 +71,12 @@
             <div class="cell" [style.grid-column]="i + 2" [style.grid-row]="2 + hi * slotsPerHour + ' / span ' + slotsPerHour"></div>
           }
         }
+      }
+
+      <!-- Closing line: the day ends at endHour (10:00 pm at Liwa), so that time is labelled too -->
+      <div class="hour hour-end" style="grid-column: 1" [style.grid-row]="rowCount() + 2">{{ hourLabel(endHour()) }}</div>
+      @for (d of days(); track d; let i = $index) {
+        <div class="cell cell-end" [style.grid-column]="i + 2" [style.grid-row]="rowCount() + 2"></div>
       }
 
       @for (f of freeBlocks(); track $index) {

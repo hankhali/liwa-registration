@@ -201,3 +201,8 @@ button.cell {
     font-weight: 600;
   }
 }
+
+// The closing time (10:00 pm) on the bottom line of the grid.
+.cell-end {
+  border-inline-start: 0;
+}
