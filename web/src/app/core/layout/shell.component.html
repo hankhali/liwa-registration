@@ -71,6 +71,18 @@
   </div>
 </header>
 
+@if (tourBar(); as name) {
+  <!-- Guided demo tour: who you are viewing as, and one click back to the tour page. -->
+  <div class="tour-bar" role="region" [attr.aria-label]="'tour.bar.label' | transloco">
+    <mat-icon aria-hidden="true">tour</mat-icon>
+    <span>{{ 'tour.bar.viewingAs' | transloco: { name: name, role: ('roles.' + auth.role() | transloco) } }}</span>
+    <button mat-flat-button type="button" class="primary" [disabled]="tour.switching()" (click)="backToTour()">
+      <mat-icon aria-hidden="true" class="flip-rtl">arrow_back</mat-icon>
+      {{ 'tour.bar.back' | transloco }}
+    </button>
+  </div>
+}
+
 <div class="frame">
   <nav class="rail" [class.collapsed]="collapsed()" [attr.aria-label]="'shell.navLabel' | transloco">
     <ul>

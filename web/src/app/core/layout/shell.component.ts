@@ -14,6 +14,7 @@ import { filter, firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
 import { TranslatedTitleStrategy } from '../i18n/translated-title.strategy';
+import { TourService } from '../tour/tour.service';
 import { NAV, NavItem } from './nav';
 import { NotificationBellComponent } from './notification-bell.component';
 import { ThemeChoice, ThemeService } from './theme.service';
@@ -75,14 +76,23 @@ export class ShellComponent {
   protected readonly currentTerm = computed(() => this.terms().find((t) => t.isCurrent) ?? null);
   protected readonly badges = signal<Record<string, number>>({});
   protected readonly themes: ThemeChoice[] = ['system', 'light', 'dark'];
+  protected readonly tour = inject(TourService);
+  private readonly router = inject(Router);
+  private readonly url = signal('');
+  /** During the guided tour, everywhere except the tour page: the name of the account being viewed. */
+  protected readonly tourBar = computed(() =>
+    this.tour.touring() && !this.url().startsWith('/tour') ? (this.auth.user()?.displayName ?? null) : null,
+  );
 
   constructor() {
     // After navigation, move focus to the main region so screen-reader and keyboard users
     // start at the new page content rather than the top of the toolbar (WCAG 2.4.3).
     let first = true;
-    inject(Router)
-      .events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed())
-      .subscribe(() => {
+    this.url.set(this.router.url);
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe((e) => {
+        this.url.set(e.urlAfterRedirects);
         this.drawerOpen.set(false);
         void this.loadBadges();
         if (first) {
@@ -123,7 +133,12 @@ export class ShellComponent {
   }
 
   protected signOut(): void {
+    this.tour.end();
     this.auth.signOut('user');
+  }
+
+  protected backToTour(): void {
+    void this.tour.back();
   }
 
   private readCollapsed(): boolean {

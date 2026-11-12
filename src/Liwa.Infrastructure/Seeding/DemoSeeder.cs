@@ -17,6 +17,12 @@ public sealed class DemoSeedOptions
 
     /// <summary>Shared password for every demo account.</summary>
     public string Password { get; set; } = "Liwa#2027";
+
+    /// <summary>
+    /// Optional easier password for the demo <c>admin</c> account (e.g. "admin"), so a visitor can sign in as
+    /// admin / admin and take the guided tour. Development demo only; null = the shared password.
+    /// </summary>
+    public string? AdminPassword { get; set; }
 }
 
 /// <summary>
@@ -68,9 +74,20 @@ public sealed class DemoSeeder(
         foreach (var a in Accounts.Where(a => !existing.Contains(a.Username)))
         {
             var user = new User(a.Id, a.Username, a.DisplayName, email: null, a.Role, a.UniversityId, clock.GetUtcNow());
-            user.SetPasswordHash(hasher.Hash(o.Password));
+            user.SetPasswordHash(hasher.Hash(PasswordFor(a, o)));
             db.Users.Add(user);
             created++;
+        }
+
+        // The demo admin's easier tour password applies to existing demo databases too.
+        if (!string.IsNullOrEmpty(o.AdminPassword))
+        {
+            var admin = await db.Users.SingleOrDefaultAsync(u => u.Username == "admin", ct);
+            if (admin is not null && admin.PasswordHash is { } hash && hasher.Verify(hash, o.AdminPassword) == PasswordVerification.Failed)
+            {
+                admin.SetPasswordHash(hasher.Hash(o.AdminPassword));
+                created++;
+            }
         }
 
         if (created > 0) await db.SaveChangesAsync(ct);
@@ -90,6 +107,10 @@ public sealed class DemoSeeder(
 
         await SeedPreferencesAsync(ct);
     }
+
+    /// <summary>The demo admin may have its own (tour) password; everyone else uses the shared one.</summary>
+    public static string PasswordFor(DemoAccount a, DemoSeedOptions o) =>
+        a.Username == "admin" && !string.IsNullOrEmpty(o.AdminPassword) ? o.AdminPassword : o.Password;
 
     private static readonly System.Text.Json.JsonSerializerOptions WebJson = new(System.Text.Json.JsonSerializerDefaults.Web);
 

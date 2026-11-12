@@ -88,6 +88,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/admin-home.page').then((m) => m.AdminHomePage),
       },
       {
+        // The guided demo tour (sign in as admin / admin on a demo server).
+        path: 'tour',
+        canActivate: [roleGuard('Admin')],
+        title: 'tour.title',
+        loadComponent: () => import('./features/tour/tour.page').then((m) => m.TourPage),
+      },
+      {
         path: 'admin/catalog',
         canActivate: [roleGuard('Admin')],
         title: 'nav.catalog',

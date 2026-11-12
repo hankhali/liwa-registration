@@ -351,3 +351,20 @@
     margin: 0;
   }
 }
+
+// Guided demo tour: a slim gold-edged bar under the top bar with one way back to the tour page.
+.tour-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--liwa-surface);
+  border-bottom: 3px solid var(--liwa-gold);
+  color: var(--liwa-text);
+  font-weight: 600;
+
+  button {
+    margin-inline-start: auto;
+  }
+}

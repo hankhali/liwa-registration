@@ -16,6 +16,22 @@
     <h1 id="login-heading">{{ 'login.heading' | transloco }}</h1>
     <p class="liwa-muted intro">{{ 'login.intro' | transloco }}</p>
 
+    @if (demo(); as d) {
+      <!-- Demo server only: one click to the guided tour, for visitors. -->
+      <section class="tour-start" aria-labelledby="tour-start-heading">
+        <h2 id="tour-start-heading">{{ 'login.tour.heading' | transloco }}</h2>
+        <p>{{ 'login.tour.text' | transloco }}</p>
+        <button mat-flat-button type="button" class="primary tour-button" (click)="startTour()" [disabled]="startingTour()">
+          @if (startingTour()) {
+            <mat-spinner diameter="20" [attr.aria-label]="'login.signingIn' | transloco" />
+          } @else {
+            {{ 'login.tour.button' | transloco }}
+          }
+        </button>
+        <p class="liwa-muted tour-or">{{ 'login.tour.or' | transloco }} <bdi dir="ltr"><strong>admin</strong> / <strong>{{ d.adminPassword }}</strong></bdi></p>
+      </section>
+    }
+
     @if (reason() === 'expired' && !error() && !ssoError()) {
       <p class="notice" role="status">{{ 'login.expired' | transloco }}</p>
     }
@@ -110,7 +126,7 @@
         <ul>
           @for (a of d.accounts; track a.username) {
             <li>
-              <button type="button" class="demo-user" (click)="useDemo(a.username, d.password)"><bdi dir="ltr">{{ a.username }}</bdi></button>
+              <button type="button" class="demo-user" (click)="useDemo(a.username)"><bdi dir="ltr">{{ a.username }}</bdi></button>
               <span class="liwa-muted">{{ a.description }}</span>
             </li>
           }

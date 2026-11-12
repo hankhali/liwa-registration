@@ -70,9 +70,15 @@
     },
     "demo": {
       "heading": "Practice accounts (development only)",
-      "intro": "Password for all: {{ password }}",
+      "intro": "Password for all: {{ password }} (admin uses admin)",
       "students": "Students",
       "staff": "Staff"
+    },
+    "tour": {
+      "heading": "Here to see the project?",
+      "text": "Take a short guided tour. One click signs you in and shows each part of the platform.",
+      "button": "Start the guided tour",
+      "or": "Or sign in yourself as"
     }
   },
   "student": {
@@ -1130,5 +1136,52 @@
   "units": {
     "classesCredits": "{{ classes }} classes ({{ credits }} credits)",
     "classCredits": "1 class ({{ credits }} credits)"
+  },
+  "tour": {
+    "title": "Guided tour",
+    "heading": "Welcome to the guided tour",
+    "intro": "The Liwa Smart Registration Assistant helps a student choose next semester's classes so they fit the student's free time and keep them on track to graduate. An advisor then checks and approves the plan.",
+    "how": "Pick a step below. Each button opens the platform as a practice account, with no password to type. Use \"Back to the tour\" at the top of any page to come back here.",
+    "unavailable": "The tour needs the practice data, which is only on the demo server.",
+    "end": "End the tour and sign out",
+    "stops": {
+      "student": {
+        "title": "A student plans next semester",
+        "what": "A real Business Information Technology record (name and ID removed) of a student who can only study in the evenings.",
+        "look": "Look at: the suggested classes and why each one was picked, the weekly timetable, and the slider for how many classes to take.",
+        "button": "Open as a student"
+      },
+      "studentPlan": {
+        "title": "A student gets advisor feedback",
+        "what": "The advisor suggested a change to this student's plan.",
+        "look": "Look at: the old and new classes side by side, and the one button to accept or reply.",
+        "button": "Open the feedback"
+      },
+      "advisor": {
+        "title": "The advisor reviews plans",
+        "what": "Plans waiting for approval. Each one is already checked against prerequisites, credit limits and time clashes.",
+        "look": "Look at: open a plan, then approve it, send it back with a comment, or suggest changes.",
+        "button": "Open as an advisor"
+      },
+      "admin": {
+        "title": "The registrar sets the rules",
+        "what": "Courses and degree plans from the catalog, data imports, users and credit-load rules.",
+        "look": "Look at: the catalog of courses and the settings for credit limits.",
+        "button": "Open as the registrar"
+      }
+    },
+    "facts": {
+      "heading": "Good to know",
+      "catalog": "Degree plans and prerequisites come from the official Liwa University Catalog 2025-2026.",
+      "data": "All names and records are practice data. Nothing here is a real student account.",
+      "rules": "Every suggestion explains itself: why a class is first, what it unlocks, and when the student graduates.",
+      "languages": "English and Arabic: switch with the language button at the top.",
+      "phone": "It works on a phone too."
+    },
+    "bar": {
+      "label": "Guided tour",
+      "viewingAs": "Guided tour: you are viewing as {{ name }} ({{ role }})",
+      "back": "Back to the tour"
+    }
   }
 }

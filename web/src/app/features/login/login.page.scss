@@ -1,4 +1,4 @@
-﻿:host {
+:host {
   display: block;
   min-height: 100vh;
   background:
@@ -196,4 +196,34 @@ form.secondary {
   cursor: pointer;
   text-decoration: underline;
   min-height: 32px;
+}
+
+// Demo server only: the guided-tour shortcut for visitors.
+.tour-start {
+  margin: 0 0 1.25rem;
+  padding: 1rem;
+  border-radius: var(--liwa-radius);
+  border: 2px solid var(--liwa-gold);
+  background: var(--liwa-page);
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.0625rem;
+  }
+
+  p {
+    margin: 0 0 0.75rem;
+  }
+
+  .tour-button {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .tour-or {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    text-align: center;
+  }
 }

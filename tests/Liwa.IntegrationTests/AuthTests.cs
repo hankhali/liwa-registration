@@ -110,6 +110,42 @@ public sealed class AuthTests(LiwaApiFactory factory)
     }
 
     [Fact]
+    public async Task Demo_admin_can_get_an_easier_tour_password()
+    {
+        // The guided tour (Development only) lets a visitor sign in as admin / admin; other accounts keep theirs.
+        DemoSeeder Seeder(IServiceScope s, string? adminPassword) => new(
+            s.ServiceProvider.GetRequiredService<LiwaDbContext>(),
+            s.ServiceProvider.GetRequiredService<Liwa.Application.Abstractions.IPasswordHasher>(),
+            TimeProvider.System,
+            s.ServiceProvider.GetRequiredService<Liwa.Application.Imports.IImportService>(),
+            Microsoft.Extensions.Options.Options.Create(new DemoSeedOptions { Enabled = true, Password = LiwaApiFactory.DemoPassword, AdminPassword = adminPassword }),
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<DemoSeeder>.Instance);
+
+        async Task<HttpStatusCode> Login(string username, string password) =>
+            (await factory.CreateClient().PostAsJsonAsync("/api/auth/login", new { username, password })).StatusCode;
+
+        try
+        {
+            using (var scope = factory.Services.CreateScope())
+                await Seeder(scope, "admin").SeedAsync(default);
+
+            Assert.Equal(HttpStatusCode.OK, await Login("admin", "admin"));
+            Assert.Equal(HttpStatusCode.OK, await Login("advisor.it", LiwaApiFactory.DemoPassword));
+            Assert.Equal(HttpStatusCode.Unauthorized, await Login("advisor.it", "admin"));
+            Assert.Equal("admin", DemoSeeder.PasswordFor(DemoSeeder.Accounts.Single(a => a.Username == "admin"), new DemoSeedOptions { AdminPassword = "admin" }));
+            Assert.Equal("x", DemoSeeder.PasswordFor(DemoSeeder.Accounts.Single(a => a.Username == "admin"), new DemoSeedOptions { Password = "x" }));
+        }
+        finally
+        {
+            // Put the shared password back for the other tests.
+            using var scope = factory.Services.CreateScope();
+            await Seeder(scope, LiwaApiFactory.DemoPassword).SeedAsync(default);
+        }
+
+        Assert.Equal(HttpStatusCode.OK, await Login("admin", LiwaApiFactory.DemoPassword));
+    }
+
+    [Fact]
     public async Task Passwords_are_stored_hashed()
     {
         using var scope = factory.Services.CreateScope();

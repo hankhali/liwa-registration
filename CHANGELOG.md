@@ -2,6 +2,13 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: guided demo tour (2026-11-12)
+
+- **One-click tour for visitors** (demo server only): the sign-in page shows "Start the guided tour"; signing in as `admin` / `admin` also opens it.
+- **Tour page** (`/tour`): four steps in plain language (a student plans next semester, a student gets advisor feedback, the advisor reviews plans, the registrar sets the rules). Each step opens the app as that practice account with no password to type.
+- **"Back to the tour" bar** on every page during the tour shows whose view you are in. "End the tour and sign out" closes it.
+- `DemoSeed:AdminPassword` (Development: `admin`) gives only the demo admin an easier password and is applied on startup. Other accounts keep `DemoSeed:Password`. Outside Development there are no demo accounts, so there is no tour and no `admin` / `admin`.
+- English and Arabic strings. Tests: integration (admin password on/off) and the tour service.
 ## Unreleased: classes until 10 pm (2026-11-12)
 
 - Liwa teaches until 10 pm: the week grid and free-time editor show 8 am–10 pm, "Evenings only" is Mon–Thu 5–10 pm

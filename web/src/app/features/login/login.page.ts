@@ -7,14 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import { AuthService, SignInError, SsoConfig } from '../../core/auth/auth.service';
-
-interface DemoAccounts {
-  password: string;
-  accounts: { username: string; role: string; description: string }[];
-}
+import { TourService } from '../../core/tour/tour.service';
 import { LanguageService } from '../../core/i18n/language.service';
 
 const SSO_ERRORS = ['failed', 'not_registered', 'inactive', 'expired', 'unavailable'] as const;
@@ -79,19 +73,31 @@ export class LoginPage {
     }
     this.ssoConfig.set(await this.auth.ssoConfig());
     // Practice accounts: the API only answers in Development with demo data on (404 everywhere else).
-    try {
-      this.demo.set(await firstValueFrom(this.http.get<DemoAccounts>('/api/auth/demo-accounts')));
-    } catch {
-      this.demo.set(null);
-    }
+    await this.tour.load();
   }
 
-  protected readonly demo = signal<DemoAccounts | null>(null);
-  private readonly http = inject(HttpClient);
+  private readonly tour = inject(TourService);
+  protected readonly demo = this.tour.demo;
+  protected readonly startingTour = signal(false);
 
-  protected useDemo(username: string, password: string): void {
+  protected useDemo(username: string): void {
+    const d = this.demo();
+    if (!d) return;
     this.showLocal.set(true);
-    this.form.setValue({ username, password });
+    this.form.setValue({ username, password: username === 'admin' ? d.adminPassword : d.password });
+  }
+
+  /** One click for a visitor: signs in as the demo admin and opens the guided tour. */
+  protected async startTour(): Promise<void> {
+    const d = this.demo();
+    if (!d || this.startingTour()) return;
+    this.startingTour.set(true);
+    const result = await this.auth.signIn('admin', d.adminPassword);
+    this.startingTour.set(false);
+    if (result.ok) {
+      this.tour.start();
+      await this.router.navigateByUrl('/tour');
+    } else this.error.set(result.error);
   }
 
   protected startSso(): void {
@@ -122,6 +128,12 @@ export class LoginPage {
     this.submitting.set(false);
 
     if (result.ok) {
+      // On a demo server, signing in as admin opens the guided tour.
+      if (!this.safeReturnUrl() && (await this.tour.isTourSignIn(username))) {
+        this.tour.start();
+        await this.router.navigateByUrl('/tour');
+        return;
+      }
       const target = this.safeReturnUrl() ?? this.auth.homeUrl();
       await this.router.navigateByUrl(target);
     } else {

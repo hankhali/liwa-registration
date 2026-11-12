@@ -28,12 +28,12 @@ public sealed class DemoAccountsController(IWebHostEnvironment env, IOptions<Liw
 {
     public sealed record DemoAccountInfo(string Username, string Role, string Description);
 
-    public sealed record DemoAccounts(string Password, IReadOnlyList<DemoAccountInfo> Accounts);
+    public sealed record DemoAccounts(string Password, string AdminPassword, IReadOnlyList<DemoAccountInfo> Accounts);
 
     [HttpGet]
     public IActionResult Get() =>
         env.IsDevelopment() && demo.Value.Enabled
-            ? Ok(new DemoAccounts(demo.Value.Password, Liwa.Infrastructure.Seeding.DemoSeeder.Accounts
+            ? Ok(new DemoAccounts(demo.Value.Password, string.IsNullOrEmpty(demo.Value.AdminPassword) ? demo.Value.Password : demo.Value.AdminPassword, Liwa.Infrastructure.Seeding.DemoSeeder.Accounts
                 .Select(a => new DemoAccountInfo(a.Username, a.Role.ToString(), a.Description)).ToList()))
             : NotFound();
 }
