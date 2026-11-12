@@ -2,6 +2,12 @@
 
 All notable changes are listed here, newest first, grouped by milestone.
 
+## Unreleased: online preview (showcase build) (2026-11-12)
+
+- **`showcase` build configuration:** the real app runs entirely in the browser from API answers recorded by `web/scripts/record-showcase.mjs`, which walks the tour and every page of the tour accounts in Chrome. No server or database is needed, so it can be shared as a link that works with the developer's computer off.
+- Read-only: anything that would save answers "This online demo is read-only". Practice accounts sign in without passwords, and the practice passwords aren't shipped.
+- No university logo, a "prototype · student project · practice data · not an official university service" banner, and a "Welcome / Start the guided tour" landing instead of the sign-in form. Hash page addresses for static hosting. Translations load from a relative path.
+- `docs/sharing-the-demo.md` now covers the online preview (recommended) and port forwarding.
 ## Unreleased: step-by-step walkthrough and a shareable link (2026-11-12)
 
 - **Guided walkthrough:** one continuous story in four parts (the student, the advisor, the advisor's feedback, the registrar), 24 steps. The page dims and a spotlight glides to the thing being explained, with a card beside it ("Part 2 of 4 · Step 3 of 6", progress bar, Back / Next / Exit). Practice accounts and pages switch on their own between parts.

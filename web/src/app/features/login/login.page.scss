@@ -227,3 +227,18 @@ form.secondary {
     text-align: center;
   }
 }
+
+// Showcase build: a plain title instead of the university logo, and a note under the tour box.
+.showcase-title {
+  margin: 2.5rem 0 1.5rem;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.showcase-note {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--liwa-text-muted);
+}

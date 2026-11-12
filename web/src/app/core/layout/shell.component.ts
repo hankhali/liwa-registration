@@ -14,6 +14,7 @@ import { filter, firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { LanguageService } from '../i18n/language.service';
 import { TranslatedTitleStrategy } from '../i18n/translated-title.strategy';
+import { SHOWCASE } from '../../showcase/showcase';
 import { TourService } from '../tour/tour.service';
 import { WalkthroughService } from '../tour/walkthrough';
 import { WalkthroughOverlayComponent } from '../tour/walkthrough-overlay.component';
@@ -84,6 +85,7 @@ export class ShellComponent {
   private readonly url = signal('');
   /** During the guided tour, everywhere except the tour page: the name of the account being viewed. */
   protected readonly walk = inject(WalkthroughService);
+  protected readonly showcase: boolean = SHOWCASE;
   protected readonly tourBar = computed(() =>
     this.tour.touring() && this.walk.index() === null && !this.url().startsWith('/tour') ? (this.auth.user()?.displayName ?? null) : null,
   );

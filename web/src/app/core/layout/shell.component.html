@@ -7,7 +7,9 @@
   </button>
   <a class="brand" [routerLink]="auth.homeUrl()" [attr.aria-label]="'shell.homeLink' | transloco">
     <!-- Official white wordmark, unmodified, only on the indigo bar (brief §9). -->
-    <img class="brand-logo" src="assets/brand/liwa-university-scaled.png" [alt]="'app.university' | transloco" width="2560" height="922" />
+    @if (!showcase) {
+      <img class="brand-logo" src="assets/brand/liwa-university-scaled.png" [alt]="'app.university' | transloco" width="2560" height="922" />
+    }
     <span class="brand-product">{{ 'app.product' | transloco }}</span>
   </a>
   @if (pageTitle(); as t) {
@@ -81,6 +83,10 @@
       {{ 'tour.bar.back' | transloco }}
     </button>
   </div>
+}
+
+@if (showcase) {
+  <p class="showcase-banner" role="note">{{ 'showcase.banner' | transloco }}</p>
 }
 
 <div class="frame">

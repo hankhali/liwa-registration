@@ -7,14 +7,18 @@
   </div>
 
   <!-- Official white wordmark, unmodified, on the indigo band (brief §9). -->
-  <img class="login-logo" src="assets/brand/liwa-university-scaled.png" [alt]="'app.university' | transloco" width="2560" height="922" />
-  <p class="login-university-ar" lang="ar" dir="rtl">جامعة ليوا</p>
+  @if (!showcase) {
+    <img class="login-logo" src="assets/brand/liwa-university-scaled.png" [alt]="'app.university' | transloco" width="2560" height="922" />
+    <p class="login-university-ar" lang="ar" dir="rtl">جامعة ليوا</p>
+  } @else {
+    <p class="showcase-title">{{ 'showcase.title' | transloco }}</p>
+  }
 
   <main class="login-card liwa-card" aria-labelledby="login-heading">
     <div class="login-product">{{ 'app.product' | transloco }}</div>
 
-    <h1 id="login-heading">{{ 'login.heading' | transloco }}</h1>
-    <p class="liwa-muted intro">{{ 'login.intro' | transloco }}</p>
+    <h1 id="login-heading">{{ (showcase ? 'showcase.heading' : 'login.heading') | transloco }}</h1>
+    <p class="liwa-muted intro">{{ (showcase ? 'showcase.intro' : 'login.intro') | transloco }}</p>
 
     @if (demo(); as d) {
       <!-- Demo server only: one click to the guided tour, for visitors. -->
@@ -28,7 +32,9 @@
             {{ 'login.tour.button' | transloco }}
           }
         </button>
-        <p class="liwa-muted tour-or">{{ 'login.tour.or' | transloco }} <bdi dir="ltr"><strong>admin</strong> / <strong>{{ d.adminPassword }}</strong></bdi></p>
+        @if (!showcase) {
+          <p class="liwa-muted tour-or">{{ 'login.tour.or' | transloco }} <bdi dir="ltr"><strong>admin</strong> / <strong>{{ d.adminPassword }}</strong></bdi></p>
+        }
       </section>
     }
 
@@ -43,7 +49,9 @@
       </p>
     }
 
-    @if (completing() || !ssoConfig()) {
+    @if (showcase) {
+      <p class="showcase-note" role="note">{{ 'showcase.note' | transloco }}</p>
+    } @else if (completing() || !ssoConfig()) {
       <!-- Finishing a Microsoft sign-in, or checking which sign-in options exist. -->
       <p class="waiting" role="status">
         <mat-spinner diameter="24" aria-hidden="true" />
@@ -116,9 +124,11 @@
       }
     }
 
-    <p class="help liwa-muted">{{ 'login.help' | transloco }}</p>
+    @if (!showcase) {
+      <p class="help liwa-muted">{{ 'login.help' | transloco }}</p>
+    }
 
-    @if (demo(); as d) {
+    @if (!showcase && demo(); as d) {
       <!-- Only returned by the API in Development with demo data on. -->
       <details class="demo">
         <summary>{{ 'login.demo.heading' | transloco }}</summary>

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService, SignInError, SsoConfig } from '../../core/auth/auth.service';
 import { TourService } from '../../core/tour/tour.service';
+import { SHOWCASE } from '../../showcase/showcase';
 import { WalkthroughService } from '../../core/tour/walkthrough';
 import { LanguageService } from '../../core/i18n/language.service';
 
@@ -81,6 +82,7 @@ export class LoginPage {
   private readonly walk = inject(WalkthroughService);
   protected readonly demo = this.tour.demo;
   protected readonly startingTour = signal(false);
+  protected readonly showcase: boolean = SHOWCASE;
 
   protected useDemo(username: string): void {
     const d = this.demo();

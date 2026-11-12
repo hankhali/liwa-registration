@@ -1305,5 +1305,12 @@
         }
       }
     }
+  },
+  "showcase": {
+    "title": "Smart Registration Assistant",
+    "heading": "Welcome",
+    "intro": "A prototype that helps students plan their semester and advisors approve it.",
+    "note": "This is an online preview of a student project. It runs on practice data, works without signing in, and doesn't save changes.",
+    "banner": "Prototype preview · student project · practice data, changes are not saved · not an official university service"
   }
 }

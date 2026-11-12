@@ -1,6 +1,23 @@
 # Sharing the demo with a link
 
-Use this to let someone (a reviewer, a professor) try the platform from their own browser. Nothing is installed: VS Code's built-in port forwarding gives a public `https://…devtunnels.ms` address for the app running on this machine.
+There are two ways to let someone (a reviewer, a professor) try the platform from their own browser. Nothing is installed for either.
+
+## Option A (recommended): the online preview, which works with this computer off
+
+The `showcase` build is the real app running entirely in the browser. It answers from API responses recorded from a run against the real server, so no server or database is needed. It is read-only: screens and the guided walkthrough work, but saving, sending and approving answer "This online demo is read-only". It shows no university logo and carries a "prototype · practice data · not an official university service" banner.
+
+```powershell
+# API (Development) and ng serve running as in Option B step 1, plus demo plan states.
+cd web
+npx ng build --configuration showcase      # → dist/showcase/browser
+node scripts/record-showcase.mjs           # walks the tour in Chrome, saves showcase-data.json
+```
+
+Then publish `dist/showcase/browser/index.html`, with every other file in that folder alongside it, to any static host. It has been published as a private claude.ai Artifact: open it and use **Share** to give the reviewer access. Re-run both commands after changing the app or the data, because the build clears the recorded data.
+
+## Option B: forward the live app from this computer
+
+VS Code's built-in port forwarding gives a public `https://…devtunnels.ms` address for the app running on this machine.
 
 ## 1. Start the app (demo data on)
 
